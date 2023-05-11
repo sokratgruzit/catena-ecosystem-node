@@ -1,91 +1,46 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const path = require("path");
-const credentials = require("./middleware/credentials");
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-require("dotenv").config();
+import corsOptions from "./config/corsOptions";
 
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-const fs = require("fs");
+import cookieParser from "cookie-parser";
 
 const app = express();
-app.use(express.json({ extended: true }));
-app.use(credentials);
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
 
-app.get("/images/:img", (req, res) => {
-  const { folder } = req.body;
-  try {
-    let imgPath = path.join(__dirname, `./uploads/${folder}/${req.params.img}`);
+app.use(cors(corsOptions));
 
-    if (fs.existsSync(imgPath)) {
-      res.status(200).sendFile(imgPath);
-    } else {
-      res.status(400).send(null);
-    }
-  } catch (err) {
-    res.status(400).send(null);
-  }
-});
-
-app.post("/profile", upload.single("img"), async (req, res) => {
-  const { address } = req.body;
-
-  if (!address && req.auth?.address) {
-    address = req.auth.address;
-  }
-
-  if (req.file) {
-    var filePath = req.file.path;
-
-    fs.rename(
-      __dirname.split("/src")[0] + "/" + filePath,
-      __dirname.split("/src")[0] + "/uploads/profile/" + address + ".png",
-      function (err) {
-        if (err) {
-          res.json({ success: false, message: err });
-        } else {
-          res.status(200).json("updated");
-        }
-      }
-    );
-  } else {
-    fs.unlink(
-      __dirname.split("/src")[0] + "/uploads/profile/" + address + ".png",
-      (err) => {}
-    );
-    res.status(200).json("image deleted");
-  }
-});
+app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.get("/api/test", (req, res) => {
   res.send("test");
 });
-//static path
-const root = require("path").join(__dirname, "front", "build");
-app.use(express.static(root));
+// app.use(isAuthenticated);
 
-async function start() {
-  const PORT = process.env.PORT || 5000;
-  try {
-    mongoose.set("strictQuery", false);
-    await mongoose.connect(process.env.MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    app.listen(PORT, () =>
-      console.log(`App has been started on port ${PORT}...`)
-    );
-  } catch (e) {
-    console.log(`Server Error ${e.message}`);
-    process.exit(1);
-  }
-}
+// app.use("/user", userRoutes);
 
-start();
+const PORT = process.env.PORT || 5000;
+
+mongoose
+  .connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB", err);
+  });
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
