@@ -9,9 +9,9 @@ dotenv.config();
 import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
-import adminRouter from "./modules/admin/admin.routes.js";
 
 import authRoutes from "./modules/auth/auth.routes.js";
+import adminRouter from "./modules/admin/admin.routes.js";
 
 const app = express();
 
@@ -25,7 +25,7 @@ app.get("/test", (req, res) => {
   res.send("test");
 });
 
-// app.use("/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/login", adminRouter);
 
 const PORT = process.env.PORT || 5000;

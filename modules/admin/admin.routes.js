@@ -3,6 +3,6 @@ import * as adminController from "./admin.controller.js";
 
 const router = Router();
 
-router.route("/login").post(adminController.adminLogin);
+router.route("/").post(adminController.adminLogin);
 
 export default router;
