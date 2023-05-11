@@ -9,7 +9,7 @@ dotenv.config();
 import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
-import { adminRouter } from "./modules/admin/admin.routes"
+import adminRoutes from "./modules/admin/admin.routes.js";
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.get("/test", (req, res) => {
   res.send("test");
 });
 
-app.use("/login", adminRouter);
+app.use("/login", adminRoute);
 
 const PORT = process.env.PORT || 5000;
 

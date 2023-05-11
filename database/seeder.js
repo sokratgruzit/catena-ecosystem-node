@@ -1,8 +1,8 @@
 import * as dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import Admin from "../models/Admin.js";
-import Roles from "../models/Roles";
+import { Admin } from "../models/Admin.js";
+import { Roles } from "../models/Roles.js";
 
 dotenv.config();
 
