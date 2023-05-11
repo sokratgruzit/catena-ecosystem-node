@@ -25,8 +25,8 @@ app.get("/test", (req, res) => {
   res.send("test");
 });
 
+app.use("/admin", adminRouter);
 app.use("/auth", authRoutes);
-app.use("/login", adminRouter);
 
 const PORT = process.env.PORT || 5000;
 
