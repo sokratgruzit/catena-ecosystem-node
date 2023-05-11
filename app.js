@@ -9,7 +9,7 @@ dotenv.config();
 import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
-import { adminRouter } from "./modules/admin/admin.routes"
+import adminRouter from "./modules/admin/admin.routes.js"
 
 const app = express();
 

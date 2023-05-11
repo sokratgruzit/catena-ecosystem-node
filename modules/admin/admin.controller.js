@@ -3,9 +3,8 @@ import bcrypt from "bcrypt";
 import { Admin } from "../../models/Admin.js";
 import config from "../../config/index.js";
 
-const adminLogin = async (req, res) => {
+export const adminLogin = async (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password)
 
     try {
         const admin = await Admin.findOne({ email: email });
@@ -49,6 +48,3 @@ const adminLogin = async (req, res) => {
         return res.status(500).send({ error: "Error logging in" });
     }
 };
-module.exports = {
-    adminLogin
-}
