@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 if (!process.env.JWT_SECRET) throw new Error("you need to provide JWT_SECRET in .env");
 
 const config = {

@@ -2,12 +2,13 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import corsOptions from "./config/corsOptions";
-
+import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
+import { isAuthenticated } from "./services/isAuthenticated.js";
 
 const app = express();
 
@@ -16,12 +17,12 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-app.get("/api/test", (req, res) => {
+app.use(isAuthenticated);
+app.get("/test", (req, res) => {
   res.send("test");
 });
-// app.use(isAuthenticated);
 
-// app.use("/user", userRoutes);
+//  app.use("/user", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 
@@ -36,10 +37,6 @@ mongoose
   .catch((err) => {
     console.error("Error connecting to MongoDB", err);
   });
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
