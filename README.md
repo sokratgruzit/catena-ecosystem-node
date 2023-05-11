@@ -3,7 +3,7 @@
 `` npm i ``
 
 ### seeding
-`` node database/seeding.js ``
+`` npm seed ``
 
 ### run
 `` npm start ``
