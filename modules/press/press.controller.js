@@ -3,6 +3,11 @@ import * as fs from 'fs';
 
 export const press = async (req, res) => {
     const { title, text, inner_descr, time, active_status, categoryId, presonsId } = req.body;
+    const { userId } = req.userId;
+
+    if (!userId) {
+        return res.status(400).send({ error: "User isn't authenticated" });
+    }
 
     const imagePath = req.files['outter_image'][0].path;
     const imagetargetPath = `uploads/${req.files['outter_image'][0].originalname}`;

@@ -3,6 +3,17 @@ import * as fs from 'fs';
 
 export const category = async (req, res) => {
     const { title } = req.body;
+    const { userId } = req.userId;
+
+    if (!userId) {
+        return res.status(400).send({ error: "User isn't authenticated" });
+    }
+    
+    if (!title || !imagetargetPath || !logoImagetargetPaths) {
+        return res.status(400).send({
+            message: "Fill all fealds"
+        });
+    }
 
     const imagePath = req.files['image'][0].path;
     const imagetargetPath = `uploads/${req.files['image'][0].originalname}`;
@@ -10,11 +21,6 @@ export const category = async (req, res) => {
     const logoImagePaths = req.files['logo_image'][0].path;
     const logoImagetargetPaths = `uploads/${req.files['logo_image'][0].originalname}`;
 
-    if (!title || !imagetargetPath || !logoImagetargetPaths) {
-        return res.status(400).send({
-            message: "Fill all fealds"
-        });
-    }
 
     fs.rename(imagePath, imagetargetPath, handleImageUploadError);
 
