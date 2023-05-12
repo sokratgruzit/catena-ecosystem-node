@@ -6,12 +6,9 @@ import config from "../../config/index.js";
 
 export const registerWalletAddress = async (req, res) => {
   try {
-  } catch (e) {
-    const { address } = req.body;
+    let { address } = req.body;
 
     if (!address) return res.status(400).send({ error: "Address is required" });
-
-    address = address.toLowerCase();
 
     const existingUser = await User.findOne({ address });
 
@@ -22,25 +19,11 @@ export const registerWalletAddress = async (req, res) => {
 
     const user = new User({ address });
     await user.save();
+
+    res.status(200).send({ message: "user saved successfully" });
+  } catch (e) {
+    return res.status(500).send({ error: "something went wrong" });
   }
-
-  // const user = new User({ email, password, username, refreshToken: "" });
-
-  // const resp = await user.save();
-
-  // console.log(resp);
-
-  // const accessToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
-  //   expiresIn: "15m",
-  // });
-
-  // const refreshToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
-  //   expiresIn: "30d",
-  // });
-
-  // user.refreshToken = refreshToken;
-
-  // await user.save();
 };
 
 export const login = async (req, res) => {
@@ -53,7 +36,7 @@ export const login = async (req, res) => {
       return res.status(404).send({ error: "User not found" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
       return res.status(401).send({ error: "Invalid password" });

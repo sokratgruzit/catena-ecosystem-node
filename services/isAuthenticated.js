@@ -12,7 +12,6 @@ export function isAuthenticated(req, res, next) {
       refresh(req, res);
     }
   }
-
   next();
 }
 
@@ -22,13 +21,9 @@ function refresh(req, res) {
   if (refreshToken) {
     try {
       const decoded = jwt.verify(refreshToken, config.jwtSecret);
-      const accessToken = jwt.sign(
-        { userId: decoded.userId },
-        config.jwtSecret,
-        {
-          expiresIn: "15m",
-        }
-      );
+      const accessToken = jwt.sign({ userId: decoded.userId }, config.jwtSecret, {
+        expiresIn: "15m",
+      });
       req.userId = decoded.userId;
       res.cookie("Access-Token", accessToken, {
         sameSite: "none",
