@@ -2,7 +2,7 @@ import express, { Router } from "express";
 import * as pressController from "./press.controller.js";
 import { isAuthenticated } from "../../services/isAuthenticated.js";
 import multer from "multer";
-const upload = multer({ dest: 'uploads/' })
+const upload = multer({ dest: 'uploads/press/' })
 
 const router = Router();
 const app = express();

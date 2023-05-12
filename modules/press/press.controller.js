@@ -1,39 +1,35 @@
 import { Press } from '../../models/Press.js';
-import * as fs from 'fs';
+import { imageUpload } from '../../utils/upload.js';
 
 export const press = async (req, res) => {
-    const { title, text, inner_descr, time, active_status, categoryId, presonsId } = req.body;
-    console.log(active_status)
-    // const imagePath = req.files['outter_image'][0].path;
-    // const imagetargetPath = `uploads/press/${req.files['outter_image'][0].originalname}`;
+    const { title, text, inner_descr, time, active_status, categoryId, personsId } = req.body;
+    const randomString1 = Math.random().toString(15).slice(2, 30);
+    const randomString2 = Math.random().toString(15).slice(2, 30);
 
-    // const logoImagePaths = req.files['inner_image'][0].path;
-    // const logoImagetargetPaths = `uploads/press/${req.files['inner_image'][0].originalname}`;
+    if (!title || !text || !inner_descr  ) {
+        return res.status(400).send({
+            message: "Fill all fealds"
+        });
+    }
 
-    // if (!title || !text || !inner_descr  || !imagetargetPath || !logoImagetargetPaths) {
-    //     return res.status(400).send({
-    //         message: "Fill all fealds"
-    //     });
-    // }
-
-    // fs.rename(imagePath, imagetargetPath, handleImageUploadError);
-
-    // fs.rename(logoImagePaths, logoImagetargetPaths, handleImageUploadError);
+    const outter_image = await imageUpload(randomString1, req.files['outter_image'][0], req.files['outter_image'][0].path, 'press');
+    const inner_image = await imageUpload(randomString2, req.files['inner_image'][0], req.files['inner_image'][0].path, 'press');
 
     try {
         const press = await Press.create({
-            // title: title,
-            // text: text,
-            // inner_descr: inner_descr,
-            // time: time,
+            title: title,
+            text: text,
+            inner_descr: inner_descr,
+            time: time,
             active_status: active_status,
-            // outter_image: imagetargetPath,
-            // inner_image: logoImagetargetPaths,
-            // category: categoryId,
-            // persons: presonsId,
+            outter_image: outter_image,
+            inner_image: inner_image,
+            category: categoryId,
+            persons: personsId,
         })
         .populate('category')
         .populate('persons')
+
         return res.status(200).json(press);
     } catch(error) {
         return res.status(500).send({ error: "Error press created" })
@@ -46,18 +42,11 @@ export const updateActiveStatus = async (req, res) => {
     const update = { active_status };
 
     try {
-        console.log(1)
         const updateToggleStatus = await Press.findOneAndUpdate(filter, update, { new: true })
-        console.log(updateToggleStatus);
+
         return res.status(200).send(updateToggleStatus);
     } catch(error) {
         return res.status(500).send({ error: "Failed to update active status" });
-    }
-};
-
-export const handleImageUploadError = (error) => {
-    if (error) {
-        console.log(`image exception ${error}`)
     }
 };
 
