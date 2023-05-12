@@ -23,6 +23,10 @@ app.get("/test", (req, res) => {
   res.send("test");
 });
 
+app.post("/api/admin/content/Users", (req, res)=>{
+  res.send({})
+})
+
 app.use("/admin", adminRouter);
 
 const PORT = process.env.PORT || 5000;
