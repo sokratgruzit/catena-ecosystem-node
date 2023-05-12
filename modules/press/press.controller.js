@@ -3,17 +3,12 @@ import * as fs from 'fs';
 
 export const press = async (req, res) => {
     const { title, text, inner_descr, time, active_status, categoryId, presonsId } = req.body;
-    const { userId } = req.userId;
-
-    if (!userId) {
-        return res.status(400).send({ error: "User isn't authenticated" });
-    }
 
     const imagePath = req.files['outter_image'][0].path;
-    const imagetargetPath = `uploads/${req.files['outter_image'][0].originalname}`;
+    const imagetargetPath = `uploads/press/${req.files['outter_image'][0].originalname}`;
 
     const logoImagePaths = req.files['inner_image'][0].path;
-    const logoImagetargetPaths = `uploads/${req.files['inner_image'][0].originalname}`;
+    const logoImagetargetPaths = `uploads/press/${req.files['inner_image'][0].originalname}`;
 
     if (!title || !text || !inner_descr  || !imagetargetPath || !logoImagetargetPaths) {
         return res.status(400).send({
@@ -43,6 +38,10 @@ export const press = async (req, res) => {
     } catch(error) {
         return res.status(500).send({ error: "Error press created" })
     }
+};
+
+export const toggleStatus = async (req, res) => {
+    
 };
 
 export const handleImageUploadError = (error) => {

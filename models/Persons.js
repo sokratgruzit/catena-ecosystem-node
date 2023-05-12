@@ -14,10 +14,6 @@ const personsSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        press: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Press",
-        }
     }
 );
 

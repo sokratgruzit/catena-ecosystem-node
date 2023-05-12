@@ -3,14 +3,9 @@ import * as fs from 'fs';
 
 export const persons = async (req, res) => {
     const { title, status } = req.body;
-    const { userId } = req.userId;
-
-    if (!userId) {
-        return res.status(400).send({ error: "User isn't authenticated" });
-    }
 
     const imagePath = req.file.path;
-    const imagetargetPath = `uploads/${req.file.originalname}`
+    const imagetargetPath = `uploads/persons/${req.file.originalname}`
 
     if (!title || !status || !imagetargetPath) {
         return res.status(400).send({
