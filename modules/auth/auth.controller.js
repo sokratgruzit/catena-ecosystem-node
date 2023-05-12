@@ -4,6 +4,45 @@ import { User } from "../../models/User.js";
 
 import config from "../../config/index.js";
 
+export const registerWalletAddress = async (req, res) => {
+  try {
+  } catch (e) {
+    const { address } = req.body;
+
+    if (!address) return res.status(400).send({ error: "Address is required" });
+
+    address = address.toLowerCase();
+
+    const existingUser = await User.findOne({ address });
+
+    if (existingUser)
+      return res.status(400).send({
+        message: "A user with this address already exists",
+      });
+
+    const user = new User({ address });
+    await user.save();
+  }
+
+  // const user = new User({ email, password, username, refreshToken: "" });
+
+  // const resp = await user.save();
+
+  // console.log(resp);
+
+  // const accessToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
+  //   expiresIn: "15m",
+  // });
+
+  // const refreshToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
+  //   expiresIn: "30d",
+  // });
+
+  // user.refreshToken = refreshToken;
+
+  // await user.save();
+};
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -84,8 +123,6 @@ export const register = async (req, res) => {
     const user = new User({ email, password, username, refreshToken: "" });
 
     const resp = await user.save();
-
-    console.log(resp);
 
     const accessToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
       expiresIn: "15m",

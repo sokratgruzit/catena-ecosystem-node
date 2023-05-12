@@ -1,3 +1,5 @@
+import { User } from "../../models/User.js";
+
 export const getUserInfo = async (req, res) => {
   const userId = req.userId;
 
@@ -9,5 +11,5 @@ export const getUserInfo = async (req, res) => {
     return res.status(200).send(userData);
   }
 
-  return res.status(404).send("no user found");
+  return res.status(404).send("no user or unauthorized");
 };

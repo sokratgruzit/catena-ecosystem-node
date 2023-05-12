@@ -12,6 +12,7 @@ import { isAuthenticated } from "./services/isAuthenticated.js";
 
 import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
+import userRoutes from "./modules/user/user.routes.js";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.get("/test", (req, res) => {
 
 app.use("/admin", adminRouter);
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 
