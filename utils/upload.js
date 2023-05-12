@@ -18,7 +18,7 @@ export const imageUpload = (address, files, filePath, folderPath) => {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(tempFilePath);
+                        resolve(newFilePath.replace(/.*(\/uploads.*)/, '$1'))
                     }
                 }
             );
