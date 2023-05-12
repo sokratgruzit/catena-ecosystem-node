@@ -18,8 +18,22 @@ export async function getUserInfo(req, res) {
 
 export async function makeProfile(req, res) {
   try {
-    let address = req.address;
-    console.log(address);
+    let { address, username, email, password } = req.body;
+
+    if (!address) return res.status(400).send("no address");
+
+    const foundUser = User.findOne({ address });
+    console.log(foundUser);
+
+    if (!foundUser) return res.status(400).send("no user found");
+
+    const updatedUser = User.findOneAndUpdate(
+      { address },
+      { username, email, password },
+      { new: true },
+    );
+
+    res.status(200).send({ result: updatedUser });
   } catch (e) {
     console.log(e);
     return res.status(404).send("something wen wrong");

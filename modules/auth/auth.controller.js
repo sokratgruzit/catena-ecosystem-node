@@ -9,6 +9,7 @@ export const registerWalletAddress = async (req, res) => {
     let { address } = req.body;
 
     if (!address) return res.status(400).send({ error: "Address is required" });
+    address.toLowerCase();
 
     const existingUser = await User.findOne({ address });
 

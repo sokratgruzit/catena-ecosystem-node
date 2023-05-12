@@ -24,4 +24,21 @@ userSchema.pre("save", function (next) {
   });
 });
 
+userSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate();
+  if (!update.password) {
+    return next();
+  }
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) return next(err);
+
+    bcrypt.hash(update.password, salt, (err, hash) => {
+      if (err) return next(err);
+      update.password = hash;
+      next();
+    });
+  });
+});
+
 export const User = mongoose.model("User", userSchema);
