@@ -13,7 +13,9 @@ import { isAuthenticated } from "./services/isAuthenticated.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
-
+import categoryRouter from "./modules/category/category.routes.js";
+import personsRouter from "./modules/persons/persons.routes.js";
+import pressRouter from "./modules/press/press.routes.js";
 const app = express();
 
 app.use(cors(corsOptions));
@@ -29,6 +31,9 @@ app.get("/test", (req, res) => {
 app.use("/admin", adminRouter);
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
+app.use("/category", categoryRouter);
+app.use("/persons", personsRouter);
+app.use("/press", pressRouter);
 
 const PORT = process.env.PORT || 5000;
 

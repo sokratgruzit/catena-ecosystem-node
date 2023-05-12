@@ -40,8 +40,8 @@ export const adminLogin = async (req, res) => {
     });
 
     return res.send({
-      username: admin.username,
-      email: admin.email,
+      email: email,
+      password: password,
     });
   } catch (errors) {
     return res.status(500).send({ error: "Error logging in" });
@@ -51,21 +51,25 @@ export const adminLogin = async (req, res) => {
 export const adminLogout = async (req, res) => {
   const { email } = req.body;
 
-  const admin = await Admin.findOne({ email: email });
+  try {
+    const admin = await Admin.findOne({ email: email });
 
-  if (admin) {
-    res.cookie("Access-Token", "", {
-      sameSite: "none",
-      httpOnly: true,
-      secure: true,
-    });
+    if (admin) {
+      res.cookie("Access-Token", "", {
+        sameSite: "none",
+        httpOnly: true,
+        secure: true,
+      });
 
-    res.cookie("Refresh-Token", "", {
-      sameSite: "none",
-      httpOnly: true,
-      secure: true,
-    });
+      res.cookie("Refresh-Token", "", {
+        sameSite: "none",
+        httpOnly: true,
+        secure: true,
+      });
 
-    return res.status(200).send("logged out");
+      return res.status(200).send("logged out");
+    }
+  } catch (error) {
+    return res.status(500).send({ error: "Error in logged out" });
   }
 };

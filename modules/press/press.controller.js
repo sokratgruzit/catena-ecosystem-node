@@ -1,0 +1,75 @@
+import { Press } from '../../models/Press.js';
+import * as fs from 'fs';
+
+export const press = async (req, res) => {
+    const { title, text, inner_descr, time, active_status, categoryId, presonsId } = req.body;
+    console.log(active_status)
+    // const imagePath = req.files['outter_image'][0].path;
+    // const imagetargetPath = `uploads/press/${req.files['outter_image'][0].originalname}`;
+
+    // const logoImagePaths = req.files['inner_image'][0].path;
+    // const logoImagetargetPaths = `uploads/press/${req.files['inner_image'][0].originalname}`;
+
+    // if (!title || !text || !inner_descr  || !imagetargetPath || !logoImagetargetPaths) {
+    //     return res.status(400).send({
+    //         message: "Fill all fealds"
+    //     });
+    // }
+
+    // fs.rename(imagePath, imagetargetPath, handleImageUploadError);
+
+    // fs.rename(logoImagePaths, logoImagetargetPaths, handleImageUploadError);
+
+    try {
+        const press = await Press.create({
+            // title: title,
+            // text: text,
+            // inner_descr: inner_descr,
+            // time: time,
+            active_status: active_status,
+            // outter_image: imagetargetPath,
+            // inner_image: logoImagetargetPaths,
+            // category: categoryId,
+            // persons: presonsId,
+        })
+        .populate('category')
+        .populate('persons')
+        return res.status(200).json(press);
+    } catch(error) {
+        return res.status(500).send({ error: "Error press created" })
+    }
+};
+
+export const updateActiveStatus = async (req, res) => {
+    const { _id, active_status } = req.body;
+    const filter = { _id };
+    const update = { active_status };
+
+    try {
+        console.log(1)
+        const updateToggleStatus = await Press.findOneAndUpdate(filter, update, { new: true })
+        console.log(updateToggleStatus);
+        return res.status(200).send(updateToggleStatus);
+    } catch(error) {
+        return res.status(500).send({ error: "Failed to update active status" });
+    }
+};
+
+export const handleImageUploadError = (error) => {
+    if (error) {
+        console.log(`image exception ${error}`)
+    }
+};
+
+export const getAllPress = async (req, res) => {
+    try {
+        const press = await Press.find()
+        .populate('category', 'title')
+        .populate('persons')
+        .exec()
+
+        return res.status(200).json(press);
+    } catch(error) {
+        return res.status(500).send({ error: "Error to getting press" });
+    }
+};
