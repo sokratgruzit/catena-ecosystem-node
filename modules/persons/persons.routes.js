@@ -10,5 +10,5 @@ const router = Router();
 app.use(isAuthenticated);
 
 router.route("/create").post(upload.single("image"),personsController.persons);
-router.route("/getallpersons").get(personsController.getAllPersons)
+router.route("/get-all-persons").get(personsController.getAllPersons)
 export default router;

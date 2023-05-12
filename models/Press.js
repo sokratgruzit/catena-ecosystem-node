@@ -4,11 +4,11 @@ const pressSchema = new mongoose.Schema(
     {
         title: {
             type: String,
-            required: true,
+            // required: true,
         },
         text: {
             type: String,
-            required: true,
+            // required: true,
         },
         time: {
             type: Date,
@@ -16,15 +16,15 @@ const pressSchema = new mongoose.Schema(
         },
         inner_descr: {
             type: String,
-            required: true,
+            // required: true,
         },
         outter_image: {
             type: String,
-            required: true,
+            // required: true,
         },
         inner_image: {
             type: String,
-            required: true,
+            // required: true,
         },
         active_status: {
             type: Boolean,

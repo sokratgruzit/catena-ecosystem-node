@@ -13,6 +13,7 @@ router.route("/create").post(upload.fields([
     {name: "outter_image"},
     {name: "inner_image"},
 ]),pressController.press);
-router.route("/getallpress").get(pressController.getAllPress);
+router.route("/get-all-press").get(pressController.getAllPress);
+router.route("/update-active-status").put(pressController.updateActiveStatus);
 
 export default router;

@@ -14,5 +14,5 @@ router.route("/create").post(upload.fields([
     {name:"logo_image", maxCount:1},
 ]),categoryController.category);
 
-router.route("/getallcategory").get(categoryController.getAllCategories)
+router.route("/get-all-category").get(categoryController.getAllCategories)
 export default router;
