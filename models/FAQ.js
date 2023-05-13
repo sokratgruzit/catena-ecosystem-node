@@ -4,13 +4,17 @@ const FAQSchema = new mongoose.Schema(
   {
     question: {
       type: String,
-    //   required: true,
-    //   unique: true,
+      required: true,
+      unique: true,
     },
     answer: {
       type: String,
-    //   required: true,
+      required: true,
     },
+    active: {
+        type: Boolean,
+        default: true
+      },
   },
   {
     timestamps: true,
