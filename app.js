@@ -11,7 +11,7 @@ import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
 import FAQRouter from "./modules/FAQ/FAQ.routes.js";
-
+import eventRouter from "./modules/event/event.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
@@ -51,9 +51,9 @@ app.use("/user", userRoutes);
 app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
 app.use("/press", pressRouter);
-app.use("/FAQ", FAQRouter)
-
 app.use("/FAQ", FAQRouter);
+app.use("/event", eventRouter);
+
 const PORT = process.env.PORT || 5000;
 
 mongoose
