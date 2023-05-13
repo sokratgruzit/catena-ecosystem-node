@@ -51,6 +51,7 @@ app.use("/user", userRoutes);
 app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
 app.use("/press", pressRouter);
+app.use("/FAQ", FAQRouter)
 
 app.use("/FAQ", FAQRouter);
 const PORT = process.env.PORT || 5000;
