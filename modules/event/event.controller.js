@@ -32,6 +32,8 @@ export const createEvent = async (req, res) => {
             active_status: active_status,
             category: categoryId,
         })
+        .populate('category')
+
 
         return res.status(200).json(event);
     } catch(error) {
@@ -57,9 +59,25 @@ export const updateActiveStatus = async (req, res) => {
 export const getAllEvents = async (req, res) => {
     try {
         const event = await Event.find()
+        .populate('category', 'title')
+        .exec()
 
         return res.status(200).json( event );
     } catch(error) {
         return res.status(500).send({ error: "Error to getting event" });
     }
+};
+
+export const destroyOneEvent = async (req, res) => {
+    try {
+        const result = await Event.deleteOne({ _id: req.body._id});
+
+        if (result.acknowledged === true) {
+          return res.status(200).json({ message: "event successuly deleted" });
+        }
+        res.status(400).json({ message: "event deletion failed" });
+      } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ message: e.message });
+      }
 };
