@@ -25,6 +25,21 @@ app.get("/test", (req, res) => {
   res.send("test");
 });
 
+app.get("/image", (req, res) => {
+  const { folder } = req.body;
+  try {
+    let imgPath = path.join(__dirname, `./uploads/${folder}/${req.params.img}`);
+    console.log(imgPath)
+    if (fs.existsSync(imgPath)) {
+      res.status(200).sendFile(imgPath);
+    } else {
+      res.status(400).send(null);
+    }
+  } catch (err) {
+    res.status(400).send(null);
+  }
+});
+
 app.use("/admin", adminRouter);
 app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
