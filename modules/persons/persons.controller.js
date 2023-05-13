@@ -10,7 +10,6 @@ export const persons = async (req, res) => {
       message: "Fill all fealds",
     });
   }
-  console.log(req.file);
   try {
     // const image = await imageUpload(randomString, req.file, req.file.path, "persons");
 
