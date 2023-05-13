@@ -18,6 +18,8 @@ import userRoutes from "./modules/user/user.routes.js";
 import categoryRouter from "./modules/category/category.routes.js";
 import personsRouter from "./modules/persons/persons.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
+import proposalsRouter from "./modules/proposals/proposals.routes.js";
+import choicesRouter from "./modules/choices/choices.routes.js";
 const app = express();
 
 app.use(cors(corsOptions));
@@ -51,7 +53,8 @@ app.use("/user", userRoutes);
 app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
 app.use("/press", pressRouter);
-
+app.use("/proposals", proposalsRouter);
+app.use("/choices", choicesRouter);
 app.use("/FAQ", FAQRouter);
 const PORT = process.env.PORT || 5000;
 
