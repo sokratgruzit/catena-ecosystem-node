@@ -11,7 +11,10 @@ import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
 import FAQRouter from "./modules/FAQ/FAQ.routes.js";
+
+import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
+import userRoutes from "./modules/user/user.routes.js";
 import categoryRouter from "./modules/category/category.routes.js";
 import personsRouter from "./modules/persons/persons.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
@@ -43,6 +46,8 @@ app.get("/image", (req, res) => {
 });
 
 app.use("/admin", adminRouter);
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
 app.use("/press", pressRouter);

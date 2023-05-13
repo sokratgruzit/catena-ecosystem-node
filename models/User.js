@@ -2,9 +2,10 @@ import * as mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
+  address: { type: String, required: true, unique: true },
+  username: { type: String, required: false },
+  email: { type: String, required: false },
+  password: { type: String, required: false },
 });
 
 userSchema.pre("save", function (next) {
@@ -18,6 +19,23 @@ userSchema.pre("save", function (next) {
     bcrypt.hash(user.password, salt, (err, hash) => {
       if (err) return next(err);
       user.password = hash;
+      next();
+    });
+  });
+});
+
+userSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate();
+  if (!update.password) {
+    return next();
+  }
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) return next(err);
+
+    bcrypt.hash(update.password, salt, (err, hash) => {
+      if (err) return next(err);
+      update.password = hash;
       next();
     });
   });
