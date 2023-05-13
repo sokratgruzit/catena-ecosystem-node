@@ -1,10 +1,10 @@
 import * as mongoose from "mongoose";
-import * as slug from "mongoose-slug-updater";
-import * as Language from "./Language.js";
+import slug from "mongoose-slug-updater";
+import { Language } from "./Language.js";
 
 mongoose.plugin(slug);
 
-const PressTranslatedFieldsSchema = mongoose.schema(
+const PressTranslatedFieldsSchema = mongoose.Schema(
   {
     title: {
       type: String,
@@ -50,6 +50,12 @@ const PressSchemaObject = {
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
+    },
+  ],
+  persons: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Persons",
     },
   ],
 };

@@ -40,17 +40,7 @@ export const press = async (req, res) => {
   }
 
   try {
-    const press = await Press.create({
-      title: title,
-      text: text,
-      inner_descr: inner_descr,
-      // time: time,
-      active_status: active_status,
-      outter_image: outter_image,
-      inner_image: inner_image,
-      category: categoryId,
-      persons: personsId,
-    });
+    const press = await Press.create(req.body);
 
     return res.status(200).json(press);
   } catch (error) {
