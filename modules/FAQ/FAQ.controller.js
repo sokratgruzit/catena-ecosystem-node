@@ -5,11 +5,11 @@ export const create = async (req, res) => {
     try {
         const { question, answer } = req.body;
 
-        let result = new FAQ({
-            question,
-            answer,
-        });
-        result = await result.save();
+        const result = await FAQ.create({
+            question: question,
+            answer: answer
+        })
+
         res.status(200).json({ message: "New FAQ Created", result });
     } catch (e) {
         console.log(e.message);
