@@ -2,16 +2,18 @@ import { User } from "../../models/User.js";
 
 export async function getUserInfo(req, res) {
   try {
-    const userId = req.userId;
+    let { address } = req.body;
 
-    if (!userId) return res.status(404).send("unauthorized");
+    if (!address) return res.status(400).send("no address");
+    address.toLowerCase();
+    // const userId = req.userId;
+    // if (!userId) return res.status(404).send("unauthorized");
 
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findOne({ address: address });
 
-    const userData = { username: user?.username, email: user?.email };
-
-    return res.status(200).send(userData);
+    return res.status(200).send({ user });
   } catch (e) {
+    console.log(e);
     return res.status(404).send("no user or unauthorized");
   }
 }
@@ -22,12 +24,11 @@ export async function makeProfile(req, res) {
 
     if (!address) return res.status(400).send("no address");
 
-    const foundUser = User.findOne({ address });
-    console.log(foundUser);
+    const foundUser = await User.findOne({ address });
 
     if (!foundUser) return res.status(400).send("no user found");
 
-    const updatedUser = User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { address },
       { username, email, password },
       { new: true },
