@@ -2,13 +2,12 @@ import * as fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-export const imageUpload = (address, files, filePath, folderPath) => {
+export const imageUpload = (address, file, folderPath) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
   return new Promise((resolve, reject) => {
-    if (files) {
-      var tempFilePath = filePath;
+    if (file) {
       const newFilePath = path.join(
         __dirname,
         "..",
@@ -17,7 +16,7 @@ export const imageUpload = (address, files, filePath, folderPath) => {
         address + ".png",
       );
 
-      fs.rename(tempFilePath, newFilePath, function (err) {
+      fs.writeFile(newFilePath, file.buffer, (err) => {
         if (err) {
           reject(err);
         } else {

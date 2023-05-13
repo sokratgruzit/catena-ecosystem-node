@@ -27,7 +27,7 @@ const PressTranslatedFieldsSchema = mongoose.Schema(
       required: false,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const PressSchemaObject = {
@@ -60,13 +60,13 @@ const PressSchemaObject = {
   ],
 };
 
-Language.schema.obj.list.default.forEach((lang) => {
-  PressSchemaObject[lang.code] = PressTranslatedFieldsSchema;
+Language.find().then((languages) => {
+  languages.forEach((lang) => {
+    PressSchemaObject[lang.code] = PressTranslatedFieldsSchema;
+  });
 });
 
-// create your schema
-const pressSchema = mongoose.Schema(PressSchemaObject, {
+const pressSchema = new mongoose.Schema(PressSchemaObject, {
   timestamps: true,
 });
-
 export const Press = mongoose.model("Press", pressSchema);
