@@ -1,10 +1,31 @@
-import { Request, Response } from "express";
-
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { User } from "../../models/User.js";
 
 import config from "../../config/index.js";
+
+export const registerWalletAddress = async (req, res) => {
+  try {
+    let { address } = req.body;
+
+    if (!address) return res.status(400).send({ error: "Address is required" });
+    address.toLowerCase();
+
+    const existingUser = await User.findOne({ address });
+
+    if (existingUser)
+      return res.status(400).send({
+        message: "A user with this address already exists",
+      });
+
+    const user = new User({ address });
+    await user.save();
+
+    res.status(200).send({ message: "user saved successfully" });
+  } catch (e) {
+    return res.status(500).send({ error: "something went wrong" });
+  }
+};
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -16,7 +37,7 @@ export const login = async (req, res) => {
       return res.status(404).send({ error: "User not found" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
       return res.status(401).send({ error: "Invalid password" });
@@ -72,45 +93,49 @@ export const logout = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-  const { email, password, username } = req.body;
+  try {
+    const { email, password, username } = req.body;
 
-  const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
-  if (existingUser) {
-    return res.status(400).send({
-      message: "A user with this email already exists",
+    if (existingUser) {
+      return res.status(400).send({
+        message: "A user with this email already exists",
+      });
+    }
+
+    const user = new User({ email, password, username, refreshToken: "" });
+
+    const resp = await user.save();
+
+    const accessToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
+      expiresIn: "15m",
     });
+
+    const refreshToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
+      expiresIn: "30d",
+    });
+
+    user.refreshToken = refreshToken;
+
+    await user.save();
+
+    res.cookie("Access-Token", accessToken, {
+      sameSite: "none",
+      httpOnly: true,
+      secure: true,
+    });
+
+    res.cookie("Refresh-Token", refreshToken, {
+      sameSite: "none",
+      httpOnly: true,
+      secure: true,
+    });
+
+    return res.send({
+      message: "Successfully registered",
+    });
+  } catch (e) {
+    console.log(e);
   }
-
-  const user = new User({ email, password, username, refreshToken: "" });
-
-  await user.save();
-
-  const accessToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
-    expiresIn: "15m",
-  });
-
-  const refreshToken = jwt.sign({ userId: user._id }, config.jwtSecret, {
-    expiresIn: "30d",
-  });
-
-  user.refreshToken = refreshToken;
-
-  await user.save();
-
-  res.cookie("Access-Token", accessToken, {
-    sameSite: "none",
-    httpOnly: true,
-    secure: true,
-  });
-
-  res.cookie("Refresh-Token", refreshToken, {
-    sameSite: "none",
-    httpOnly: true,
-    secure: true,
-  });
-
-  return res.send({
-    message: "Successfully registered",
-  });
 };

@@ -41,7 +41,7 @@ export const adminLogin = async (req, res) => {
 
     return res.send({
       token: accessToken,
-      userId: req.userId
+      userId: req.userId,
     });
   } catch (errors) {
     return res.status(500).send({ error: "Error logging in" });
@@ -70,6 +70,6 @@ export const adminLogout = async (req, res) => {
       return res.status(200).send("logged out");
     }
   } catch (error) {
-    return res.status(500).send({error: "Error in logged out" })
+    return res.status(500).send({ error: "Error in logged out" });
   }
 };
