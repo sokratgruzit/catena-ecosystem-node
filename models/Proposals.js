@@ -1,6 +1,10 @@
 import * as mongoose from "mongoose";
+import slug from "mongoose-slug-updater";
+import { Language } from "./Language.js";
 
-const ProposalsSchema = new mongoose.Schema(
+mongoose.plugin(slug);
+
+const ProposalTranslatedFieldsSchema = mongoose.Schema(
     {
         title: {
             type: String,
@@ -10,24 +14,40 @@ const ProposalsSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        startDate: {
-            type: Date,
-            default: Date.now,
-        },
-        endDate: {
-            type: Date,
-            default: Date.now,
-        },
-        choices: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Choices",
-            },
-        ],
-    },
-    {
-        timestamps: true,
-    }
+    }, { _id: false }
 );
 
-export const Proposals = mongoose.model("Proposals", ProposalsSchema);
+const ProposalsSchemaObject = {
+    slug: {
+        type: String,
+        slug: "en.title",
+        slugPaddingSize: 2,
+        unique: true,
+    },
+    startDate: {
+        type: Date,
+        default: Date.now,
+    },
+    endDate: {
+        type: Date,
+        default: Date.now,
+    },
+    choices: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Choices",
+        },
+    ],
+};
+
+Language.find().then((languages) => {
+    languages.forEach((lang) => {
+        ProposalsSchemaObject[lang.code] = ProposalTranslatedFieldsSchema;
+    });
+});
+
+const proposalsSchema = new mongoose.Schema(ProposalsSchemaObject, {
+    timestamps: true,
+});
+
+export const Proposals = mongoose.model("Proposals", proposalsSchema);
