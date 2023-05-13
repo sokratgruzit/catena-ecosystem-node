@@ -6,7 +6,7 @@ export const press = async (req, res) => {
     const randomString1 = Math.random().toString(15).slice(2, 30);
     const randomString2 = Math.random().toString(15).slice(2, 30);
 
-    if (!title || !text || !inner_descr  ) {
+    if (!title || !text || !inner_descr) {
         return res.status(400).send({
             message: "Fill all fealds"
         });
@@ -21,18 +21,18 @@ export const press = async (req, res) => {
             text: text,
             inner_descr: inner_descr,
             time: time,
-            active_status: active_status,
+            // active_status: active_status,
             outter_image: outter_image,
             inner_image: inner_image,
-            category: categoryId,
-            persons: personsId,
+            // category: categoryId,
+            // persons: personsId,
         })
         .populate('category')
         .populate('persons')
 
         return res.status(200).json(press);
     } catch(error) {
-        return res.status(500).send({ error: "Error press created" })
+        return res.status(500).json(error)
     }
 };
 
