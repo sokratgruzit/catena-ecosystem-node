@@ -40,8 +40,8 @@ export const adminLogin = async (req, res) => {
     });
 
     return res.send({
-      email: email,
-      password: password,
+      token: accessToken,
+      userId: req.userId,
     });
   } catch (errors) {
     return res.status(500).send({ error: "Error logging in" });
