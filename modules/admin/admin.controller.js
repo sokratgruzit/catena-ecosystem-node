@@ -41,7 +41,7 @@ export const adminLogin = async (req, res) => {
 
     return res.send({
       token: accessToken,
-      userId: admin._id,
+      userId: req.userId,
     });
   } catch (errors) {
     return res.status(500).send({ error: "Error logging in" });

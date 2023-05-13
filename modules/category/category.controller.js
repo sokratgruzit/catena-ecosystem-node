@@ -1,46 +1,33 @@
 import { Category } from "../../models/Category.js";
-import * as fs from 'fs';
+import { imageUpload } from "../../utils/upload.js";
 
 export const category = async (req, res) => {
     const { title } = req.body;
+    const randomString1 = Math.random().toString(15).slice(2, 30);
+    const randomString2 = Math.random().toString(15).slice(2, 30);
 
-    if (!title || !imagetargetPath || !logoImagetargetPaths) {
+    if (!title) {
         return res.status(400).send({
             message: "Fill all fealds"
         });
     }
 
-    const imagePath = req.files['image'][0].path;
-    const imagetargetPath = `uploads/category/${req.files['image'][0].originalname}`;
-
-    const logoImagePaths = req.files['logo_image'][0].path;
-    const logoImagetargetPaths = `uploads/category/${req.files['logo_image'][0].originalname}`;
-
-
-    fs.rename(imagePath, imagetargetPath, handleImageUploadError);
-
-    fs.rename(logoImagePaths, logoImagetargetPaths, handleImageUploadError);
-
     try {
-        const category = await Category.create({
+        const image = await imageUpload(randomString1, req.files['image'][0], req.files['image'][0].path, 'category');
+        const logo_image = await imageUpload(randomString2, req.files['logo_image'][0], req.files['logo_image'][0].path, 'category');
+
+        const person = await Category.create({
             title: title,
-            image: imagetargetPath,
-            logo_image: logoImagetargetPaths
+            image: image,
+            logo_image: logo_image
         });
 
-        return res.status(200).json(category);
-
+        return res.status(200).json(person);
     } catch (error) {
-        return res.status(500).send({ error: "Error category created" })
+        console.log(error)
+        return res.status(500).send({ error: "Error creating category" });
     }
-
 };
-
-export const handleImageUploadError = (error) => {
-    if (error) {
-        console.log(`image exception ${error}`)
-    }
-}
 
 export const getAllCategories = async (req, res) => {
     try {

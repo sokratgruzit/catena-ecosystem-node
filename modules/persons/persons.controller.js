@@ -1,45 +1,35 @@
 import { Persons } from '../../models/Persons.js';
-import * as fs from 'fs';
+import { imageUpload } from '../../utils/upload.js';
 
 export const persons = async (req, res) => {
     const { title, status } = req.body;
+    const randomString = Math.random().toString(15).slice(2, 30);
 
-    const imagePath = req.file.path;
-    const imagetargetPath = `uploads/persons/${req.file.originalname}`
-
-    if (!title || !status || !imagetargetPath) {
+    if (!title || !status) {
         return res.status(400).send({
             message: "Fill all fealds"
         });
     }
 
-    fs.rename(imagePath, imagetargetPath, handleImageUploadError)
-
     try {
+        const image = await imageUpload(randomString, req.file, req.file.path, 'persons');
+
         const persons = await Persons.create({
             title: title,
             status: status,
-            image: imagetargetPath
+            image: image
         });
 
         return res.status(200).json(persons);
-
     } catch (error) {
-        return res.status(500).send({ error: "Error persons created" });
+        return res.status(500).send({ error: "Error creating persons" });
     }
-
 };
-
-export const handleImageUploadError = (error) => {
-    if (error) {
-        console.log(`image exception ${error}`)
-    }
-}
 
 export const getAllPersons = async (req, res) => {
     try {
         const persons = await Persons.find();
-        
+
         return res.status(200).json(persons);
     } catch (error) {
         return res.status(500).send({ error: "Error getting persons" });
