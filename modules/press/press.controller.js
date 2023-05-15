@@ -1,5 +1,5 @@
 import { Press } from "../../models/Press.js";
-import { imageUpload } from "../../utils/upload.js";
+import { imageUpload } from "../../utils/uploadImage.js";
 
 export const press = async (req, res) => {
   const {
@@ -25,16 +25,14 @@ export const press = async (req, res) => {
     outter_image = await imageUpload(
       randomString1,
       req.files["outter_image"][0],
-      req.files["outter_image"][0].path,
       "press"
     );
   }
   let inner_image;
   if (req.files && req.files["inner_image"]) {
     inner_image = await imageUpload(
-      randomString1,
+      randomString2,
       req.files["inner_image"][0],
-      req.files["inner_image"][0].path,
       "press"
     );
   }
