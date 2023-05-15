@@ -1,13 +1,9 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import * as categoryController from "./category.controller.js";
-import { isAuthenticated } from "../../services/isAuthenticated.js";
 import multer from "multer";
-const upload = multer({ dest: "uploads/category/" });
+const upload = multer({ storage: multer.memoryStorage() });
 
-const app = express();
 const router = Router();
-
-app.use(isAuthenticated);
 
 router.route("/create").post(
   upload.fields([
