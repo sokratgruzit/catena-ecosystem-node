@@ -4,7 +4,7 @@ import { Language } from "./Language.js";
 
 mongoose.plugin(slug);
 
-const FAQTranslatedFieldsSchema = new mongoose.Schema(
+const FaqTranslatedFieldsSchema = new mongoose.Schema(
   {
     question: {
       type: String,
@@ -19,7 +19,7 @@ const FAQTranslatedFieldsSchema = new mongoose.Schema(
   { _id: false },
 );
 
-const FAQSchemaObject = {
+const FaqSchemaObject = {
   slug: {
     type: String,
     slug: "en.title",
@@ -34,12 +34,12 @@ const FAQSchemaObject = {
 
 Language.find().then((languages) => {
   languages.forEach((lang) => {
-    FAQSchemaObject[lang.code] = FAQTranslatedFieldsSchema;
+    FaqSchemaObject[lang.code] = FaqTranslatedFieldsSchema;
   });
 });
 
-const FAQSchema = new mongoose.Schema(FAQSchemaObject, {
+const FaqSchema = new mongoose.Schema(FaqSchemaObject, {
   timestamps: true,
 });
 
-export const FAQ = mongoose.model("FAQ", FAQSchema);
+export const Faq = mongoose.model("Faq", FaqSchema);

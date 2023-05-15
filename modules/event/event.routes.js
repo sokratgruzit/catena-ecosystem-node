@@ -15,7 +15,7 @@ router.route("/create").post(upload.fields([
     {name: "image"},
 ]),eventControler.createEvent);
 router.route("/update-active-status").put(eventControler.updateActiveStatus);
-router.route("/get-all-press").get(eventControler.getAllEvents);
+router.route("/get-all-event").get(eventControler.getAllEvents);
 router.route("/destroyOneEvent").delete(eventControler.destroyOneEvent);
 
 export default router;
