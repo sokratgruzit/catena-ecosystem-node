@@ -16,6 +16,7 @@ export const createChoices = async (req, res) => {
 };
 
 export const getAllChoices = async (req, res) => {
+    console.log(req.body);
     try {
         const allChoices = await Choices.find();
 
