@@ -4,14 +4,14 @@ import * as mongoose from "mongoose";
 
 mongoose.plugin(slug);
 
-const eventTranslatedFieldsSchema = new mongoose.Schema(
+const AnouncementTranslatedFieldsSchema = new mongoose.Schema(
     {
-        title: {
+        name: {
             type: String,
             required: true,
             unique: true,
         },
-        badge: {
+        title: {
             type: String,
             required: true,
         },
@@ -27,13 +27,11 @@ const eventTranslatedFieldsSchema = new mongoose.Schema(
     { _id: false },
   );
 
-const EventSchemaObject = new mongoose.Schema(
+const AnouncementSchemaObj = new mongoose.Schema(
     {
-        slug: {
+        image: {
             type: String,
-            slug: "en.title",
-            slugPaddingSize: 2,
-            unique: true,
+            required: true,
         },
         time: {
             type: Date,
@@ -43,19 +41,17 @@ const EventSchemaObject = new mongoose.Schema(
             type: String,
             required: true,
         },
-        outter_image: {
-            type: String,
-            required: true,
-        },
-        image: {
-            type: String,
-            required: true,
-        },
         active_status: {
             type: Boolean,
             default: true,
             required: true,
         },
+        slug: {
+            type: String,
+            slug: "en.title",
+            slugPaddingSize: 2,
+            unique: true,
+          },
         category: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
@@ -65,12 +61,12 @@ const EventSchemaObject = new mongoose.Schema(
 
 Language.find().then((languages) => {
     languages.forEach((lang) => {
-        EventSchemaObject[lang.code] = eventTranslatedFieldsSchema;
+        AnouncementSchemaObj[lang.code] = AnouncementTranslatedFieldsSchema;
     });
   });
   
-  const eventSchema = new mongoose.Schema(EventSchemaObject, {
+  const AnouncementSchema = new mongoose.Schema(AnouncementSchemaObj, {
     timestamps: true,
   });
 
-export const Event = mongoose.model("Event", eventSchema);
+export const Anouncement = mongoose.model("Anouncement", AnouncementSchema);
