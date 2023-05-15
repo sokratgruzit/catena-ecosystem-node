@@ -33,7 +33,7 @@ export const imageUpload = (address, file, folderPath) => {
 
       fs.unlink(deleteFilePath, (err) => {
         if (err) {
-          reject(err);
+          resolve("there was no img");
         } else {
           resolve("image deleted");
         }
