@@ -38,8 +38,6 @@ export async function makeProfile(req, res) {
     const foundUser = await User.findOne({ address });
     if (!foundUser) return res.status(400).send("no user found");
 
-    const file = req.file;
-
     const image = await imageUpload(address, req.file, "profile");
     const updatedUser = await User.findOneAndUpdate(
       { address },

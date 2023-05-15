@@ -10,14 +10,6 @@ const CategoryTranslatedFieldsSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        image: {
-            type: String,
-            required: true,
-        },
-        logo_image: {
-            type: String,
-            required: true,
-        },
     },
     { _id: false },
 );
@@ -28,6 +20,14 @@ const CategorySchemaObject = {
         slug: "en.title",
         slugPaddingSize: 2,
         unique: true,
+    },
+    image: {
+        type: String,
+        required: true,
+    },
+    logo_image: {
+        type: String,
+        required: true,
     },
 };
 
