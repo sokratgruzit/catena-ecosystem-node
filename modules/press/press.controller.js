@@ -15,6 +15,7 @@ export const press = async (req, res) => {
     userId
   } = req.body;
   const files = [...req.files['outter_image'], ...req.files['inner_image']];
+  
   // if (!title || !text || !inner_descr) {
   //     return res.status(400).send({
   //         message: "Fill all fealds"

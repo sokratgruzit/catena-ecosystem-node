@@ -56,8 +56,9 @@ export const createEvent = async (req, res) => {
       image,
       userId
     } = req.body;
-    const files = [...req.files['outter_image'], ...req.files['cover_image'], ...req.files['image']];
-    
+
+    const files = [...req.files['outter_image'], ...req.files['cover_image']];
+
     // if (!title || !text || !inner_descr) {
     //     return res.status(400).send({
     //         message: "Fill all fealds"
@@ -65,7 +66,7 @@ export const createEvent = async (req, res) => {
     // }
   
     try {
-      const img = await uploadImageMany(userId, files, 'event')
+      const image = await uploadImageMany( userId, files, 'event' );
   
       const event = await Event.create({
         title: title,
@@ -73,9 +74,9 @@ export const createEvent = async (req, res) => {
         badge: badge,
         inner_descr: inner_descr,
         // time: time,
-        cover_image: img,
-        outter_image: img,
-        image: img,
+        cover_image: image,
+        outter_image: image,
+        // image: img,
         active_status: active_status,
         category: categoryId,
       });
@@ -85,7 +86,7 @@ export const createEvent = async (req, res) => {
       console.log(error);
       return res.status(500).json(error);
     }
-  };
+};
 
 export const updateActiveStatus = async (req, res) => {
     const { _id, active_status } = req.body;
