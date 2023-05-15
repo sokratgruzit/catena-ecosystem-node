@@ -66,7 +66,7 @@ export const changeStatus = async (req, res) => {
 
         console.log(req.body)
     
-        res.status(200).json(result);
+        res.status(200).json( result );
     } catch (e) {
         console.log(e.message);
         res.status(400).json({ message: e.message });
