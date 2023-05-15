@@ -2,7 +2,7 @@ import express, { Router } from "express";
 import * as eventControler from "./event.controller.js";
 import { isAuthenticated } from "../../services/isAuthenticated.js";
 import multer from "multer";
-const upload = multer({ dest: 'uploads/event/' })
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
 const app = express();

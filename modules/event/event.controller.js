@@ -1,5 +1,5 @@
 import { Event } from '../../models/Event.js';
-import { imageUpload } from '../../utils/upload.js';
+import { uploadImageMany } from '../../utils/uploadImageMany.js';
 
 // export const createEvent = async (req, res) => {
 //     const { title, badge, text, inner_descr, time, active_status, categoryId } = req.body;
@@ -51,46 +51,34 @@ export const createEvent = async (req, res) => {
       time,
       active_status,
       categoryId,
+      outter_image,
+      cover_image,
+      image,
+      userId
     } = req.body;
-    const randomString1 = Math.random().toString(15).slice(2, 30);
-    const randomString2 = Math.random().toString(15).slice(2, 30);
-  
+    const files = [...req.files['outter_image'], ...req.files['cover_image'], ...req.files['image']];
+    
     // if (!title || !text || !inner_descr) {
     //     return res.status(400).send({
     //         message: "Fill all fealds"
     //     });
     // }
   
-    let outter_image;
-    if (req.files && req.files["outter_image"]) {
-      outter_image = await imageUpload(
-        randomString1,
-        req.files["outter_image"][0],
-        req.files["outter_image"][0].path,
-        "event"
-      );
-    }
-    let inner_image;
-    if (req.files && req.files["inner_image"]) {
-      inner_image = await imageUpload(
-        randomString1,
-        req.files["inner_image"][0],
-        req.files["inner_image"][0].path,
-        "event"
-      );
-    }
-    let image;
-    if (req.files && req.files["image"]) {
-      image = await imageUpload(
-        randomString1,
-        req.files["image"][0],
-        req.files["image"][0].path,
-        "event"
-      );
-    }
-  
     try {
-      const event = await Event.create(req.body);
+      const img = await uploadImageMany(userId, files, 'event')
+  
+      const event = await Event.create({
+        title: title,
+        text: text,
+        badge: badge,
+        inner_descr: inner_descr,
+        // time: time,
+        cover_image: img,
+        outter_image: img,
+        image: img,
+        active_status: active_status,
+        category: categoryId,
+      });
   
       return res.status(200).json(event);
     } catch (error) {

@@ -58,7 +58,7 @@ app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
 app.use("/event", eventRouter);
-app.use("/anouncement", anouncementRouter);
+// app.use("/anouncement", anouncementRouter);
 
 const PORT = process.env.PORT || 5000;
 
