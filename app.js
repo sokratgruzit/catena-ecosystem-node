@@ -21,6 +21,7 @@ import personsRouter from "./modules/persons/persons.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
+import voteRouter from "./modules/vote/vote.routes.js";
 const app = express();
 
 app.use(cors(corsOptions));
@@ -59,6 +60,7 @@ app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
 app.use("/event", eventRouter);
 // app.use("/anouncement", anouncementRouter);
+app.use("/vote", voteRouter);
 
 const PORT = process.env.PORT || 5000;
 

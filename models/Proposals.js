@@ -2,6 +2,9 @@ import * as mongoose from "mongoose";
 
 const ProposalsSchema = new mongoose.Schema(
     {
+        type: {
+            type: String
+        },
         title: {
             type: String,
             required: true,
