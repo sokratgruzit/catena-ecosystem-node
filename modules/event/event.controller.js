@@ -25,7 +25,7 @@ export const createEvent = async (req, res) => {
             text: text,
             badge: badge,
             inner_descr: inner_descr,
-            time: time,
+            // time: time,
             cover_image: cover_image,
             outter_image: outter_image,
             image: image,

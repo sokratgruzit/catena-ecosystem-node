@@ -14,7 +14,10 @@ export const press = async (req, res) => {
     inner_image,
     userId
   } = req.body;
-  const files = [...req.files['outter_image'], ...req.files['inner_image']];
+  const outterImageFiles = req.files['outter_image'];
+  const innerImageFiles = req.files['inner_image'];
+  const files = [...outterImageFiles, ...innerImageFiles];
+
   // if (!title || !text || !inner_descr) {
   //     return res.status(400).send({
   //         message: "Fill all fealds"
@@ -22,14 +25,15 @@ export const press = async (req, res) => {
   // }
 
   try {
-    const image = await uploadImageMany(userId, files, 'press')
+    // const image = await uploadImageMany(userId, files, 'press')
+    const image = await uploadImageMany(userId, files, 'press');
 
     const press = await Press.create({
       title: title,
       text: text,
       inner_descr: inner_descr,
-      outter_image: image,
-      inner_image: image,
+      outter_image: image[0],
+      inner_image: image[1],
       // time: time,
       active_status: active_status,
       category: categoryId,
