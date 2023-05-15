@@ -15,7 +15,6 @@ export const imageUpload = (address, file, folderPath) => {
         folderPath,
         address + ".png",
       );
-
       fs.writeFile(newFilePath, file.buffer, (err) => {
         if (err) {
           reject(err);
