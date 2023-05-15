@@ -18,14 +18,6 @@ const PressTranslatedFieldsSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    outter_image: {
-      type: String,
-      required: false,
-    },
-    inner_image: {
-      type: String,
-      required: false,
-    },
   },
   { _id: false },
 );
@@ -45,6 +37,14 @@ const PressSchemaObject = {
     type: Boolean,
     default: false,
     required: true,
+  },
+  outter_image: {
+    type: String,
+    required: false,
+  },
+  inner_image: {
+    type: String,
+    required: false,
   },
   category: [
     {

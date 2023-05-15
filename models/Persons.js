@@ -10,10 +10,6 @@ const PersonsTranslatedFieldsSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        image: {
-            type: String,
-            required: true,
-        },
     }, { _id: false }
 );
 
@@ -25,6 +21,10 @@ const PersonsSchemaObject = {
         unique: true,
     },
     status: {
+        type: String,
+        required: true,
+    },
+    image: {
         type: String,
         required: true,
     },
