@@ -1,41 +1,25 @@
-import { Language } from "./Language.js";
 import slug from "mongoose-slug-updater";
 import * as mongoose from "mongoose";
 
 mongoose.plugin(slug);
 
-const AnouncementTranslatedFieldsSchema = new mongoose.Schema(
+const AnouncementSchema = new mongoose.Schema(
     {
         name: {
             type: String,
             required: true,
             unique: true,
         },
-        title: {
-            type: String,
-            required: true,
-        },
-        text: {
-            type: String,
-            required: true,
-        },
-        inner_descr: {
-            type: String,
-            required: true,
-        },
-    },
-    { _id: false },
-  );
-
-const AnouncementSchemaObj = new mongoose.Schema(
-    {
-        image: {
-            type: String,
-            required: true,
-        },
+        title: { },
+        text: { },
+        inner_descr: {  },
         time: {
             type: Date,
             default: Date.now,
+        },
+        image: {
+            type: String,
+            required: true,
         },
         cover_image: {
             type: String,
@@ -56,17 +40,10 @@ const AnouncementSchemaObj = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
         }]
+    },
+    {
+        timestamps: true,
     }
 );
 
-Language.find().then((languages) => {
-    languages.forEach((lang) => {
-        AnouncementSchemaObj[lang.code] = AnouncementTranslatedFieldsSchema;
-    });
-  });
-  
-  const AnouncementSchema = new mongoose.Schema(AnouncementSchemaObj, {
-    timestamps: true,
-  });
-
-export const Anouncement = mongoose.model("Anouncement", AnouncementSchema);
+export const Anouncement = mongoose.model("anouncement", AnouncementSchema);

@@ -12,8 +12,10 @@ export const press = async (req, res) => {
     personsId,
     outter_image,
     inner_image,
-    userId
+    userId,
+    slug
   } = req.body;
+
   const outterImageFiles = req.files['outter_image'];
   const innerImageFiles = req.files['inner_image'];
   const files = [...outterImageFiles, ...innerImageFiles];
@@ -28,15 +30,16 @@ export const press = async (req, res) => {
     const image = await uploadImageMany(userId, files, 'press');
 
     const press = await Press.create({
-      title: title,
-      text: text,
-      inner_descr: inner_descr,
+      title,
+      text,
+      inner_descr,
       outter_image: image[0],
       inner_image: image[1],
-      // time: time,
-      active_status: active_status,
+      time,
+      active_status,
       category: categoryId,
       persons: personsId,
+      slug
     });
 
     return res.status(200).json(press);

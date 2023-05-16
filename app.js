@@ -22,9 +22,7 @@ import personsRouter from "./modules/persons/persons.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
-<<<<<<< HEAD
 import voteRouter from "./modules/vote/vote.routes.js";
-=======
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -32,12 +30,12 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
->>>>>>> origin/supe
 const app = express();
 
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(isAuthenticated);
@@ -72,7 +70,7 @@ app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
 app.use("/event", eventRouter);
-// app.use("/anouncement", anouncementRouter);
+app.use("/anouncement", anouncementRouter);
 app.use("/vote", voteRouter);
 
 const PORT = process.env.PORT || 5000;

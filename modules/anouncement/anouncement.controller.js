@@ -1,35 +1,35 @@
 import { Anouncement } from '../../models/Anouncements.js';
-import { imageUpload } from '../../utils/upload.js';
+import { uploadImageMany } from '../../utils/uploadImageMany.js';
 
 export const createAnouncement = async (req, res) => {
-    const { name, title, text, inner_descr, time, active_status, categoryId } = req.body;
-    const randomString1 = Math.random().toString(15).slice(2, 30);
-    const randomString2 = Math.random().toString(15).slice(2, 30);
+    const { name, title, text, inner_descr, time, active_status, categoryId, userId, slug } = req.body;
 
-    if ( !name || !text || !inner_descr || !title ) {
-        return res.status(400).send({
-            message: "Fill all fealds"
-        });
-    }
 
-    const image = await imageUpload(randomString1, req.files['image'][0], req.files['image'][0].path, 'anouncement');
-    const cover_image = await imageUpload(randomString2, req.files['cover_image'][0], req.files['cover_image'][0].path, 'anouncement');
+    // if ( !name || !text || !inner_descr || !title ) {
+    //     return res.status(400).send({
+    //         message: "Fill all fealds"
+    //     });
+    // }
 
-    console.log(req.body)
+    const coverImageFiles = req.files['cover_image'];
+    const ImageFiles = req.files['image'];
+    const files = [...coverImageFiles, ...ImageFiles];
+
     try {
+        const img = await uploadImageMany(userId, files, 'anouncement');
+
         const anouncement = await Anouncement.create({
             name: name,
-            image: image,
+            image: img[0],
             title: title,
             text: text,
             inner_descr: inner_descr,
             time: time,
-            cover_image: cover_image,
+            cover_image: img[1],
             active_status: active_status,
             category: categoryId,
+            slug
         })
-        // .populate('category')
-
 
         return res.status(200).json(anouncement);
     } catch(error) {
@@ -55,8 +55,6 @@ export const updateActiveStatus = async (req, res) => {
 export const getAllAnouncement = async (req, res) => {
     try {
         const result = await Anouncement.find()
-        // .populate('category', 'title')
-        // .exec()
 
         return res.status(200).json( result );
     } catch(error) {
