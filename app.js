@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import path from "path";
+import fs from "fs";
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -21,7 +22,17 @@ import personsRouter from "./modules/persons/persons.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
+<<<<<<< HEAD
 import voteRouter from "./modules/vote/vote.routes.js";
+=======
+
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+>>>>>>> origin/supe
 const app = express();
 
 app.use(cors(corsOptions));
@@ -34,17 +45,19 @@ app.get("/test", (req, res) => {
   res.send("test");
 });
 
-app.get("/image", (req, res) => {
-  const { folder } = req.body;
+app.get("/image/:folder/:img", (req, res) => {
   try {
-    let imgPath = path.join(`./uploads/${folder}/${req.params.img}`);
-    console.log(imgPath);
+    let imgPath = path.join(
+      __dirname,
+      `./uploads/${req.params.folder}/${req.params.img}`,
+    );
     if (fs.existsSync(imgPath)) {
       res.status(200).sendFile(imgPath);
     } else {
       res.status(400).send(null);
     }
   } catch (err) {
+    console.log(err);
     res.status(400).send(null);
   }
 });

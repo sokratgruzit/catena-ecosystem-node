@@ -1,15 +1,31 @@
 import * as mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema({
   address: { type: String, required: true, unique: true },
   fullname: { type: String, required: false },
-  email: { type: String, required: false },
+  email: { type: String, required: false, unique: true },
   mobile: { type: String, required: false },
   dateOfBirth: { type: Date, required: false },
   nationality: { type: String, required: false },
   password: { type: String, required: false },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
+  tempEmail: String,
 });
+
+userSchema.methods.generateEmailVerificationToken = function () {
+  const token = crypto.randomBytes(20).toString("hex");
+  this.emailVerificationToken = token;
+  this.emailVerificationExpires = Date.now() + 3600000; // 1 hour from now
+
+  return token;
+};
 
 userSchema.pre("save", function (next) {
   const user = this;
