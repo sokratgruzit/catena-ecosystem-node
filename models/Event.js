@@ -27,8 +27,7 @@ const eventTranslatedFieldsSchema = new mongoose.Schema(
     { _id: false },
   );
 
-const EventSchemaObject = new mongoose.Schema(
-    {
+const EventSchemaObject = {
         slug: {
             type: String,
             slug: "en.title",
@@ -61,7 +60,6 @@ const EventSchemaObject = new mongoose.Schema(
             ref: "Category",
         }]
     }
-);
 
 Language.find().then((languages) => {
     languages.forEach((lang) => {
