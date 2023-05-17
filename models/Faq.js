@@ -5,27 +5,20 @@ mongoose.plugin(slug);
 
 const FaqSchema = new mongoose.Schema(
   {
-    question: {
-      type: String,
-      required: true,
-      // unique: true,
-    },
-    answer: {
-      type: String,
-      required: true,
-    },
+    question: {},
+    answer: {},
     slug: {
       type: String,
-      slug: "en.title",
+      slug: "question.en",
       slugPaddingSize: 2,
       unique: true,
     },
     active: {
       type: Boolean,
-      default: true
+      default: true,
     },
   },
-  { timestamps: true, },
+  { timestamps: true }
 );
 
 export const Faq = mongoose.model("faq", FaqSchema);
