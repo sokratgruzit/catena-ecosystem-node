@@ -11,8 +11,9 @@ dotenv.config();
 import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
-import FAQRouter from "./modules/FAQ/FAQ.routes.js";
+import faqRouter from "./modules/faq/faq.routes.js";
 import eventRouter from "./modules/event/event.routes.js";
+import anouncementRouter from "./modules/anouncement/anouncement.router.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
@@ -34,6 +35,7 @@ const app = express();
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(isAuthenticated);
@@ -64,10 +66,11 @@ app.use("/user", userRoutes);
 app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
 app.use("/press", pressRouter);
-app.use("/FAQ", FAQRouter);
+app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
 app.use("/event", eventRouter);
+app.use("/anouncement", anouncementRouter);
 app.use("/vote", voteRouter);
 
 const PORT = process.env.PORT || 5000;

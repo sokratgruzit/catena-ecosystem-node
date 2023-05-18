@@ -3,34 +3,25 @@ import * as mongoose from "mongoose";
 
 mongoose.plugin(slug);
 
-const eventSchema = new mongoose.Schema(
+const AnouncementSchema = new mongoose.Schema(
   {
-    slug: {
+    name: {
       type: String,
-      slug: "title.en",
-      slugPaddingSize: 2,
+      required: true,
       unique: true,
     },
     title: {},
-    badge: {
-      type: String,
-      required: true,
-    },
     text: {},
     inner_descr: {},
     time: {
       type: Date,
       default: Date.now,
     },
-    cover_image: {
-      type: String,
-      required: true,
-    },
-    outter_image: {
-      type: String,
-      required: true,
-    },
     image: {
+      type: String,
+      required: true,
+    },
+    cover_image: {
       type: String,
       required: true,
     },
@@ -38,6 +29,12 @@ const eventSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
       required: true,
+    },
+    slug: {
+      type: String,
+      slug: "title.en",
+      slugPaddingSize: 2,
+      unique: true,
     },
     category: [
       {
@@ -51,4 +48,4 @@ const eventSchema = new mongoose.Schema(
   }
 );
 
-export const Event = mongoose.model("Event", eventSchema);
+export const Anouncement = mongoose.model("anouncement", AnouncementSchema);

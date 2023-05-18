@@ -4,41 +4,27 @@ import { Language } from "./Language.js";
 
 mongoose.plugin(slug);
 
-const CategoryTranslatedFieldsSchema = mongoose.Schema(
-    {
-        title: {
-            type: String,
-            required: true,
-        },
-    },
-    { _id: false },
-);
-
-const CategorySchemaObject = {
+const categorySchema = mongoose.Schema(
+  {
+    title: {},
     slug: {
-        type: String,
-        slug: "en.title",
-        slugPaddingSize: 2,
-        unique: true,
+      type: String,
+      slug: "title.en",
+      slugPaddingSize: 2,
+      unique: true,
     },
     image: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     logo_image: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
-};
-
-Language.find().then((languages) => {
-    languages.forEach((lang) => {
-        CategorySchemaObject[lang.code] = CategoryTranslatedFieldsSchema;
-    });
-});
-
-const categorySchema = new mongoose.Schema(CategorySchemaObject, {
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
 export const Category = mongoose.model("Category", categorySchema);

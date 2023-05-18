@@ -1,72 +1,50 @@
 import * as mongoose from "mongoose";
 import slug from "mongoose-slug-updater";
-import { Language } from "./Language.js";
 
 mongoose.plugin(slug);
 
-const PressTranslatedFieldsSchema = mongoose.Schema(
+const pressSchema = new mongoose.Schema(
   {
-    title: {
+    slug: {
       type: String,
+      slug: "title.en",
+      slugPaddingSize: 2,
+      unique: true,
+    },
+    title: {},
+    text: {},
+    inner_descr: {},
+    time: {
+      type: Date,
+      default: Date.now,
+    },
+    active_status: {
+      type: Boolean,
+      default: false,
       required: true,
     },
-    text: {
+    outter_image: {
       type: String,
-      required: true,
+      required: false,
     },
-    inner_descr: {
+    inner_image: {
       type: String,
-      required: true,
+      required: false,
     },
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
+    persons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Persons",
+      },
+    ],
   },
-  { _id: false },
+  { timestamps: true }
 );
 
-const PressSchemaObject = {
-  slug: {
-    type: String,
-    slug: "en.title",
-    slugPaddingSize: 2,
-    unique: true,
-  },
-  time: {
-    type: Date,
-    default: Date.now,
-  },
-  active_status: {
-    type: Boolean,
-    default: false,
-    required: true,
-  },
-  outter_image: {
-    type: String,
-    required: false,
-  },
-  inner_image: {
-    type: String,
-    required: false,
-  },
-  category: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
-  ],
-  persons: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Persons",
-    },
-  ],
-};
-
-Language.find().then((languages) => {
-  languages.forEach((lang) => {
-    PressSchemaObject[lang.code] = PressTranslatedFieldsSchema;
-  });
-});
-
-const pressSchema = new mongoose.Schema(PressSchemaObject, {
-  timestamps: true,
-});
-export const Press = mongoose.model("Press", pressSchema);
+export const Press = mongoose.model("press", pressSchema);

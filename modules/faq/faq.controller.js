@@ -1,25 +1,26 @@
-import { FAQ } from "../../models/FAQ.js";
+import { Faq } from "../../models/Faq.js";
 
 
 export const create = async (req, res) => {
     try {
-        const { question, answer } = req.body;
+        const { question, answer, slug } = req.body;
 
-        const result = await FAQ.create({
-            question: question,
-            answer: answer
+        const result = await Faq.create({
+            question,
+            answer,
+            slug
         })
 
-        res.status(200).json({ message: "New FAQ Created", result });
+        res.status(200).json(result );
     } catch (e) {
         console.log(e.message);
         res.status(400).json({ message: e.message });
     }
 };
 
-export const findOneFAQ = async (req, res) => {
+export const findOneFaq = async (req, res) => {
     try {
-        let result = await FAQ.find({
+        let result = await Faq.find({
          question: req.body.question 
         });
     
@@ -30,9 +31,9 @@ export const findOneFAQ = async (req, res) => {
     }
 };
 
-export const findAllFAQ = async (req, res) => {
+export const findAllFaq = async (req, res) => {
     try {
-        let result = await FAQ.find({ });
+        let result = await Faq.find({ });
     
         res.status(200).json(result);
     } catch (e) {
@@ -41,11 +42,11 @@ export const findAllFAQ = async (req, res) => {
     }
 };
 
-export const updateOneFAQ = async (req, res) => {
+export const updateOneFaq = async (req, res) => {
     try {
         const { _id } = req.body;
  
-        const result = await FAQ.findOneAndUpdate({ _id }, req.body, {
+        const result = await Faq.findOneAndUpdate({ _id }, req.body, {
             new: true,
           });
     
@@ -60,7 +61,7 @@ export const changeStatus = async (req, res) => {
     try {
         const { _id } = req.body;
  
-        const result = await FAQ.findOneAndUpdate({ _id }, req.body, {
+        const result = await Faq.findOneAndUpdate({ _id }, req.body, {
             new: true,
           });
 
@@ -73,14 +74,14 @@ export const changeStatus = async (req, res) => {
     }
 };
 
-export const destroyOneFAQ = async (req, res) => {
+export const destroyOneFaq = async (req, res) => {
     try {
-        const result = await FAQ.deleteOne({ _id: req.body._id});
+        const result = await Faq.deleteOne({ _id: req.body._id});
 
         if (result.acknowledged === true) {
-          return res.status(200).json({ message: "FAQ successuly deleted" });
+          return res.status(200).json({ message: "Faq successuly deleted" });
         }
-        res.status(400).json({ message: "FAQ deletion failed" });
+        res.status(400).json({ message: "Faq deletion failed" });
       } catch (e) {
         console.log(e.message);
         res.status(400).json({ message: e.message });
