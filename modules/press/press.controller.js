@@ -80,7 +80,6 @@ export const getAllPress = async (req, res) => {
 
 export const getPressWithActiveStatus = async (req, res) => {
   const { active_status } = req.body;
-  console.log(active_status);
 
   try {
     const pressWithActiveStatus = await Press.find({
