@@ -1,5 +1,5 @@
 import { Persons } from "../../models/Persons.js";
-import { imageUpload } from "../../utils/upload.js";
+import { imageUpload } from "../../utils/uploadImage.js";
 
 export const persons = async (req, res) => {
   const { title, status } = req.body;
@@ -10,8 +10,9 @@ export const persons = async (req, res) => {
       message: "Fill all fealds",
     });
   }
+  
   try {
-    // const image = await imageUpload(randomString, req.file, req.file.path, "persons");
+    const image = await imageUpload(randomString, req.file, "persons");
 
     const persons = await Persons.create({
       title: title,
@@ -21,7 +22,7 @@ export const persons = async (req, res) => {
 
     return res.status(200).json(persons);
   } catch (error) {
-    return res.status(500).send({ error: "Error creating persons" });
+    return res.status(500).json(error);
   }
 };
 
@@ -31,6 +32,6 @@ export const getAllPersons = async (req, res) => {
 
     return res.status(200).json(persons);
   } catch (error) {
-    return res.status(500).send({ error: "Error getting persons" });
+    return res.status(500).json(error);
   }
 };

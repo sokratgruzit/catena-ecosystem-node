@@ -6,10 +6,12 @@ const ChoicesSchema = new mongoose.Schema(
             type: String,
             require: true,
         },
-        vote: {
-            type: Number,
-            default: 0
-        }
+        vote: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Votes"
+            }
+        ]
     }
 );
 

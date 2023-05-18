@@ -8,7 +8,7 @@ export const uploadImageMany = (address, files, folderPath) => {
 
   return new Promise((resolve, reject) => {
     if (files) {
-      const promises = files.map((file, index) => {
+      const promises = files.map((files, index) => {
         const newFilePath = path.join(
           __dirname,
           "..",
@@ -18,7 +18,7 @@ export const uploadImageMany = (address, files, folderPath) => {
         );
 
         return new Promise((resolve, reject) => {
-          fs.writeFile(newFilePath, file.buffer, (err) => {
+          fs.writeFile(newFilePath, files.buffer, (err) => {
             if (err) {
               reject(err);
             } else {

@@ -12,7 +12,7 @@ import corsOptions from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
 import FAQRouter from "./modules/FAQ/FAQ.routes.js";
-
+import eventRouter from "./modules/event/event.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
@@ -21,6 +21,7 @@ import personsRouter from "./modules/persons/persons.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
+import voteRouter from "./modules/vote/vote.routes.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -66,7 +67,9 @@ app.use("/press", pressRouter);
 app.use("/FAQ", FAQRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
-app.use("/FAQ", FAQRouter);
+app.use("/event", eventRouter);
+app.use("/vote", voteRouter);
+
 const PORT = process.env.PORT || 5000;
 
 mongoose

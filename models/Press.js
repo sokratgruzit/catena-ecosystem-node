@@ -18,14 +18,6 @@ const PressTranslatedFieldsSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    outter_image: {
-      type: String,
-      required: false,
-    },
-    inner_image: {
-      type: String,
-      required: false,
-    },
   },
   { _id: false },
 );
@@ -46,10 +38,24 @@ const PressSchemaObject = {
     default: false,
     required: true,
   },
+  outter_image: {
+    type: String,
+    required: false,
+  },
+  inner_image: {
+    type: String,
+    required: false,
+  },
   category: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
+    },
+  ],
+  persons: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Persons",
     },
   ],
 };
