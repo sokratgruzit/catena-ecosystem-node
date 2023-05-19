@@ -1,11 +1,12 @@
 import { Choices } from "../../models/Choices.js";
 
 export const createChoices = async (req, res) => {
-    const { title } = req.body;
+    const { title, voteId } = req.body;
 
     try {
         const choices = await Choices.create({
-            title: title
+            title: title,
+            vote: voteId
         });
 
         return res.status(200).json(choices);
@@ -16,25 +17,15 @@ export const createChoices = async (req, res) => {
 };
 
 export const getAllChoices = async (req, res) => {
+    console.log(req.body);
     try {
-        const allChoices = await Choices.find();
+        const allChoices = await Choices.find()
+        .populate('votes')
+        .exec();
 
         return res.status(200).json(allChoices);
     } catch (error) {
+        console.log(error)
         return res.status(500).json(error);
     }
 };
-
-export const updateChoicesWIthVote = async (req, res) => {
-    const { _id, vote } = req.body;
-    const filter = { _id };
-    const update = { vote };
-
-    try {
-        const updateVote = await Choices.findOneAndUpdate(filter, update);
-
-        return res.status(200).json(updateVote);
-    } catch (error) {
-        return res.status(500).json(error);
-    }
-}; 

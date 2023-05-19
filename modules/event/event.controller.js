@@ -1,44 +1,51 @@
 import { Event } from '../../models/Event.js';
-import { imageUpload } from '../../utils/upload.js';
+import { uploadImageMany } from '../../utils/uploadImageMany.js';
 
 export const createEvent = async (req, res) => {
-    const { title, badge, text, inner_descr, time, active_status, categoryId } = req.body;
-    const randomString1 = Math.random().toString(15).slice(2, 30);
-    const randomString2 = Math.random().toString(15).slice(2, 30);
-    const randomString3 = Math.random().toString(15).slice(2, 30);
+    const {
+      title,
+      text,
+      badge,
+      inner_descr,
+      time,
+      active_status,
+      categoryId,
+      userId,
+      slug
+    } = req.body;
 
-    if ( !title || !text || !inner_descr || !badge ) {
-        return res.status(400).send({
-            message: "Fill all fealds"
-        });
-    }
+    const outterImageFiles = req.files['outter_image'];
+    const innerImageFiles = req.files['cover_image'];
+    const imageFiles = req.files['image'];
+    const files = [...outterImageFiles, ...innerImageFiles, ...imageFiles];
 
-    const cover_image = await imageUpload(randomString1, req.files['cover_image'][0], req.files['cover_image'][0].path, 'event');
-    const outter_image = await imageUpload(randomString2, req.files['outter_image'][0], req.files['outter_image'][0].path, 'event');
-    const image = await imageUpload(randomString3, req.files['image'][0], req.files['image'][0].path, 'event');
-
-    console.log(req.body)
-    console.log(cover_image)
+    // if (!title || !text || !inner_descr) {
+    //     return res.status(400).send({
+    //         message: "Fill all fealds"
+    //     });
+    // }
+  
     try {
-        const event = await Event.create({
-            title: title,
-            text: text,
-            badge: badge,
-            inner_descr: inner_descr,
-            time: time,
-            cover_image: cover_image,
-            outter_image: outter_image,
-            image: image,
-            active_status: active_status,
-            category: categoryId,
-        })
-        .populate('category')
+      const img = await uploadImageMany(userId, files, 'event');
+  
+      const event = await Event.create({
+        title,
+        text,
+        badge,
+        inner_descr,
+        time,
+        outter_image: img[0],
+        cover_image: img[1],
+        image: img[2],
+        active_status,
+        category: categoryId,
+        slug
+      });
 
-
-        return res.status(200).json(event);
-    } catch(error) {
-        console.log(error)
-        return res.status(500).json( error )
+      return res.status(200).json(event);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
     }
 };
 
@@ -59,8 +66,8 @@ export const updateActiveStatus = async (req, res) => {
 export const getAllEvents = async (req, res) => {
     try {
         const event = await Event.find()
-        .populate('category', 'title')
-        .exec()
+        // .populate('category', 'title')
+        // .exec()
 
         return res.status(200).json( event );
     } catch(error) {

@@ -5,5 +5,4 @@ const router = Router();
 
 router.route("/create").post(choicesController.createChoices);
 router.route("/get-all-choices").get(choicesController.getAllChoices);
-router.route("/update-choices-vote").put(choicesController.updateChoicesWIthVote);
 export default router;

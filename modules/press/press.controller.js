@@ -1,5 +1,5 @@
 import { Press } from "../../models/Press.js";
-import { imageUpload } from "../../utils/upload.js";
+import { uploadImageMany } from "../../utils/uploadImageMany.js";
 
 export const press = async (req, res) => {
   const {
@@ -10,9 +10,15 @@ export const press = async (req, res) => {
     active_status,
     categoryId,
     personsId,
+    outter_image,
+    inner_image,
+    userId,
+    slug
   } = req.body;
-  const randomString1 = Math.random().toString(15).slice(2, 30);
-  const randomString2 = Math.random().toString(15).slice(2, 30);
+
+  const outterImageFiles = req.files['outter_image'];
+  const innerImageFiles = req.files['inner_image'];
+  const files = [...outterImageFiles, ...innerImageFiles];
 
   // if (!title || !text || !inner_descr) {
   //     return res.status(400).send({
@@ -20,27 +26,21 @@ export const press = async (req, res) => {
   //     });
   // }
 
-  let outter_image;
-  if (req.files && req.files["outter_image"]) {
-    outter_image = await imageUpload(
-      randomString1,
-      req.files["outter_image"][0],
-      req.files["outter_image"][0].path,
-      "press"
-    );
-  }
-  let inner_image;
-  if (req.files && req.files["inner_image"]) {
-    inner_image = await imageUpload(
-      randomString1,
-      req.files["inner_image"][0],
-      req.files["inner_image"][0].path,
-      "press"
-    );
-  }
-
   try {
-    const press = await Press.create(req.body);
+    const image = await uploadImageMany(userId, files, 'press');
+
+    const press = await Press.create({
+      title,
+      text,
+      inner_descr,
+      outter_image: image[0],
+      inner_image: image[1],
+      time,
+      active_status,
+      category: categoryId,
+      persons: personsId,
+      slug
+    });
 
     return res.status(200).json(press);
   } catch (error) {

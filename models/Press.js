@@ -1,21 +1,26 @@
 import * as mongoose from "mongoose";
 import slug from "mongoose-slug-updater";
-import { Language } from "./Language.js";
 
 mongoose.plugin(slug);
 
-const PressTranslatedFieldsSchema = mongoose.Schema(
+const pressSchema = new mongoose.Schema(
   {
-    title: {
+    slug: {
       type: String,
-      required: true,
+      slug: "title.en",
+      slugPaddingSize: 2,
+      unique: true,
     },
-    text: {
-      type: String,
-      required: true,
+    title: {},
+    text: {},
+    inner_descr: {},
+    time: {
+      type: Date,
+      default: Date.now,
     },
-    inner_descr: {
-      type: String,
+    active_status: {
+      type: Boolean,
+      default: false,
       required: true,
     },
     outter_image: {
@@ -26,47 +31,20 @@ const PressTranslatedFieldsSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
+    persons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Persons",
+      },
+    ],
   },
-  { _id: false },
+  { timestamps: true }
 );
 
-const PressSchemaObject = {
-  slug: {
-    type: String,
-    slug: "en.title",
-    slugPaddingSize: 2,
-    unique: true,
-  },
-  time: {
-    type: Date,
-    default: Date.now,
-  },
-  active_status: {
-    type: Boolean,
-    default: false,
-    required: true,
-  },
-  category: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
-  ],
-  persons: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Persons",
-    },
-  ],
-};
-
-Language.find().then((languages) => {
-  languages.forEach((lang) => {
-    PressSchemaObject[lang.code] = PressTranslatedFieldsSchema;
-  });
-});
-
-const pressSchema = new mongoose.Schema(PressSchemaObject, {
-  timestamps: true,
-});
-export const Press = mongoose.model("Press", pressSchema);
+export const Press = mongoose.model("press", pressSchema);
