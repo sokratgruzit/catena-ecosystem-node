@@ -1,17 +1,8 @@
 import * as mongoose from "mongoose";
-import slug from "mongoose-slug-updater";
-
-mongoose.plugin(slug);
 
 const homePageSliderSchema = new mongoose.Schema(
     {
         title: {},
-        slug: {
-            type: String,
-            slug: "title",
-            slugPaddingSize: 2,
-            unique: true,
-        },
         description: {},
     }, { timestamps: true }
 );

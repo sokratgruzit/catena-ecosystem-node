@@ -7,7 +7,7 @@ const translateSchema = new mongoose.Schema(
     {
         slug: {
             type: String,
-            // unique: true
+            unique: true
         },
         translation: {},
     }, { timestamps: true }
