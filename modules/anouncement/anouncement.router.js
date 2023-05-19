@@ -9,12 +9,12 @@ const app = express();
 
 app.use(isAuthenticated);
 
+router.route("/get-all-anouncement").get(anouncementControler.getAllAnouncement);
 router.route("/create-anouncement").post(upload.fields([
     {name: "cover_image"},
     {name: "image"},
 ]),anouncementControler.createAnouncement);
 router.route("/update-active-status").put(anouncementControler.updateActiveStatus);
-router.route("/get-all-anouncement").get(anouncementControler.getAllAnouncement);
 router.route("/destroy-one-anouncement").delete(anouncementControler.destroyOneAnouncement);
 
 export default router;

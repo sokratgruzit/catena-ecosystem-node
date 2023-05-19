@@ -3,8 +3,9 @@ import * as translateController from "./translate.controller.js";
 
 const router = Router();
 
-router.route("/create").post(translateController.createTranslate);
 router.route("/get-translate").get(translateController.translateFindWithKey);
+router.route("/create").post(translateController.createTranslate);
 router.route("/update-translate").put(translateController.updateTranslate);
 router.route("/delete-translate").delete(translateController.deleteTranslate);
+
 export default router;
