@@ -36,3 +36,27 @@ export const getAllCategories = async (req, res) => {
         return res.status(500).send({ error: "Error getting categories" });
     }
 };
+
+export const deleteCategories = async (req, res) => {
+    const { _id } = req.body;
+
+    try {
+        const categoryDelete = await Category.findOneAndDelete({ _id: _id });
+
+        return res.status(200).json(categoryDelete);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
+export const deleteManyCategories = async (req, res) => {
+    const { _id } = req.body;
+
+    try {
+        const deleteMany = await Category.deleteMany({ _id: _id });
+
+        return res.status(200).json(deleteMany);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
