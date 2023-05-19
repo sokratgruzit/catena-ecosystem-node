@@ -1,6 +1,16 @@
 import { Anouncement } from '../../models/Anouncements.js';
 import { uploadImageMany } from '../../utils/uploadImageMany.js';
 
+export const getAllAnouncement = async (req, res) => {
+    try {
+        const result = await Anouncement.find()
+
+        return res.status(200).json( result );
+    } catch(error) {
+        return res.status(500).send({ error: "Error to getting Anouncement" });
+    }
+};
+
 export const createAnouncement = async (req, res) => {
     const { name, title, text, inner_descr, time, active_status, categoryId, userId, slug } = req.body;
 
@@ -49,16 +59,6 @@ export const updateActiveStatus = async (req, res) => {
         return res.status(200).send(updateToggleStatus);
     } catch(error) {
         return res.status(500).send({ error: "Failed to update active status" });
-    }
-};
-
-export const getAllAnouncement = async (req, res) => {
-    try {
-        const result = await Anouncement.find()
-
-        return res.status(200).json( result );
-    } catch(error) {
-        return res.status(500).send({ error: "Error to getting Anouncement" });
     }
 };
 

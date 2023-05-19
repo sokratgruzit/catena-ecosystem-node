@@ -14,5 +14,6 @@ router.route("/create").post(upload.fields([
 router.route("/update-press").put(pressController.updatePress);
 router.route("/update-active-status").put(pressController.updateActiveStatus);
 router.route("/delete").delete(pressController.deleteOnePress);
-router.route("/delete-many-press").delete(pressController.deleteManyPress)
+router.route("/delete-many-press").delete(pressController.deleteManyPress);
+
 export default router;
