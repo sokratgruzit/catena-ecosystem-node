@@ -5,6 +5,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
 
+router.route("/get-all-category").get(categoryController.getAllCategories);
 router.route("/create").post(
   upload.fields([
     { name: "image", maxCount: 1 },
@@ -13,5 +14,4 @@ router.route("/create").post(
   categoryController.category,
 );
 
-router.route("/get-all-category").get(categoryController.getAllCategories);
 export default router;

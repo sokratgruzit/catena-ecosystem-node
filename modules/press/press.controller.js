@@ -44,7 +44,6 @@ export const press = async (req, res) => {
 
     return res.status(200).json(press);
   } catch (error) {
-    console.log(error);
     return res.status(500).json(error);
   }
 };
@@ -80,7 +79,6 @@ export const getAllPress = async (req, res) => {
 
 export const getPressWithActiveStatus = async (req, res) => {
   const { active_status } = req.body;
-  console.log(active_status);
 
   try {
     const pressWithActiveStatus = await Press.find({

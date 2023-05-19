@@ -10,13 +10,13 @@ const app = express();
 
 app.use(isAuthenticated);
 
+router.route("/get-all-event").get(eventControler.getAllEvents);
 router.route("/create-event").post(upload.fields([
     {name: "cover_image"},
     {name: "outter_image"},
     {name: "image"},
 ]),eventControler.createEvent);
 router.route("/update-active-status").put(eventControler.updateActiveStatus);
-router.route("/get-all-event").get(eventControler.getAllEvents);
 router.route("/destroy-one-event").delete(eventControler.destroyOneEvent);
 
 export default router;
