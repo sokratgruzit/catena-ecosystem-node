@@ -14,6 +14,10 @@ const PersonsTranslatedFieldsSchema = mongoose.Schema(
             type: String,
             required: true,
         },
+        status: {
+            type: String,
+            required: true,
+        },
     }, { _id: false }
 );
 
@@ -23,10 +27,6 @@ const PersonsSchemaObject = {
         slug: "en.title",
         slugPaddingSize: 2,
         unique: true,
-    },
-    status: {
-        type: String,
-        required: true,
     },
 }
 
