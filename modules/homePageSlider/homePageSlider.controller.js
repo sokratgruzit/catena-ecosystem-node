@@ -53,3 +53,15 @@ export const deleteHomePageSlider = async (req, res) => {
         return res.status(500).json(error);
     }
 };
+
+export const deleteManyHomePageSlider = async (req, res) => {
+    const { _id } = req.body;
+
+    try {
+        const deleteMany = await HomePageSlider.deleteMany({ _id: _id })
+
+        return res.status(200).json(deleteMany);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
