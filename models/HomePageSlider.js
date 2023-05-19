@@ -6,6 +6,10 @@ mongoose.plugin(slug);
 const homePageSliderSchema = new mongoose.Schema(
     {
         title: {},
+        status: {
+            type: Boolean,
+            require: true
+        },
         slug: {
             type: String,
             slug: "title",
