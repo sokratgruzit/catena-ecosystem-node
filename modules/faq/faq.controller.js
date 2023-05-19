@@ -30,6 +30,19 @@ export const findOneFaq = async (req, res) => {
         res.status(400).json({ message: e.message });
     }
 };
+export const findAllActiveFaq = async (req, res) => {
+ 
+    try {
+      const result = await Faq.find({
+        active_status: true,
+      })
+        .exec();
+  
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+};
 
 export const findAllFaq = async (req, res) => {
     try {

@@ -63,16 +63,59 @@ export const updateActiveStatus = async (req, res) => {
     }
 };
 
+export const update = async (req, res) => {
+  const { 
+    _id, 
+    title,
+    text,
+    badge,
+    inner_descr} = req.body;
+  const filter = { _id };
+  const update = { title, text, badge, inner_descr };
+
+  try {
+      const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true })
+
+      return res.status(200).send(updateToggleStatus);
+  } catch(error) {
+      return res.status(500).send({ error: "Failed to update active status" });
+  }
+};
+
+export const findAllActiveEvent = async (req, res) => {
+
+  try {
+    const result = await Event.find({
+      active_status: true,
+    })
+      .exec();
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 export const getAllEvents = async (req, res) => {
     try {
         const event = await Event.find()
-        // .populate('category', 'title')
-        // .exec()
 
         return res.status(200).json( event );
     } catch(error) {
         return res.status(500).send({ error: "Error to getting event" });
     }
+};
+
+export const deleteManyEvents = async (req, res) => {
+  const { _id } = req.body;
+
+  try {
+    const deleteMany = await Event.deleteMany({ _id: _id });
+
+    return res.status(200).json(deleteMany);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
 export const destroyOneEvent = async (req, res) => {

@@ -10,6 +10,7 @@ const app = express();
 app.use(isAuthenticated);
 
 router.route("/get-all-anouncement").get(anouncementControler.getAllAnouncement);
+router.route("/finde-all-active-anouncement").get(anouncementControler.findAllActiveAnouncement);
 router.route("/create-anouncement").post(upload.fields([
     {name: "cover_image"},
     {name: "image"},

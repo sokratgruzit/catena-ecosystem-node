@@ -52,6 +52,20 @@ export const updateActiveStatus = async (req, res) => {
     }
 };
 
+export const findAllActiveAnouncement = async (req, res) => {
+
+    try {
+      const result = await Anouncement.find({
+        active_status: true,
+      })
+        .exec();
+  
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  };
+
 export const getAllAnouncement = async (req, res) => {
     try {
         const result = await Anouncement.find()

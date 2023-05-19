@@ -78,11 +78,9 @@ export const getAllPress = async (req, res) => {
 };
 
 export const getPressWithActiveStatus = async (req, res) => {
-  const { active_status } = req.body;
-
   try {
     const pressWithActiveStatus = await Press.find({
-      active_status: active_status,
+      active_status: true,
     })
       .populate("category")
       .populate("persons")
