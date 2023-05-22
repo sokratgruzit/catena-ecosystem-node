@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 
 mongoose.plugin(slug);
 
-const AnouncementSchema = new mongoose.Schema(
+const AnnouncementSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -48,4 +48,4 @@ const AnouncementSchema = new mongoose.Schema(
   }
 );
 
-export const Anouncement = mongoose.model("anouncement", AnouncementSchema);
+export const Announcement = mongoose.model("announcement", AnnouncementSchema);

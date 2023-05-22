@@ -55,7 +55,7 @@ export const updateActiveStatus = async (req, res) => {
     const update = { active_status };
 
     try {
-        const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true })
+        const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true });
 
         return res.status(200).send(updateToggleStatus);
     } catch(error) {
@@ -74,7 +74,7 @@ export const update = async (req, res) => {
   const update = { title, text, badge, inner_descr };
 
   try {
-      const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true })
+      const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true });
 
       return res.status(200).send(updateToggleStatus);
   } catch(error) {
@@ -88,7 +88,7 @@ export const findAllActiveEvent = async (req, res) => {
     const result = await Event.find({
       active_status: true,
     })
-      .exec();
+    .exec();
 
     return res.status(200).json(result);
   } catch (error) {
@@ -98,7 +98,7 @@ export const findAllActiveEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
     try {
-        const event = await Event.find()
+        const event = await Event.find();
 
         return res.status(200).json( event );
     } catch(error) {
