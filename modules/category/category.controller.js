@@ -16,8 +16,8 @@ export const category = async (req, res) => {
         const image = await uploadImageMany(userId, files, 'category')
         const person = await Category.create({
             title: title,
-            image: image,
-            logo_image: image
+            image: image[0],
+            logo_image: image[1]
         });
 
         return res.status(200).json(person);
