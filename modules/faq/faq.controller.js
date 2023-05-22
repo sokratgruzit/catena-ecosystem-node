@@ -87,7 +87,7 @@ export const changeStatus = async (req, res) => {
     }
 };
 
-export const destroyOneFaq = async (req, res) => {
+export const deleteOneFaq = async (req, res) => {
     try {
         const result = await Faq.deleteOne({ _id: req.body._id});
 
