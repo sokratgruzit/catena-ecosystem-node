@@ -17,7 +17,7 @@ export const createTranslate = async (req, res) => {
 
 export const translateFindWithKey = async (req, res) => {
     const { key } = req.query;
-    
+
     try {
         const query = { [`translation.${key}`]: { $exists: true } };
         const translateWithKey = await Translate.findOne(query);
@@ -35,7 +35,7 @@ export const updateTranslate = async (req, res) => {
     try {
         const updatedTranslate = await Translate.findOneAndUpdate(
             { _id },
-            { $set: { [ `translation.${field}` ]: value } },
+            { $set: { [`translation.${field}`]: value } },
             { new: true }
         );
 
@@ -53,6 +53,18 @@ export const deleteTranslate = async (req, res) => {
         const deletedTranslate = await Translate.findOneAndDelete({ _id: _id });
 
         return res.status(200).json(deletedTranslate);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
+export const deleteManyTranslate = async (req, res) => {
+    const { _id } = req.body;
+
+    try {
+        const deleteMany = await Translate.deleteMany({ _id: _id });
+
+        return res.status(200).json(deleteMany);
     } catch (error) {
         return res.status(500).json(error);
     }

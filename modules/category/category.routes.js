@@ -4,7 +4,6 @@ import multer from "multer";
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
-
 router.route("/get-all-category").get(categoryController.getAllCategories);
 router.route("/create").post(
   upload.fields([
@@ -13,5 +12,6 @@ router.route("/create").post(
   ]),
   categoryController.category,
 );
-
+router.route("/delete-category").delete(categoryController.deleteCategories);
+router.route("/delete-many-category").delete(categoryController.deleteManyCategories);
 export default router;
