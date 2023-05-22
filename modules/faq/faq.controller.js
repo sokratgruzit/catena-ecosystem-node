@@ -1,23 +1,5 @@
 import { Faq } from "../../models/Faq.js";
 
-
-export const create = async (req, res) => {
-    try {
-        const { question, answer, slug } = req.body;
-
-        const result = await Faq.create({
-            question,
-            answer,
-            slug
-        })
-
-        res.status(200).json(result );
-    } catch (e) {
-        console.log(e.message);
-        res.status(400).json({ message: e.message });
-    }
-};
-
 export const findOneFaq = async (req, res) => {
     try {
         let result = await Faq.find({
@@ -54,6 +36,24 @@ export const findAllFaq = async (req, res) => {
         res.status(400).json({ message: e.message });
     }
 };
+
+export const create = async (req, res) => {
+    try {
+        const { question, answer, slug } = req.body;
+
+        const result = await Faq.create({
+            question,
+            answer,
+            slug
+        })
+
+        res.status(200).json(result );
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ message: e.message });
+    }
+};
+
 
 export const updateOneFaq = async (req, res) => {
     try {

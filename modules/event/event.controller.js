@@ -1,6 +1,30 @@
 import { Event } from '../../models/Event.js';
 import { uploadImageMany } from '../../utils/uploadImageMany.js';
 
+export const findAllActiveEvent = async (req, res) => {
+
+  try {
+    const result = await Event.find({
+      active_status: true,
+    })
+    .exec();
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+export const getAllEvents = async (req, res) => {
+    try {
+        const event = await Event.find();
+
+        return res.status(200).json( event );
+    } catch(error) {
+        return res.status(500).send({ error: "Error to getting event" });
+    }
+};
+
 export const createEvent = async (req, res) => {
     const {
       title,
@@ -70,9 +94,14 @@ export const update = async (req, res) => {
     text,
     badge,
     inner_descr} = req.body;
-  const filter = { _id };
-  const update = { title, text, badge, inner_descr };
-
+    
+    const outterImageFiles = req.files['outter_image'];
+    const innerImageFiles = req.files['cover_image'];
+    const imageFiles = req.files['image'];
+    const files = [...outterImageFiles, ...innerImageFiles, ...imageFiles];
+    
+    const filter = { _id };
+    const update = { title, text, badge, inner_descr, cover_image };
   try {
       const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true });
 
@@ -82,29 +111,6 @@ export const update = async (req, res) => {
   }
 };
 
-export const findAllActiveEvent = async (req, res) => {
-
-  try {
-    const result = await Event.find({
-      active_status: true,
-    })
-    .exec();
-
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
-export const getAllEvents = async (req, res) => {
-    try {
-        const event = await Event.find();
-
-        return res.status(200).json( event );
-    } catch(error) {
-        return res.status(500).send({ error: "Error to getting event" });
-    }
-};
 
 export const deleteManyEvents = async (req, res) => {
   const { _id } = req.body;
@@ -118,7 +124,7 @@ export const deleteManyEvents = async (req, res) => {
   }
 };
 
-export const destroyOneEvent = async (req, res) => {
+export const deleteOneEvent = async (req, res) => {
     try {
         const result = await Event.deleteOne({ _id: req.body._id});
 

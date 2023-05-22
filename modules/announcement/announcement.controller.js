@@ -1,6 +1,50 @@
 import { Announcement } from '../../models/Announcement.js';
 import { uploadImageMany } from '../../utils/uploadImageMany.js';
 
+export const findAllActiveAnnouncement = async (req, res) => {
+  try {
+    const result = await Announcement.find({
+      active_status: true,
+    })
+      .exec();
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+export const findByPagination = async (req, res) => {
+  try {
+    let limit = req.limit;
+    let req_page = req.page;
+    let data = {}; 
+
+    let result = await Announcement
+      .find(data)
+      .sort({ createdAt: "desc" })
+      .limit(limit)
+      .skip(limit * (req_page - 1));
+
+    let total_pages = await Announcement.count(data);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+
+export const getAllAnnouncement = async (req, res) => {
+    try {
+        const result = await Announcement.find()
+
+        return res.status(200).json( result );
+    } catch(error) {
+        return res.status(500).send({ error: "Error to getting Announcement" });
+    }
+};
+
 export const createAnnouncement = async (req, res) => {
     const { name, title, text, inner_descr, time, active_status, categoryId, userId, slug } = req.body;
 
@@ -70,50 +114,6 @@ export const update = async (req, res) => {
   } catch(error) {
       return res.status(500).send({ error: "Failed to update active status" });
   }
-};
-
-export const findAllActiveAnnouncement = async (req, res) => {
-  try {
-    const result = await Announcement.find({
-      active_status: true,
-    })
-      .exec();
-
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
-export const findByPagination = async (req, res) => {
-  try {
-    let limit = req.limit;
-    let req_page = req.page;
-    let data = {}; 
-
-    let result = await Announcement
-      .find(data)
-      .sort({ createdAt: "desc" })
-      .limit(limit)
-      .skip(limit * (req_page - 1));
-
-    let total_pages = await Announcement.count(data);
-
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
-
-export const getAllAnnouncement = async (req, res) => {
-    try {
-        const result = await Announcement.find()
-
-        return res.status(200).json( result );
-    } catch(error) {
-        return res.status(500).send({ error: "Error to getting Announcement" });
-    }
 };
 
 export const destroyOneAnnouncement = async (req, res) => {
