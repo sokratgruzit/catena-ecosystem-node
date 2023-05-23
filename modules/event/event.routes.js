@@ -19,7 +19,7 @@ router.route("/create-event").post(upload.fields([
 ]),eventControler.createEvent);
 router.route("/update").put(eventControler.update);
 router.route("/update-active-status").put(eventControler.updateActiveStatus);
-router.route("/destroy-many-events").delete(eventControler.deleteManyEvents);
-router.route("/destroy-one-event").delete(eventControler.destroyOneEvent);
+router.route("/delete-many-events").delete(eventControler.deleteManyEvents);
+router.route("/delete-one-event").delete(eventControler.deleteOneEvent);
 
 export default router;
