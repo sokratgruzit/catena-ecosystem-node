@@ -1,5 +1,5 @@
 import { Faq } from "../../models/Faq.js";
-
+import { faqTranslate } from "../../models/Faq.Translate.js";
 
 export const create = async (req, res) => {
     try {
@@ -9,7 +9,13 @@ export const create = async (req, res) => {
             question,
             answer,
             slug
-        })
+        });
+
+        await faqTranslate.create({
+            question: question,
+            answer: answer,
+            result: result._id.toString()
+        });
 
         res.status(200).json(result );
     } catch (e) {
@@ -33,7 +39,8 @@ export const findOneFaq = async (req, res) => {
 
 export const findAllFaq = async (req, res) => {
     try {
-        let result = await Faq.find({ });
+        let result = await Faq.find({})
+        .populate("faqTranslate")
     
         res.status(200).json(result);
     } catch (e) {

@@ -14,6 +14,10 @@ const homePageSliderSchema = new mongoose.Schema(
             slugPaddingSize: 2,
             unique: true,
         },
+        homePageSliderTranslate: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "homePageSliderTranslate"
+        }
     }, { timestamps: true }
 );
 

@@ -1,10 +1,12 @@
 import { Anouncement } from '../../models/Anouncements.js';
 import { uploadImageMany } from '../../utils/uploadImageMany.js';
+import { anouncementTranslate } from '../../models/Anouncements.Translate.js';
 
 export const getAllAnouncement = async (req, res) => {
     try {
         const result = await Anouncement.find()
-
+        .populate("anouncementTranslate")
+        
         return res.status(200).json( result );
     } catch(error) {
         return res.status(500).send({ error: "Error to getting Anouncement" });
@@ -39,12 +41,20 @@ export const createAnouncement = async (req, res) => {
             active_status: active_status,
             category: categoryId,
             slug
+        });
+
+        await anouncementTranslate.create({
+            name: name,
+            title: title,
+            text: text,
+            inner_descr: inner_descr,
+            anouncement: anouncement._id.toString()
         })
 
         return res.status(200).json(anouncement);
     } catch(error) {
         console.log(error)
-        return res.status(500).json( error )
+        return res.status(500).json(error)
     }
 };
 

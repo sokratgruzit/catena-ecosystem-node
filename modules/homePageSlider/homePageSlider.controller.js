@@ -1,4 +1,5 @@
 import { HomePageSlider } from "../../models/HomePageSlider.js";
+import { homePageSliderTranslate } from "../../models/HomePageSlider.Translate.js";
 
 export const createSlider = async (req, res) => {
     const { title, description, status } = req.body;
@@ -10,6 +11,12 @@ export const createSlider = async (req, res) => {
             status: status
         });
 
+        await homePageSliderTranslate.create({
+            title: title,
+            description: description,
+            slider: slider._id.toString()
+        });
+
         return res.status(200).json(slider);
     } catch (error) {
         return res.status(500).json(error);
@@ -18,7 +25,8 @@ export const createSlider = async (req, res) => {
 
 export const getAllHomePageSlider = async (req, res) => {
     try {
-        const allSlider = await HomePageSlider.find();
+        const allSlider = await HomePageSlider.find()
+        .populate("homePageSliderTranslate")
 
         return res.status(200).json(allSlider);
     } catch (error) {

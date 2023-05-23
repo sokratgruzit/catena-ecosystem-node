@@ -17,6 +17,10 @@ const categorySchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    categoryTranslate: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "categoryTranslate"
+    },
   },
   {
     timestamps: true,

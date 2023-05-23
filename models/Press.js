@@ -43,6 +43,10 @@ const pressSchema = new mongoose.Schema(
         ref: "Persons",
       },
     ],
+    pressTranslate: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "pressTranslate"
+    }
   },
   { timestamps: true }
 );

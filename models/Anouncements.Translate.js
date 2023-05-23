@@ -18,4 +18,4 @@ const anouncementsTranslateSchema = new mongoose.Schema(
     }
 );
 
-export const anouncementTranslate = mongoose.model("anouncementTranslate", anouncementTranslate);
+export const anouncementTranslate = mongoose.model("anouncementTranslate", anouncementsTranslateSchema);

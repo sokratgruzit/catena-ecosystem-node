@@ -8,6 +8,10 @@ const FaqSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    faqTranslate: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "faqTranslate"
+    }
   },
   { timestamps: true }
 );
