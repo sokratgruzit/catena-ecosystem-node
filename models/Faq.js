@@ -2,16 +2,14 @@ import * as mongoose from "mongoose";
 
 const FaqSchema = new mongoose.Schema(
   {
-    question: {},
-    answer: {},
+    slug: {
+      type: String,
+      unique: true,
+    },
     active: {
       type: Boolean,
       default: true,
     },
-    faqTranslate: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "faqTranslate"
-    }
   },
   { timestamps: true }
 );
