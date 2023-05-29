@@ -1,14 +1,45 @@
 import { Faq } from "../../models/Faq.js";
 import { faqTranslate } from "../../models/Faq.Translate.js";
 import { languages } from "../../utils/languages.js";
+import * as mongoose from "mongoose";
 
 export const findOneFaq = async (req, res) => {
   try {
-    let result = await Faq.find({
-      question: req.body.question,
-    });
+    let id = req.body._id;
 
-    res.status(200).json(result);
+    const returnData = await Faq.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "faqtranslates",
+          localField: "_id",
+          foreignField: "faq",
+          as: "translations",
+        },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "faq",
+                in: {
+                  k: "$$faq.lang",
+                  v: "$$faq",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json(returnData);
   } catch (e) {
     console.log(e.message);
     res.status(400).json({ message: e.message });
@@ -17,9 +48,49 @@ export const findOneFaq = async (req, res) => {
 
 export const findAllFaq = async (req, res) => {
   try {
-    let result = await Faq.find({}).populate("faqTranslate");
+    const returnData = await Faq.aggregate([
+      {
+        $lookup: {
+          from: "faqtranslates",
+          localField: "_id",
+          foreignField: "faq",
+          as: "translations",
+        },
+      },
+      {
+        $limit: req.body.limit + req.body.limit * (req.body.page - 1),
+      },
+      {
+        $skip: req.body.limit * (req.body.page - 1),
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "faq",
+                in: {
+                  k: "$$faq.lang",
+                  v: "$$faq",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
 
-    res.status(200).json(result);
+    const totalPages = await Faq.count(returnData)
+    console.log(totalPages)
+
+    res.status(200).json({
+      returnData,
+      totalPages
+    });
   } catch (e) {
     console.log(e.message);
     res.status(400).json({ message: e.message });
@@ -84,13 +155,48 @@ export const create = async (req, res) => {
 
 export const updateOneFaq = async (req, res) => {
   try {
-    const { _id } = req.body;
+    const { _id, answer, field } = req.body;
+    let data = req.body;
 
-    const result = await Faq.findOneAndUpdate({ _id }, req.body, {
-      new: true,
-    });
+    const result = await Faq.findOne({ _id })
 
-    res.status(200).json(result);
+    const results = await faqTranslate.findOne({ _id })
+    console.log(results)
+    console.log(result)
+
+    const returnData = await Faq.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "faqtranslates",
+          localField: "_id",
+          foreignField: "faq",
+          as: "translations",
+        },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "faq",
+                in: {
+                  k: "$$faq.lang",
+                  v: "$$faq",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json(returnData);
   } catch (e) {
     console.log(e.message);
     res.status(400).json({ message: e.message });
