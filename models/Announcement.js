@@ -42,6 +42,12 @@ const AnnouncementSchema = new mongoose.Schema(
         ref: "Category",
       },
     ],
+    anouncementTranslate:
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "anouncementTranslate"
+    }
+
   },
   {
     timestamps: true,

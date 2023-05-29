@@ -7,7 +7,7 @@ const pressSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      slug: "title.en",
+      slug: "title",
       slugPaddingSize: 2,
       unique: true,
     },
@@ -43,6 +43,10 @@ const pressSchema = new mongoose.Schema(
         ref: "Persons",
       },
     ],
+    pressTranslate: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "pressTranslate"
+    }
   },
   { timestamps: true }
 );
