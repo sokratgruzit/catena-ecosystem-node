@@ -170,6 +170,7 @@ export const updateOneFaq = async (req, res) => {
         faq: id.toString(),
       });
     }
+
     await faqTranslate.insertMany(translatedData);
 
     const returnData = await Faq.aggregate([
