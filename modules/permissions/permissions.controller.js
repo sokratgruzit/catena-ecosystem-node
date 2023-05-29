@@ -11,6 +11,19 @@ export const get = async (req, res) => {
     }
 };
 
+export const create = async (req, res) => {
+  try {
+      const { name } = req.body;
+
+      const result = await Permissions.create({ name })
+
+      res.status(200).json( result );
+  } catch (e) {
+      console.log(e.message);
+      res.status(400).json({ message: e.message });
+  }
+};
+
 export const update = async (req, res) => {
   const { _id, name } = req.body;
 
