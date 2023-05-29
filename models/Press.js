@@ -7,7 +7,7 @@ const pressSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      slug: "title.en",
+      slug: "title",
       slugPaddingSize: 2,
       unique: true,
     },
