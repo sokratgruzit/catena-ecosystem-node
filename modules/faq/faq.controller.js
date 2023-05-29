@@ -84,12 +84,12 @@ export const findAllFaq = async (req, res) => {
       },
     ]);
 
-    const totalPages = await Faq.count(returnData)
-    console.log(totalPages)
+    const totalPages = await Faq.count(returnData);
+    console.log(totalPages);
 
     res.status(200).json({
       returnData,
-      totalPages
+      totalPages,
     });
   } catch (e) {
     console.log(e.message);
@@ -155,19 +155,27 @@ export const create = async (req, res) => {
 
 export const updateOneFaq = async (req, res) => {
   try {
-    const { _id, answer, field } = req.body;
+    const { _id } = req.body;
+    const id = mongoose.Types.ObjectId(_id);
     let data = req.body;
 
-    const result = await Faq.findOne({ _id })
-
-    const results = await faqTranslate.findOne({ _id })
-    console.log(results)
-    console.log(result)
+    await Faq.findOneAndUpdate({ _id: id }, { slug: data.slug });
+    let translatedData = [];
+    await faqTranslate.deleteMany({ faq: id });
+    for (let i = 0; i < languages.length; i++) {
+      translatedData.push({
+        lang: languages[i].code,
+        question: data[languages[i].code]?.question,
+        answer: data[languages[i].code]?.answer,
+        faq: id.toString(),
+      });
+    }
+    await faqTranslate.insertMany(translatedData);
 
     const returnData = await Faq.aggregate([
       {
         $match: {
-          _id: mongoose.Types.ObjectId(_id),
+          _id: id,
         },
       },
       {
