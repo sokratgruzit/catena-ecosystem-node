@@ -3,6 +3,7 @@ import * as mongoose from "mongoose";
 const homePageSliderSchema = new mongoose.Schema(
     {
         title: {},
+        description: {},
         status: {
             type: Boolean,
             require: true
@@ -13,7 +14,10 @@ const homePageSliderSchema = new mongoose.Schema(
             slugPaddingSize: 2,
             unique: true,
         },
-        description: {},
+        homePageSliderTranslate: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "homePageSliderTranslate"
+        }
     }, { timestamps: true }
 );
 

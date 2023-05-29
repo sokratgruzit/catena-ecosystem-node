@@ -1,9 +1,10 @@
 import { Category } from "../../models/Category.js";
+import { categoryTranslate } from "../../models/Category.Translate.js";
 import { uploadImageMany } from "../../utils/uploadImageMany.js";
 
 export const category = async (req, res) => {
     const { title, userId } = req.body;
-
+    console.log(req.body)
     const files = [...req.files['image'], ...req.files['logo_image']]
 
     if (!title) {
@@ -14,26 +15,32 @@ export const category = async (req, res) => {
 
     try {
         const image = await uploadImageMany(userId, files, 'category')
-        const person = await Category.create({
+        const category = await Category.create({
             title: title,
             image: image[0],
             logo_image: image[1]
         });
 
-        return res.status(200).json(person);
+        await categoryTranslate.create({
+            title: title,
+            category: category._id.toString()
+        });
+
+        return res.status(200).json(category);
     } catch (error) {
         console.log(error)
-        return res.status(500).send({ error: "Error creating category" });
+        return res.status(500).json(error);
     }
 };
 
 export const getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.find();
-
+        const categories = await Category.find({})
+        .populate("categoryTranslate")
+        
         return res.status(200).json(categories);
     } catch (error) {
-        return res.status(500).send({ error: "Error getting categories" });
+        return res.status(500).json(error);
     }
 };
 

@@ -1,5 +1,6 @@
 import { Press } from "../../models/Press.js";
 import { uploadImageMany } from "../../utils/uploadImageMany.js";
+import { pressTranslate } from "../../models/Press.Translate.js";
 
 export const press = async (req, res) => {
   const {
@@ -20,12 +21,6 @@ export const press = async (req, res) => {
   const innerImageFiles = req.files['inner_image'];
   const files = [...outterImageFiles, ...innerImageFiles];
 
-  // if (!title || !text || !inner_descr) {
-  //     return res.status(400).send({
-  //         message: "Fill all fealds"
-  //     });
-  // }
-
   try {
     const image = await uploadImageMany(userId, files, 'press');
 
@@ -40,6 +35,13 @@ export const press = async (req, res) => {
       category: categoryId,
       persons: personsId,
       slug
+    });
+
+    await pressTranslate.create({
+      title: title,
+      text: text,
+      inner_descr: inner_descr,
+      press: press._id.toString()
     });
 
     return res.status(200).json(press);
@@ -72,6 +74,7 @@ export const getAllPress = async (req, res) => {
     const press = await Press.find()
       .populate("category")
       .populate("persons")
+      .populate("pressTranslate")
       .sort({ createdAt: "desc" })
       .limit(limit)
       .skip(limit * (page - 1))
@@ -85,11 +88,9 @@ export const getAllPress = async (req, res) => {
 };
 
 export const getPressWithActiveStatus = async (req, res) => {
-  const { active_status } = req.body;
-
   try {
     const pressWithActiveStatus = await Press.find({
-      active_status: active_status,
+      active_status: true,
     })
       .populate("category")
       .populate("persons")
