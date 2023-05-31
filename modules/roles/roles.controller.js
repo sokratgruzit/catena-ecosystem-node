@@ -1,13 +1,13 @@
-import { Permissions } from '../../models/Permissions.js';
+import { Roles } from '../../models/Roles.js';
 
 export const get = async (req, res) => {
 
     try {
-        const result = await Permissions.find()
+        const result = await Roles.find()
 
         return res.status(200).json( result );
     } catch(error) {
-        return res.status(500).send({ error: "Error to getting permissions" });
+        return res.status(500).send({ error: "Error to getting Roles" });
     }
 };
 
@@ -15,7 +15,7 @@ export const create = async (req, res) => {
   try {
       const { name } = req.body;
 
-      const result = await Permissions.create({ name })
+      const result = await Roles.create({ name })
 
       res.status(200).json( result );
   } catch (e) {
@@ -28,19 +28,19 @@ export const update = async (req, res) => {
   const { _id, name } = req.body;
 
   try {
-      const updateToggleStatus = await Permissions.findOneAndUpdate({ _id }, { name }, { new: true })
-      console.log(name)
+      const updateToggleStatus = await Roles.findOneAndUpdate({ _id }, { name }, { new: true })
+      console.log(_id, name)
       return res.status(200).send(updateToggleStatus);
   } catch(error) {
-      return res.status(500).send({ error: "Failed to update active status" });
+      return res.status(500).send({ error: "Failed to update" });
   }
 };
 
-export const deletePermission = async (req, res) => {
+export const deleteRole = async (req, res) => {
   const { _id } = req.body;
 
   try {
-    const deleteMany = await Permissions.deleteMany({ _id });
+    const deleteMany = await Roles.deleteMany({ _id });
 
     return res.status(200).json(deleteMany);
   } catch (error) {
