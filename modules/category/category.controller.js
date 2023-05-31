@@ -44,7 +44,25 @@ export const getAllCategories = async (req, res) => {
     }
 };
 
-export const deleteCategories = async (req, res) => {
+export const update = async (req, res) => {
+    const { _id, title } = req.body;
+    // const randomString = Math.random().toString(15).slice(2, 30);
+  
+    try {
+      // const image = await imageUpload(randomString, req.file, "persons");
+  
+      const result = await Category.findOneAndUpdate({_id},{
+        title: title,
+        // image: image,
+      }, { new: true });
+  
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  };
+
+export const deleteCategorie = async (req, res) => {
     const { _id } = req.body;
 
     try {
