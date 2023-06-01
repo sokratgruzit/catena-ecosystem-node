@@ -111,6 +111,7 @@ export const createAnnouncement = async (req, res) => {
     // })
     let data = req.body;
     let slug = convertToSlug(data.en.title);
+
     let translatedData = [];
     const result = await Announcement.create({ slug });
 
