@@ -1,13 +1,9 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import * as announcementControler from "./announcement.controller.js";
-import { isAuthenticated } from "../../services/isAuthenticated.js";
 import multer from "multer";
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
-const app = express();
-
-app.use(isAuthenticated);
 
 router.route("/get-all-announcement").get(announcementControler.getAllAnnouncement);
 router.route("/finde-all-active-announcement").get(announcementControler.findAllActiveAnnouncement);

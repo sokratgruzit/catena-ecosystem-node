@@ -5,12 +5,12 @@ const pressTranslateSchema = new mongoose.Schema(
         title: String,
         text: String,
         inner_descr: String,
-        press: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Press",
-            },
-        ],
+        press:
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Press",
+        },
+
     },
     {
         timestamps: true

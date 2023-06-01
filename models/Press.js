@@ -1,19 +1,11 @@
 import * as mongoose from "mongoose";
-import slug from "mongoose-slug-updater";
-
-mongoose.plugin(slug);
 
 const pressSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      slug: "title",
-      slugPaddingSize: 2,
       unique: true,
     },
-    title: {},
-    text: {},
-    inner_descr: {},
     time: {
       type: Date,
       default: Date.now,
@@ -23,14 +15,14 @@ const pressSchema = new mongoose.Schema(
       default: false,
       required: true,
     },
-    outter_image: {
-      type: String,
-      required: false,
-    },
-    inner_image: {
-      type: String,
-      required: false,
-    },
+    // outter_image: {
+    //   type: String,
+    //   required: false,
+    // },
+    // inner_image: {
+    //   type: String,
+    //   required: false,
+    // },
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,

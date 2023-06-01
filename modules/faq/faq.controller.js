@@ -102,8 +102,10 @@ export const create = async (req, res) => {
     let data = req.body;
     console.log(data);
     let slug = convertToSlug(data.en.question);
+
     let translatedData = [];
     const result = await Faq.create({ slug });
+
     for (let i = 0; i < languages.length; i++) {
       translatedData.push({
         lang: languages[i].code,
@@ -112,6 +114,7 @@ export const create = async (req, res) => {
         faq: result._id.toString(),
       });
     }
+
     console.log(translatedData);
     await faqTranslate.insertMany(translatedData);
 
