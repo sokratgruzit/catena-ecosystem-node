@@ -48,6 +48,8 @@ export const findOneFaq = async (req, res) => {
 
 export const findAllFaq = async (req, res) => {
   try {
+    let limit = req.body.limit?req.body.limit:10;
+    let page = req.body.page?req.body.page:1;
     const returnData = await Faq.aggregate([
       {
         $lookup: {
@@ -58,10 +60,10 @@ export const findAllFaq = async (req, res) => {
         },
       },
       {
-        $limit: req.body.limit + req.body.limit * (req.body.page - 1),
+        $limit: limit + limit * (page - 1),
       },
       {
-        $skip: req.body.limit * (req.body.page - 1),
+        $skip: limit * (page - 1),
       },
       {
         $sort: { createdAt: -1 },
@@ -84,13 +86,21 @@ export const findAllFaq = async (req, res) => {
       },
     ]);
 
-    const totalPages = await Faq.count(returnData)
-    console.log(totalPages)
+    const totalCount = await Faq.countDocuments();
+    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
 
     res.status(200).json({
       returnData,
-      totalPages
+      totalPages,
     });
+
+    // const totalPages = await Faq.count(returnData);
+    // console.log(totalPages);
+
+    // res.status(200).json({
+    //   returnData,
+    //   totalPages,
+    // });
   } catch (e) {
     console.log(e.message);
     res.status(400).json({ message: e.message });
@@ -158,11 +168,11 @@ export const updateOneFaq = async (req, res) => {
     const { _id, answer, field } = req.body;
     let data = req.body;
 
-    const result = await Faq.findOne({ _id })
+    const result = await Faq.findOne({ _id });
 
-    const results = await faqTranslate.findOne({ _id })
-    console.log(results)
-    console.log(result)
+    const results = await faqTranslate.findOne({ _id });
+    console.log(results);
+    console.log(result);
 
     const returnData = await Faq.aggregate([
       {
@@ -234,6 +244,7 @@ function convertToSlug(title) {
 export const deleteOneFaq = async (req, res) => {
   try {
     const result = await Faq.deleteOne({ _id: req.body._id });
+    console.log(req.body)
 
     if (result.acknowledged === true) {
       return res.status(200).json({ message: "Faq successuly deleted" });
