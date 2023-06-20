@@ -5,19 +5,6 @@ import { languages } from "../../utils/languages.js";
 import * as mongoose from "mongoose";
 
 export const press = async (req, res) => {
-  // const {
-  //   title,
-  //   text,
-  //   inner_descr,
-  //   time,
-  //   active_status,
-  //   categoryId,
-  //   personsId,
-  //   outter_image,
-  //   inner_image,
-  //   userId,
-  //   slug
-  // } = req.body;
 
   // const outterImageFiles = req.files['outter_image'];
   // const innerImageFiles = req.files['inner_image'];
@@ -39,19 +26,19 @@ export const press = async (req, res) => {
     //   slug
     // });
 
-    // await pressTranslate.create({
-    //   title: title,
-    //   text: text,
-    //   inner_descr: inner_descr,
-    //   press: press._id.toString()
-    // });
 
     let data = req.body;
-    console.log(data);
+    let categoryId = data.categoryId;
+    let personsId = data.personsId;
+
     let slug = convertToSlug(data.en.title);
 
     let translatedData = [];
-    const result = await Press.create({ slug });
+    const result = await Press.create({
+      slug,
+        category: categoryId,
+        persons: personsId,
+    });
 
     for (let i = 0; i < languages.length; i++) {
       translatedData.push({
@@ -59,11 +46,10 @@ export const press = async (req, res) => {
         title: data[languages[i].code]?.title,
         text: data[languages[i].code]?.text,
         inner_descr: data[languages[i].code]?.inner_descr,
-        presses: result._id.toString(),
+        press: result._id.toString(),
       });
     }
 
-    console.log(translatedData);
     await pressTranslate.insertMany(translatedData);
 
     const returnData = await Press.aggregate([
@@ -76,7 +62,7 @@ export const press = async (req, res) => {
         $lookup: {
           from: "presstranslates",
           localField: "_id",
-          foreignField: "presses",
+          foreignField: "press",
           as: "translations",
         },
       },
@@ -86,10 +72,10 @@ export const press = async (req, res) => {
             $arrayToObject: {
               $map: {
                 input: "$translations",
-                as: "presses",
+                as: "press",
                 in: {
-                  k: "$$presses.lang",
-                  v: "$$presses",
+                  k: "$$press.lang",
+                  v: "$$press",
                 },
               },
             },
@@ -98,7 +84,6 @@ export const press = async (req, res) => {
       },
     ]);
 
-    console.log(returnData)
     return res.status(200).json(returnData);
   } catch (error) {
     console.log(error)
@@ -107,52 +92,174 @@ export const press = async (req, res) => {
 };
 
 export const updateActiveStatus = async (req, res) => {
-  const { _id, active_status } = req.body;
-  const filter = { _id };
-  const update = { active_status };
-
   try {
-    const updateToggleStatus = await Press.findOneAndUpdate(filter, update, {
-      new: true,
+    const { _id } = req.body;
+    const id = mongoose.Types.ObjectId(_id);
+    let activeStatus = req.body.active_status;
+    let data = req.body;
+
+    await Press.findOneAndUpdate({ _id: id }, {
+      slug: data.slug,
+      active_status: activeStatus,
     });
 
-    return res.status(200).send(updateToggleStatus);
+    const returnData = await Press.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      {
+        $lookup: {
+          from: "presstranslates",
+          localField: "_id",
+          foreignField: "press",
+          as: "translations",
+        },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "press",
+                in: {
+                  k: "$$press.lang",
+                  v: "$$press",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json(returnData);
   } catch (error) {
     return res.status(500).json(error);
   }
 };
 
 export const getAllPress = async (req, res) => {
-  const page = req.query.page;
-  const limit = req.query.limit;
-
   try {
-    const press = await Press.find()
-      .populate("category")
-      .populate("persons")
-      .populate("pressTranslate")
-      .sort({ createdAt: "desc" })
-      .limit(limit)
-      .skip(limit * (page - 1))
-      .exec();
+    // const press = await Press.find()
+    //   .populate("category")
+    //   .populate("persons")
+    //   .populate("pressTranslate")
+    //   .sort({ createdAt: "desc" })
+    //   .limit(limit)
+    //   .skip(limit * (page - 1))
+    //   .exec();
 
-    return res.status(200).json(press);
+    let limit = req.body.limit ? req.body.limit : 10;
+    let page = req.body.page ? req.body.page : 1;
+
+    const returnData = await Press.aggregate([
+      {
+        $lookup: {
+          from: "presstranslates",
+          localField: "_id",
+          foreignField: "press",
+          as: "translations",
+        },
+      },
+      {
+        $limit: limit + limit * (page - 1),
+      },
+      {
+        $skip: limit * (page - 1),
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "press",
+                in: {
+                  k: "$$press.lang",
+                  v: "$$press",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const totalCount = await Press.countDocuments();
+    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
+
+    res.status(200).json({
+      returnData,
+      totalPages,
+    });
+
   } catch (error) {
-
+    console.log(error)
     return res.status(500).json(error);
   }
 };
 
 export const getPressWithActiveStatus = async (req, res) => {
   try {
-    const pressWithActiveStatus = await Press.find({
-      active_status: true,
-    })
-      .populate("category")
-      .populate("persons")
-      .exec();
+    let activeStatus = req.body.active_status;
+    let limit = req.body.limit ? req.body.limit : 10;
+    let page = req.body.page ? req.body.page : 1;
 
-    return res.status(200).json(pressWithActiveStatus);
+    const returnData = await Press.aggregate([
+      {
+        $match: {
+          active_status: activeStatus,
+        },
+      },
+      {
+        $lookup: {
+          from: "presstranslates",
+          localField: "_id",
+          foreignField: "press",
+          as: "translations",
+        },
+      },
+      {
+        $limit: limit + limit * (page - 1),
+      },
+      {
+        $skip: limit * (page - 1),
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "press",
+                in: {
+                  k: "$$press.lang",
+                  v: "$$press",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const totalCount = await Press.countDocuments();
+    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
+
+    res.status(200).json({
+      returnData,
+      totalPages,
+    });
+
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -194,15 +301,61 @@ export const deleteManyPress = async (req, res) => {
 };
 
 export const updatePress = async (req, res) => {
-  const { _id, title } = req.body;
-
-  const filter = { _id };
-  const update = { title };
 
   try {
-    const updatePress = await Press.findOneAndUpdate(filter, update);
+    const { _id } = req.body;
+    const id = mongoose.Types.ObjectId(_id);
+    let data = req.body;
 
-    return res.status(200).json(updatePress);
+    await Press.findOneAndUpdate({ _id: id }, { slug: data.slug });
+    let translatedData = [];
+    await pressTranslate.deleteMany({ announcement: id });
+
+    for (let i = 0; i < languages.length; i++) {
+      translatedData.push({
+        lang: languages[i].code,
+        title: data[languages[i].code]?.title,
+        text: data[languages[i].code]?.text,
+        inner_descr: data[languages[i].code]?.inner_descr,
+        press: id.toString(),
+      });
+    }
+
+    await pressTranslate.insertMany(translatedData);
+
+    const returnData = await Press.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      {
+        $lookup: {
+          from: "presstranslates",
+          localField: "_id",
+          foreignField: "press",
+          as: "translations",
+        },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "press",
+                in: {
+                  k: "$$press.lang",
+                  v: "$$press",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    return res.status(200).json(returnData);
   } catch (error) {
     return res.status(500).json(error);
   }

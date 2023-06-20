@@ -6,11 +6,58 @@ import * as mongoose from "mongoose";
 
 export const findAllActiveAnnouncement = async (req, res) => {
   try {
-    const result = await Announcement.find({
-      active_status: true,
-    }).exec();
+    let activeStatus = req.body.active_status;
+    let limit = req.body.limit ? req.body.limit : 10;
+    let page = req.body.page ? req.body.page : 1;
 
-    return res.status(200).json(result);
+    const returnData = await Announcement.aggregate([
+      {
+        $match: {
+          active_status: activeStatus,
+        },
+      },
+      {
+        $lookup: {
+          from: "anouncementtranslates",
+          localField: "_id",
+          foreignField: "announcement",
+          as: "translations",
+        },
+      },
+      {
+        $limit: limit + limit * (page - 1),
+      },
+      {
+        $skip: limit * (page - 1),
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "announcement",
+                in: {
+                  k: "$$announcement.lang",
+                  v: "$$announcement",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const totalCount = await Announcement.countDocuments();
+    const totalPages = Math.ceil(totalCount / (limit || 10));
+
+    res.status(200).json({
+      returnData,
+      totalPages,
+    });
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -37,20 +84,23 @@ export const findByPagination = async (req, res) => {
 
 export const getAllAnnouncement = async (req, res) => {
   try {
+    let limit = req.body.limit ? req.body.limit : 10;
+    let page = req.body.page ? req.body.page : 1;
+
     const returnData = await Announcement.aggregate([
       {
         $lookup: {
-          from: "announcementtranslates",
+          from: "anouncementtranslates",
           localField: "_id",
           foreignField: "announcement",
           as: "translations",
         },
       },
       {
-        $limit: req.body.limit + req.body.limit * (req.body.page - 1),
+        $limit: limit + limit * (page - 1),
       },
       {
-        $skip: req.body.limit * (req.body.page - 1),
+        $skip: limit * (page - 1),
       },
       {
         $sort: { createdAt: -1 },
@@ -73,7 +123,8 @@ export const getAllAnnouncement = async (req, res) => {
       },
     ]);
 
-    const totalPages = await Announcement.count(returnData);
+    const totalCount = await Announcement.countDocuments();
+    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
 
     res.status(200).json({
       returnData,
@@ -136,7 +187,7 @@ export const createAnnouncement = async (req, res) => {
         $lookup: {
           from: "anouncementtranslates",
           localField: "_id",
-          foreignField: "announcements",
+          foreignField: "announcement",
           as: "translations",
         },
       },
@@ -146,10 +197,10 @@ export const createAnnouncement = async (req, res) => {
             $arrayToObject: {
               $map: {
                 input: "$translations",
-                as: "announcements",
+                as: "announcement",
                 in: {
-                  k: "$$announcements.lang",
-                  v: "$$announcements",
+                  k: "$$announcement.lang",
+                  v: "$$announcement",
                 },
               },
             },
@@ -167,36 +218,130 @@ export const createAnnouncement = async (req, res) => {
 };
 
 export const updateActiveStatus = async (req, res) => {
-  const { _id, active_status } = req.body;
-  const filter = { _id };
-  const update = { active_status };
-
   try {
-    const updateToggleStatus = await Announcement.findOneAndUpdate(
-      filter,
-      update,
-      { new: true }
+    const { _id } = req.body;
+    const id = mongoose.Types.ObjectId(_id);
+    let activeStatus = req.body.active_status;
+    let data = req.body;
+
+    await Announcement.findOneAndUpdate(
+      { _id: id },
+      {
+        slug: data.slug,
+        active_status: activeStatus,
+      }
     );
 
-    return res.status(200).send(updateToggleStatus);
+    const returnData = await Announcement.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      {
+        $lookup: {
+          from: "anouncementtranslates",
+          localField: "_id",
+          foreignField: "announcement",
+          as: "translations",
+        },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "announcement",
+                in: {
+                  k: "$$announcement.lang",
+                  v: "$$announcement",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json(returnData);
   } catch (error) {
+    console.log(error);
     return res.status(500).send({ error: "Failed to update active status" });
   }
 };
 
 export const update = async (req, res) => {
-  const { _id, name, title, text, badge, inner_descr } = req.body;
-  const filter = { _id };
-  const update = { title, text, badge, inner_descr, name };
+  // const {
+  //   _id,
+  //   name,
+  //   title,
+  //   text,
+  //   badge,
+  //   inner_descr } = req.body;
+  // const filter = { _id };
+  // const update = { title, text, badge, inner_descr, name };
 
   try {
-    const updateToggleStatus = await Announcement.findOneAndUpdate(
-      filter,
-      update,
-      { new: true }
-    );
+    // const updateToggleStatus = await Announcement.findOneAndUpdate(filter, update, { new: true })
 
-    return res.status(200).send(updateToggleStatus);
+    // return res.status(200).send(updateToggleStatus);
+
+    const { _id } = req.body;
+    const id = mongoose.Types.ObjectId(_id);
+    let data = req.body;
+
+    await Announcement.findOneAndUpdate({ _id: id }, { slug: data.slug });
+    let translatedData = [];
+    await anouncementTranslate.deleteMany({ announcement: id });
+
+    for (let i = 0; i < languages.length; i++) {
+      translatedData.push({
+        lang: languages[i].code,
+        name: data[languages[i].code]?.name,
+        title: data[languages[i].code]?.title,
+        text: data[languages[i].code]?.text,
+        badge: data[languages[i].code]?.badge,
+        inner_descr: data[languages[i].code]?.inner_descr,
+        announcement: id.toString(),
+      });
+    }
+
+    await anouncementTranslate.insertMany(translatedData);
+
+    const returnData = await Announcement.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      {
+        $lookup: {
+          from: "anouncementtranslates",
+          localField: "_id",
+          foreignField: "announcement",
+          as: "translations",
+        },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "announcement",
+                in: {
+                  k: "$$announcement.lang",
+                  v: "$$announcement",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    return res.status(200).json(returnData);
   } catch (error) {
     return res.status(500).send({ error: "Failed to update active status" });
   }
