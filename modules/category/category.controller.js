@@ -4,7 +4,7 @@ import { uploadImageMany } from "../../utils/uploadImageMany.js";
 
 export const category = async (req, res) => {
     const { title, userId } = req.body;
-    console.log(req.body)
+
     const files = [...req.files['image'], ...req.files['logo_image']]
 
     if (!title) {
@@ -29,6 +29,32 @@ export const category = async (req, res) => {
         return res.status(200).json(category);
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error);
+    }
+};
+
+// i create this function to update category, i can't test it with postman so i'm waiting front
+export const updateCategory = async (req, res) => {
+    const { _id, userId, title } = req.body;
+    const image = req.files['image'];
+    const logoImage = req.files['logo_image'];
+    const files = [...image, ...logoImage];
+
+    try {
+        const imagesUpdate = await uploadImageMany(userId, files, 'category')
+        const updatedCategory = await Category.findOneAndUpdate(
+            { _id : _id },
+            {
+                title: title,
+                image: imagesUpdate[0],
+                logo_image: imagesUpdate[1]
+            },
+            { new: true }
+        )
+        console.log(updatedCategory, 'updatedCategory')
+        return res.status(200).json(updatedCategory)
+    } catch (error) {
+        console.log(error);
         return res.status(500).json(error);
     }
 };
