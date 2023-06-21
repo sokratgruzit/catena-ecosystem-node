@@ -2,6 +2,17 @@ import { Category } from "../../models/Category.js";
 import { categoryTranslate } from "../../models/Category.Translate.js";
 import { uploadImageMany } from "../../utils/uploadImageMany.js";
 
+export const getAllCategories = async (req, res) => {
+    try {
+        const categories = await Category.find({})
+        .populate("categoryTranslate")
+        
+        return res.status(200).json(categories);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
 export const category = async (req, res) => {
     const { title, userId } = req.body;
 
@@ -55,17 +66,6 @@ export const updateCategory = async (req, res) => {
         return res.status(200).json(updatedCategory)
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error);
-    }
-};
-
-export const getAllCategories = async (req, res) => {
-    try {
-        const categories = await Category.find({})
-        .populate("categoryTranslate")
-        
-        return res.status(200).json(categories);
-    } catch (error) {
         return res.status(500).json(error);
     }
 };
