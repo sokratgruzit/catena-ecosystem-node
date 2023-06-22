@@ -38,6 +38,7 @@ export const getAllPersons = async (req, res) => {
 
 export const deletePersons = async (req, res) => {
   const { _id } = req.body;
+  
   try {
     const personDeleted = await Persons.findOneAndDelete({ _id: _id });
 
