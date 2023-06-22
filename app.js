@@ -78,7 +78,7 @@ app.use("/vote", voteRouter);
 app.use("/translate", translateRouter);
 app.use("/home-page-slider", homePageSliderRouter);
 app.use("/permissions", permissionControler);
-
+app.use('/uploads', express.static('uploads'));
 const PORT = process.env.PORT || 5000;
 
 mongoose

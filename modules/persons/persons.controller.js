@@ -20,7 +20,7 @@ export const persons = async (req, res) => {
       message: "Fill all fealds",
     });
   }
-  
+
   try {
     const image = await imageUpload(randomString, req.file, "persons");
 
@@ -40,12 +40,14 @@ export const updatePerson = async (req, res) => {
   const { _id, title, status } = req.body;
 
   try {
+    const randomString = Math.random().toString(15).slice(2, 30);
+
     const image = await imageUpload(randomString, req.file, "persons");
 
     const personUpdated = await Persons.findOneAndUpdate(
       { _id: _id },
       {
-        title:title,
+        title: title,
         status: status,
         image: image
       },
