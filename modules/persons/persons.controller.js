@@ -35,3 +35,15 @@ export const getAllPersons = async (req, res) => {
     return res.status(500).json(error);
   }
 };
+
+export const deletePersons = async (req, res) => {
+  const { _id } = req.body;
+  try {
+    const personDeleted = await Persons.findOneAndDelete({ _id: _id });
+
+    return res.status(200).json(personDeleted);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
