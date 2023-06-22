@@ -8,5 +8,6 @@ const router = Router();
 router.route("/get-persons-image").get();
 router.route("/get-all-persons").get(personsController.getAllPersons);
 router.route("/create").post(upload.single("image"), personsController.persons);
+router.route("/delete-persons").delete(personsController.deletePersons);
 
 export default router;
