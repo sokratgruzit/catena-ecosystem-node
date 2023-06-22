@@ -5,9 +5,7 @@ const categorySchema = mongoose.Schema(
     title: {},
     slug: {
       type: String,
-      slug: "title",
-      slugPaddingSize: 2,
-      unique: true,
+      unique: true
     },
     image: {
       type: String,

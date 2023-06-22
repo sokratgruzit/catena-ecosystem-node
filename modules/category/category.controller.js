@@ -5,8 +5,8 @@ import { uploadImageMany } from "../../utils/uploadImageMany.js";
 export const getAllCategories = async (req, res) => {
     try {
         const categories = await Category.find({})
-        .populate("categoryTranslate")
-        
+            .populate("categoryTranslate")
+
         return res.status(200).json(categories);
     } catch (error) {
         return res.status(500).json(error);
@@ -28,6 +28,7 @@ export const category = async (req, res) => {
         const image = await uploadImageMany(userId, files, 'category')
         const category = await Category.create({
             title: title,
+            slug: convertToSlug(title),
             image: image[0],
             logo_image: image[1]
         });
@@ -54,7 +55,7 @@ export const updateCategory = async (req, res) => {
     try {
         const imagesUpdate = await uploadImageMany(userId, files, 'category')
         const updatedCategory = await Category.findOneAndUpdate(
-            { _id : _id },
+            { _id: _id },
             {
                 title: title,
                 image: imagesUpdate[0],
@@ -69,6 +70,17 @@ export const updateCategory = async (req, res) => {
         return res.status(500).json(error);
     }
 };
+
+function convertToSlug(title) {
+    const slug = title
+        .toLowerCase() // Convert to lowercase
+        .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
+        .replace(/\s+/g, "-") // Replace spaces with hyphens
+        .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
+        .trim(); // Remove leading/trailing spaces
+
+    return slug;
+}
 
 export const deleteCategories = async (req, res) => {
     const { _id } = req.body;
