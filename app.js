@@ -14,6 +14,7 @@ import { isAuthenticated } from "./services/isAuthenticated.js";
 import faqRouter from "./modules/faq/faq.routes.js";
 import eventRouter from "./modules/event/event.routes.js";
 import permissionControler from "./modules/permissions/permissions.routes.js";
+import rolesControler from "./modules/roles/roles.routes.js";
 import announcementRouter from "./modules/announcement/announcement.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
@@ -78,7 +79,9 @@ app.use("/vote", voteRouter);
 app.use("/translate", translateRouter);
 app.use("/home-page-slider", homePageSliderRouter);
 app.use("/permissions", permissionControler);
+app.use("/roles", rolesControler);
 app.use('/uploads', express.static('uploads'));
+
 const PORT = process.env.PORT || 5000;
 
 mongoose

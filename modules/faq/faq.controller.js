@@ -48,6 +48,8 @@ export const findOneFaq = async (req, res) => {
 
 export const findAllFaq = async (req, res) => {
   try {
+    let limit = req.body.limit?req.body.limit:10;
+    let page = req.body.page?req.body.page:1;
     const returnData = await Faq.aggregate([
       {
         $lookup: {
@@ -58,10 +60,10 @@ export const findAllFaq = async (req, res) => {
         },
       },
       {
-        $limit: req.body.limit + req.body.limit * (req.body.page - 1),
+        $limit: limit + limit * (page - 1),
       },
       {
-        $skip: req.body.limit * (req.body.page - 1),
+        $skip: limit * (page - 1),
       },
       {
         $sort: { createdAt: -1 },
@@ -91,6 +93,7 @@ export const findAllFaq = async (req, res) => {
       returnData,
       totalPages,
     });
+
   } catch (e) {
     console.log(e.message);
     res.status(400).json({ message: e.message });
@@ -246,6 +249,7 @@ function convertToSlug(title) {
 export const deleteOneFaq = async (req, res) => {
   try {
     const result = await Faq.deleteOne({ _id: req.body._id });
+    console.log(req.body)
 
     if (result.acknowledged === true) {
       return res.status(200).json({ message: "Faq successuly deleted" });

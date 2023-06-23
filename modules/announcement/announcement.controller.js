@@ -1,6 +1,6 @@
-import { Announcement } from '../../models/Announcement.js';
-import { uploadImageMany } from '../../utils/uploadImageMany.js';
-import { anouncementTranslate } from '../../models/Anouncements.Translate.js';
+import { Announcement } from "../../models/Announcement.js";
+import { uploadImageMany } from "../../utils/uploadImageMany.js";
+import { anouncementTranslate } from "../../models/Anouncements.Translate.js";
 import { languages } from "../../utils/languages.js";
 import * as mongoose from "mongoose";
 
@@ -69,8 +69,7 @@ export const findByPagination = async (req, res) => {
     let req_page = req.page;
     let data = {};
 
-    let result = await Announcement
-      .find(data)
+    let result = await Announcement.find(data)
       .sort({ createdAt: "desc" })
       .limit(limit)
       .skip(limit * (req_page - 1));
@@ -82,7 +81,6 @@ export const findByPagination = async (req, res) => {
     return res.status(500).json(error);
   }
 };
-
 
 export const getAllAnnouncement = async (req, res) => {
   try {
@@ -211,11 +209,11 @@ export const createAnnouncement = async (req, res) => {
       },
     ]);
 
-    console.log(returnData)
+    console.log(returnData);
     return res.status(200).json(returnData);
   } catch (error) {
-    console.log(error)
-    return res.status(500).json(error)
+    console.log(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -355,14 +353,16 @@ function convertToSlug(title) {
     .trim(); // Remove leading/trailing spaces
 
   return slug;
-};
+}
 
 export const destroyOneAnnouncement = async (req, res) => {
   try {
     const result = await Announcement.deleteOne({ _id: req.body._id });
 
     if (result.acknowledged === true) {
-      return res.status(200).json({ message: "Announcement successuly deleted" });
+      return res
+        .status(200)
+        .json({ message: "Announcement successuly deleted" });
     }
     res.status(400).json({ message: "Announcement deletion failed" });
   } catch (e) {
