@@ -14,7 +14,9 @@ export const getAllCategories = async (req, res) => {
 };
 
 export const category = async (req, res) => {
-    const { title, userId } = req.body;
+    const { title } = req.body;
+    const randomString = Math.random().toString(15).slice(2, 30);
+
 
     const files = [...req.files['image'], ...req.files['logo_image']]
 
@@ -25,7 +27,7 @@ export const category = async (req, res) => {
     }
 
     try {
-        const image = await uploadImageMany(userId, files, 'category')
+        const image = await uploadImageMany(randomString, files, 'category')
         const category = await Category.create({
             title: title,
             slug: convertToSlug(title),
