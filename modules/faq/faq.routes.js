@@ -9,6 +9,6 @@ router.route("/finde-all-faq").get(faqController.findAllFaq);
 router.route("/create").post(faqController.create);
 router.route("/update-one-faq").patch(faqController.updateOneFaq);
 router.route("/change-status").patch(faqController.changeStatus);
-router.route("/delete-one-faq").delete(faqController.deleteOneFaq);
+router.route("/delete-one-faq").post(faqController.deleteOneFaq);
 
 export default router;

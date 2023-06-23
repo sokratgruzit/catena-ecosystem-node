@@ -15,7 +15,7 @@ export const imageUpload = (address, file, folderPath) => {
         folderPath,
         address + ".png",
       );
-      console.log(file, 'aaaa')
+      console.log(file, 'uploaded image')
       fs.writeFile(newFilePath, file.buffer, (err) => {
         if (err) {
           reject(err);
