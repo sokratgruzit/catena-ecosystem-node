@@ -12,7 +12,10 @@ router.route("/create").post(
   ]),
   categoryController.category,
 );
-router.route("/update-category").post(categoryController.updateCategory);
+router.route("/update-category").post(upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "logo_image", maxCount: 1 },
+]), categoryController.updateCategory);
 router.route("/delete-category").post(categoryController.deleteCategories);
 router.route("/delete-many-category").delete(categoryController.deleteManyCategories);
 export default router;
