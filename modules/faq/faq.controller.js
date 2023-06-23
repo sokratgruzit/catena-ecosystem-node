@@ -86,21 +86,14 @@ export const findAllFaq = async (req, res) => {
       },
     ]);
 
-    const totalCount = await Faq.countDocuments();
-    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
+    const totalPages = await Faq.count(returnData);
+    console.log(totalPages);
 
     res.status(200).json({
       returnData,
       totalPages,
     });
 
-    // const totalPages = await Faq.count(returnData);
-    // console.log(totalPages);
-
-    // res.status(200).json({
-    //   returnData,
-    //   totalPages,
-    // });
   } catch (e) {
     console.log(e.message);
     res.status(400).json({ message: e.message });
@@ -112,8 +105,10 @@ export const create = async (req, res) => {
     let data = req.body;
     console.log(data);
     let slug = convertToSlug(data.en.question);
+
     let translatedData = [];
     const result = await Faq.create({ slug });
+
     for (let i = 0; i < languages.length; i++) {
       translatedData.push({
         lang: languages[i].code,
@@ -122,6 +117,7 @@ export const create = async (req, res) => {
         faq: result._id.toString(),
       });
     }
+
     console.log(translatedData);
     await faqTranslate.insertMany(translatedData);
 
@@ -165,19 +161,28 @@ export const create = async (req, res) => {
 
 export const updateOneFaq = async (req, res) => {
   try {
-    const { _id, answer, field } = req.body;
+    const { _id } = req.body;
+    const id = mongoose.Types.ObjectId(_id);
     let data = req.body;
 
-    const result = await Faq.findOne({ _id });
+    await Faq.findOneAndUpdate({ _id: id }, { slug: data.slug });
+    let translatedData = [];
+    await faqTranslate.deleteMany({ faq: id });
+    for (let i = 0; i < languages.length; i++) {
+      translatedData.push({
+        lang: languages[i].code,
+        question: data[languages[i].code]?.question,
+        answer: data[languages[i].code]?.answer,
+        faq: id.toString(),
+      });
+    }
 
-    const results = await faqTranslate.findOne({ _id });
-    console.log(results);
-    console.log(result);
+    await faqTranslate.insertMany(translatedData);
 
     const returnData = await Faq.aggregate([
       {
         $match: {
-          _id: mongoose.Types.ObjectId(_id),
+          _id: id,
         },
       },
       {

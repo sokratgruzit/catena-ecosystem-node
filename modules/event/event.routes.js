@@ -1,14 +1,10 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import * as eventControler from "./event.controller.js";
-import { isAuthenticated } from "../../services/isAuthenticated.js";
 import multer from "multer";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
-const app = express();
-
-app.use(isAuthenticated);
 
 router.route("/get-all-event").get(eventControler.getAllEvents);
 router.route("/finde-all-active-event").get(eventControler.findAllActiveEvent);

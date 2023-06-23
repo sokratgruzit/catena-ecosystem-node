@@ -4,17 +4,16 @@ const anouncementsTranslateSchema = new mongoose.Schema(
     {
         name: String,
         title: String,
-        text: String,
         inner_descr: String,
-        anouncement: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Anouncement"
-            }
-        ],
+        text: String,
+        lang: String,
+        announcement: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Announcement"
+        }
     },
     {
-        timestamps: true,
+        timestamps: true
     }
 );
 

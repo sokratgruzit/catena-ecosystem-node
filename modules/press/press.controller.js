@@ -1,51 +1,107 @@
 import { Press } from "../../models/Press.js";
 import { uploadImageMany } from "../../utils/uploadImageMany.js";
 import { pressTranslate } from "../../models/Press.Translate.js";
+import { languages } from "../../utils/languages.js";
+import * as mongoose from "mongoose";
 
 export const press = async (req, res) => {
-  const {
-    title,
-    text,
-    inner_descr,
-    time,
-    active_status,
-    categoryId,
-    personsId,
-    outter_image,
-    inner_image,
-    userId,
-    slug
-  } = req.body;
+  // const {
+  //   title,
+  //   text,
+  //   inner_descr,
+  //   time,
+  //   active_status,
+  //   categoryId,
+  //   personsId,
+  //   outter_image,
+  //   inner_image,
+  //   userId,
+  //   slug
+  // } = req.body;
 
-  const outterImageFiles = req.files['outter_image'];
-  const innerImageFiles = req.files['inner_image'];
-  const files = [...outterImageFiles, ...innerImageFiles];
+  // const outterImageFiles = req.files['outter_image'];
+  // const innerImageFiles = req.files['inner_image'];
+  // const files = [...outterImageFiles, ...innerImageFiles];
 
   try {
-    const image = await uploadImageMany(userId, files, 'press');
+    // const image = await uploadImageMany(userId, files, 'press');
 
-    const press = await Press.create({
-      title,
-      text,
-      inner_descr,
-      outter_image: image[0],
-      inner_image: image[1],
-      time,
-      active_status,
-      category: categoryId,
-      persons: personsId,
-      slug
-    });
+    // const press = await Press.create({
+    //   title,
+    //   text,
+    //   inner_descr,
+    //   outter_image: image[0],
+    //   inner_image: image[1],
+    //   time,
+    //   active_status,
+    //   category: categoryId,
+    //   persons: personsId,
+    //   slug
+    // });
 
-    await pressTranslate.create({
-      title: title,
-      text: text,
-      inner_descr: inner_descr,
-      press: press._id.toString()
-    });
+    // await pressTranslate.create({
+    //   title: title,
+    //   text: text,
+    //   inner_descr: inner_descr,
+    //   press: press._id.toString()
+    // });
 
-    return res.status(200).json(press);
+    let data = req.body;
+    console.log(data);
+    let slug = convertToSlug(data.en.title);
+
+    let translatedData = [];
+    const result = await Press.create({ slug });
+
+    for (let i = 0; i < languages.length; i++) {
+      translatedData.push({
+        lang: languages[i].code,
+        title: data[languages[i].code]?.title,
+        text: data[languages[i].code]?.text,
+        inner_descr: data[languages[i].code]?.inner_descr,
+        presses: result._id.toString(),
+      });
+    }
+
+    console.log(translatedData);
+    await pressTranslate.insertMany(translatedData);
+
+    const returnData = await Press.aggregate([
+      {
+        $match: {
+          _id: result._id,
+        },
+      },
+      {
+        $lookup: {
+          from: "presstranslates",
+          localField: "_id",
+          foreignField: "presses",
+          as: "translations",
+        },
+      },
+      {
+        $addFields: {
+          translations: {
+            $arrayToObject: {
+              $map: {
+                input: "$translations",
+                as: "presses",
+                in: {
+                  k: "$$presses.lang",
+                  v: "$$presses",
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    console.log(returnData)
+    return res.status(200).json(returnData);
   } catch (error) {
+    console.log(error)
     return res.status(500).json(error);
   }
 };
@@ -101,6 +157,17 @@ export const getPressWithActiveStatus = async (req, res) => {
     return res.status(500).json(error);
   }
 };
+
+function convertToSlug(title) {
+  const slug = title
+    .toLowerCase() // Convert to lowercase
+    .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
+    .trim(); // Remove leading/trailing spaces
+
+  return slug;
+}
 
 export const deleteOnePress = async (req, res) => {
   const { _id } = req.body;

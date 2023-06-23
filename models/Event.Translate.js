@@ -3,17 +3,18 @@ import * as mongoose from "mongoose";
 const eventTranslateSchema = new mongoose.Schema(
     {
         title: String,
+        badge: String,
         text: String,
         inner_descr: String,
-        event: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Event"
-            }
-        ]
+        lang:String,
+        event:
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Event"
+        }
     },
     {
-        timestamps: true
+        timestamps: true,
     }
 );
 
