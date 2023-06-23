@@ -80,6 +80,7 @@ app.use("/translate", translateRouter);
 app.use("/home-page-slider", homePageSliderRouter);
 app.use("/permissions", permissionControler);
 app.use("/roles", rolesControler);
+app.use('/uploads', express.static('uploads'));
 
 const PORT = process.env.PORT || 5000;
 
