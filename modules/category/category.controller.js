@@ -47,16 +47,15 @@ export const category = async (req, res) => {
     }
 };
 
-// i create this function to update category, i can't test it with postman so i'm waiting front
 export const updateCategory = async (req, res) => {
     const { _id, title } = req.body;
 
     const image = req.files['image'];
     const logoImage = req.files['logo_image'];
     const files = [...image, ...logoImage];
-    const randomString = Math.random().toString(15).slice(2, 30);
-
+    
     try {
+        const randomString = Math.random().toString(15).slice(2, 30);
         const imagesUpdate = await uploadImageMany(randomString, files, 'category')
         const updatedCategory = await Category.findOneAndUpdate(
             { _id: _id },
