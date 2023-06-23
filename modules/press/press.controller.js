@@ -5,39 +5,41 @@ import { languages } from "../../utils/languages.js";
 import * as mongoose from "mongoose";
 
 export const press = async (req, res) => {
-
-  // const outterImageFiles = req.files['outter_image'];
-  // const innerImageFiles = req.files['inner_image'];
-  // const files = [...outterImageFiles, ...innerImageFiles];
+  console.log(req.body)
+  const innerImageFiles = req.files['cover_image'];
+  const outterImageFiles = req.files['outter_image'];
+  const files = [...outterImageFiles, ...innerImageFiles];
 
   try {
-    // const image = await uploadImageMany(userId, files, 'press');
-
+    
     // const press = await Press.create({
-    //   title,
-    //   text,
-    //   inner_descr,
-    //   outter_image: image[0],
-    //   inner_image: image[1],
-    //   time,
-    //   active_status,
-    //   category: categoryId,
-    //   persons: personsId,
-    //   slug
-    // });
-
-
-    let data = req.body;
-    let categoryId = data.categoryId;
-    let personsId = data.personsId;
+      //   title,
+      //   text,
+      //   inner_descr,
+      //   outter_image: image[0],
+      //   inner_image: image[1],
+      //   time,
+      //   active_status,
+      //   category: categoryId,
+      //   persons: personsId,
+      //   slug
+      // });
+      
+      
+      let data = req.body;
+      let categoryId = data.categoryId;
+      let personsId = "fioewjfml";
+      const image = await uploadImageMany(personsId, files, 'press');
 
     let slug = convertToSlug(data.en.title);
 
     let translatedData = [];
     const result = await Press.create({
-      slug,
+        slug,
         category: categoryId,
         persons: personsId,
+        cover_image: image[0],
+        outter_image: image[1],
     });
 
     for (let i = 0; i < languages.length; i++) {
