@@ -102,57 +102,57 @@ export const findAllFaq = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    let data = req.body;
-    console.log(data);
-    let slug = convertToSlug(data.en.question);
+      let data = req.body;
+      console.log(data);
+      let slug = convertToSlug(data.en.question);
 
-    let translatedData = [];
-    const result = await Faq.create({ slug });
+      let translatedData = [];
+      const result = await Faq.create({ slug });
 
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i].code,
-        question: data[languages[i].code]?.question,
-        answer: data[languages[i].code]?.answer,
-        faq: result._id.toString(),
-      });
-    }
+      for (let i = 0; i < languages.length; i++) {
+        translatedData.push({
+          lang: languages[i].code,
+          question: data[languages[i].code]?.question,
+          answer: data[languages[i].code]?.answer,
+          faq: result._id.toString(),
+        });
+      }
 
-    console.log(translatedData);
-    await faqTranslate.insertMany(translatedData);
+      console.log(translatedData);
+      await faqTranslate.insertMany(translatedData);
 
-    const returnData = await Faq.aggregate([
-      {
-        $match: {
-          _id: result._id,
+      const returnData = await Faq.aggregate([
+        {
+          $match: {
+            _id: result._id,
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "faqtranslates",
-          localField: "_id",
-          foreignField: "faq",
-          as: "translations",
+        {
+          $lookup: {
+            from: "faqtranslates",
+            localField: "_id",
+            foreignField: "faq",
+            as: "translations",
+          },
         },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "faq",
-                in: {
-                  k: "$$faq.lang",
-                  v: "$$faq",
+        {
+          $addFields: {
+            translations: {
+              $arrayToObject: {
+                $map: {
+                  input: "$translations",
+                  as: "faq",
+                  in: {
+                    k: "$$faq.lang",
+                    v: "$$faq",
+                  },
                 },
               },
             },
           },
         },
-      },
-    ]);
-    return res.status(200).json(returnData);
+      ]);
+      return res.status(200).json(returnData);
   } catch (e) {
     console.log(e.message);
     res.status(400).json({ message: e.message });

@@ -12,7 +12,7 @@ router.route("/create").post(
   ]),
   categoryController.category,
 );
-router.route("/update").put(categoryController.update);
-router.route("/delete-category").post(categoryController.deleteCategorie);
+router.route("/update-category").post(categoryController.updateCategory);
+router.route("/delete-category").delete(categoryController.deleteCategories);
 router.route("/delete-many-category").delete(categoryController.deleteManyCategories);
 export default router;

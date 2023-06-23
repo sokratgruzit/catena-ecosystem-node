@@ -13,7 +13,7 @@ router.route("/create").post(upload.fields([
 ]),pressController.press);
 router.route("/update-press").put(pressController.updatePress);
 router.route("/update-active-status").put(pressController.updateActiveStatus);
-router.route("/delete").delete(pressController.deleteOnePress);
+router.route("/delete").post(pressController.deleteOnePress);
 router.route("/delete-many-press").delete(pressController.deleteManyPress);
 
 export default router;
