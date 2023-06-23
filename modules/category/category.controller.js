@@ -48,6 +48,8 @@ export const category = async (req, res) => {
 // i create this function to update category, i can't test it with postman so i'm waiting front
 export const updateCategory = async (req, res) => {
     const { _id, userId, title } = req.body;
+    console.log(req.body)
+    console.log(req.files)
     const image = req.files['image'];
     const logoImage = req.files['logo_image'];
     const files = [...image, ...logoImage];
