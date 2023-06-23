@@ -65,8 +65,8 @@ export const updateCategory = async (req, res) => {
                 logo_image: imagesUpdate[1]
             },
             { new: true }
-        )
-        console.log(updatedCategory, 'updatedCategory')
+        );
+
         return res.status(200).json(updatedCategory)
     } catch (error) {
         console.log(error);
