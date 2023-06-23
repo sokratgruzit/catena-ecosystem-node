@@ -1,14 +1,13 @@
 import { Permissions } from '../../models/Permissions.js';
 
 export const get = async (req, res) => {
+  try {
+    const result = await Permissions.find()
 
-    try {
-        const result = await Permissions.find()
-
-        return res.status(200).json( result );
-    } catch(error) {
-        return res.status(500).send({ error: "Error to getting permissions" });
-    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).send({ error: "Error to getting permissions" });
+  }
 };
 
 export const update = async (req, res) => {
@@ -17,11 +16,11 @@ export const update = async (req, res) => {
   const filter = { _id };
   const update = { name };
   try {
-      const updateToggleStatus = await Permissions.findOneAndUpdate(filter, update, { new: true })
+    const updateToggleStatus = await Permissions.findOneAndUpdate(filter, update, { new: true })
 
-      return res.status(200).send(updateToggleStatus);
-  } catch(error) {
-      return res.status(500).send({ error: "Failed to update active status" });
+    return res.status(200).send(updateToggleStatus);
+  } catch (error) {
+    return res.status(500).send({ error: "Failed to update active status" });
   }
 };
 
