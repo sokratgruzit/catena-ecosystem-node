@@ -5,9 +5,8 @@ import { languages } from "../../utils/languages.js";
 import * as mongoose from "mongoose";
 
 export const press = async (req, res) => {
-  console.log(req.files)
   console.log(req.body)
-  const innerImageFiles = req.files['cover_image'];
+  const innerImageFiles = req.files['inner_image'];
   const outterImageFiles = req.files['outter_image'];
   const files = [...outterImageFiles, ...innerImageFiles];
 
@@ -24,7 +23,7 @@ export const press = async (req, res) => {
       slug,
       // category: categoryId,
       // persons: personsId,
-      cover_image: image[0],
+      inner_image: image[0],
       outter_image: image[1],
     });
 
