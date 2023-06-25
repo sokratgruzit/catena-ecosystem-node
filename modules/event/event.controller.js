@@ -57,6 +57,9 @@ export const findAllActiveEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
   try {
+    let limit = req.body.limit?req.body.limit:10;
+    let page = req.body.page?req.body.page:1;
+    console.log(req.body)
     const returnData = await Event.aggregate([
       {
         $lookup: {
@@ -67,10 +70,10 @@ export const getAllEvents = async (req, res) => {
         },
       },
       {
-        $limit: req.body.limit + req.body.limit * (req.body.page - 1),
+        $limit: limit + limit * (page - 1),
       },
       {
-        $skip: req.body.limit * (req.body.page - 1),
+        $skip: limit * (page - 1),
       },
       {
         $sort: { createdAt: -1 },
