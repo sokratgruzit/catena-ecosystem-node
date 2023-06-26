@@ -4,7 +4,7 @@ const pressSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      unique: true,
+      unique: false,
     },
     time: {
       type: Date,
@@ -15,14 +15,14 @@ const pressSchema = new mongoose.Schema(
       default: false,
       required: true,
     },
-    // outter_image: {
-    //   type: String,
-    //   required: false,
-    // },
-    // inner_image: {
-    //   type: String,
-    //   required: false,
-    // },
+    outter_image: {
+      type: String,
+      required: false,
+    },
+    inner_image: {
+      type: String,
+      required: false,
+    },
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,
