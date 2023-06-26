@@ -5,16 +5,17 @@ import { languages } from "../../utils/languages.js";
 import * as mongoose from "mongoose";
 
 export const press = async (req, res) => {
+  // console.log(req.files)
   console.log(req.body)
-  const innerImageFiles = req.files['inner_image'];
-  const outterImageFiles = req.files['outter_image'];
-  const files = [...outterImageFiles, ...innerImageFiles];
+  // const innerImageFiles = req.files['inner_image'];
+  // const outterImageFiles = req.files['outter_image'];
+  // const files = [...outterImageFiles, ...innerImageFiles];
 
   try {
     let data = req.body;
     let categoryId = data.categoryId;
-    const randomString = Math.random().toString(15).slice(2, 30);
-    const image = await uploadImageMany(randomString, files, 'press');
+    // const randomString = Math.random().toString(15).slice(2, 30);
+    // const image = await uploadImageMany(randomString, files, 'press');
 
     let slug = convertToSlug(data.en.title);
 
@@ -23,8 +24,8 @@ export const press = async (req, res) => {
       slug,
       // category: categoryId,
       // persons: personsId,
-      inner_image: image[0],
-      outter_image: image[1],
+      // inner_image: image[0],
+      // outter_image: image[1],
     });
 
     for (let i = 0; i < languages.length; i++) {
@@ -291,6 +292,7 @@ export const updatePress = async (req, res) => {
 
   try {
     const { _id } = req.body;
+    console.log(_id)
     const id = mongoose.Types.ObjectId(_id);
     let data = req.body;
 

@@ -11,7 +11,7 @@ router.route("/create").post(upload.fields([
     { name: "inner_image" },
     { name: "outter_image" },
 ]), pressController.press);
-router.route("/update-press").put(pressController.updatePress);
+router.route("/update-press").post(pressController.updatePress);
 router.route("/update-active-status").put(pressController.updateActiveStatus);
 router.route("/delete").post(pressController.deleteOnePress);
 router.route("/delete-many-press").delete(pressController.deleteManyPress);

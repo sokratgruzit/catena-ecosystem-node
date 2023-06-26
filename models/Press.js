@@ -4,7 +4,7 @@ const pressSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      unique: true,
+      unique: false,
     },
     time: {
       type: Date,
