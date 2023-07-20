@@ -1,9 +1,7 @@
 import { Persons } from "../../models/Persons.js";
-import { imageUpload } from "../../utils/uploadImage.js";
 
-export const persons = async (req, res) => {
-  const { title, status } = req.body;
-  const randomString = Math.random().toString(15).slice(2, 30);
+export const create = async (req, res) => {
+  const { title, status, image } = req.body;
 
   if (!title || !status) {
     return res.status(400).send({
@@ -11,18 +9,41 @@ export const persons = async (req, res) => {
     });
   }
   
+  console.log(image)
   try {
-    const image = await imageUpload(randomString, req.file, "persons");
-
     const persons = await Persons.create({
-      title: title,
-      status: status,
-      image: image,
+      title,
+      status,
+      image,
     });
+
 
     return res.status(200).json(persons);
   } catch (error) {
     return res.status(500).json(error);
+  }
+};
+
+export const remove = async (req, res) => {
+  const { _id } = req.body;
+  const pers = await Persons.findOne({ _id });
+
+  if (pers) {
+      try {
+          await Persons.deleteOne({ _id });
+
+          res.status(200).json({
+              "message": "Person removed successfully"
+          });
+      } catch (err) {
+          res.status(400).json({
+              "message": err.message
+          });
+      }
+  } else {
+      res.status(404).json({
+          "message": "Person not found"
+      });
   }
 };
 

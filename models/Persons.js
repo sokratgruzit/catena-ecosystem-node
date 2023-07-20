@@ -5,7 +5,7 @@ mongoose.plugin(slug);
 
 const personsSchema = mongoose.Schema(
   {
-    title: {},
+    title: String,
     slug: {
       type: String,
       slug: "title.en",

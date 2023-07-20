@@ -6,7 +6,7 @@ mongoose.plugin(slug);
 
 const categorySchema = mongoose.Schema(
   {
-    title: {},
+    title: String,
     slug: {
       type: String,
       slug: "title.en",
