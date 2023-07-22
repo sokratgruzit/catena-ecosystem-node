@@ -24,6 +24,30 @@ export const create = async (req, res) => {
   }
 };
 
+export const update = async (req, res) => {
+  const { _id, title, image, status } = req.body;
+
+  if (!title && !status) {
+      return res.status(400).send({
+          message: "Fill all fealds"
+      });
+  }
+
+  const updatedCat = await Persons.findByIdAndUpdate(_id, {
+      title,
+      status,
+      image
+  }, { new: true });
+
+  if (!updatedCat) {
+      res.status(400).json({
+          "message": "Person not found",
+      });
+  } else {
+      res.status(200).json({ "message": "Person updated" });
+  }
+};
+
 export const remove = async (req, res) => {
   const { _id } = req.body;
   const pers = await Persons.findOne({ _id });
