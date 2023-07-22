@@ -1,4 +1,5 @@
 import { Persons } from "../../models/Persons.js";
+import fs from "fs";
 
 export const create = async (req, res) => {
   const { title, status, image } = req.body;
@@ -9,18 +10,32 @@ export const create = async (req, res) => {
     });
   }
   
-  console.log(image)
-  try {
-    const persons = await Persons.create({
-      title,
-      status,
-      image,
+  let exists = await Persons.findOne({ title });
+
+  if (exists) {
+    let imgPath = `uploads/persons/${image}`;
+
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+          console.error('Error deleting file:', err);
+      } else {
+          console.log('File deleted successfully!');
+      }
     });
 
-
-    return res.status(200).json(persons);
-  } catch (error) {
-    return res.status(500).json(error);
+    return res.status(200).json({ "message": "Person already exists" });
+  } else {
+    try {
+      const persons = await Persons.create({
+        title,
+        status,
+        image,
+      });
+  
+      return res.status(200).json(persons);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
   }
 };
 
@@ -28,15 +43,30 @@ export const update = async (req, res) => {
   const { _id, title, image, status } = req.body;
 
   if (!title && !status) {
-      return res.status(400).send({
-          message: "Fill all fealds"
-      });
+    return res.status(400).send({
+      message: "Fill all fealds"
+    });
+  }
+
+  const findOldImgs = await Persons.findOne({ _id });
+  const oldImg = findOldImgs.image;
+
+  if (image && oldImg !== image) {
+    let imgPath = `uploads/persons/${oldImg}`;
+
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('File deleted successfully!');
+      }
+    });
   }
 
   const updatedCat = await Persons.findByIdAndUpdate(_id, {
-      title,
-      status,
-      image
+    title,
+    status,
+    image
   }, { new: true });
 
   if (!updatedCat) {
