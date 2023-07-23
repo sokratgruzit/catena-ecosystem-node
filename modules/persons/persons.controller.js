@@ -2,7 +2,7 @@ import { Persons } from "../../models/Persons.js";
 import fs from "fs";
 
 export const create = async (req, res) => {
-  const { title, status, image } = req.body;
+  const { title, status, slug, image } = req.body;
 
   if (!title || !status) {
     return res.status(400).send({
@@ -10,7 +10,7 @@ export const create = async (req, res) => {
     });
   }
   
-  let exists = await Persons.findOne({ title });
+  let exists = await Persons.findOne({ slug });
 
   if (exists) {
     let imgPath = `uploads/persons/${image}`;

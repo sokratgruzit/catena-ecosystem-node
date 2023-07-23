@@ -2,7 +2,7 @@ import { Category } from "../../models/Category.js";
 import fs from "fs";
 
 export const create = async (req, res) => {
-    const { title, image, logo_image } = req.body;
+    const { title, slug, image, logo_image } = req.body;
 
     if (!title) {
         return res.status(400).send({
@@ -10,7 +10,7 @@ export const create = async (req, res) => {
         });
     }
 
-    let exists = await Category.findOne({ title });
+    let exists = await Category.findOne({ slug });
 
     if (exists) {
         let imgPath = `uploads/category/${image}`;
@@ -38,7 +38,8 @@ export const create = async (req, res) => {
             const cat = await Category.create({
                 title,
                 image,
-                logo_image
+                logo_image,
+                slug
             });
     
             return res.status(200).json(cat);
