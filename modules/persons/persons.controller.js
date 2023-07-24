@@ -1,5 +1,4 @@
 import { Persons } from "../../models/Persons.js";
-import { imageUpload } from "../../utils/uploadImage.js";
 
 export const getAllPersons = async (req, res) => {
   try {
@@ -22,13 +21,12 @@ export const persons = async (req, res) => {
   }
 
   try {
-    const image = await imageUpload(randomString, req.file, "persons");
-
     const persons = await Persons.create({
-      title: title,
-      status: status,
-      image: image,
+      title,
+      status,
+      image,
     });
+
 
     return res.status(200).json(persons);
   } catch (error) {
