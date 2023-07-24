@@ -1,33 +1,33 @@
 import * as mongoose from "mongoose";
-import slug from "mongoose-slug-updater";
-
-mongoose.plugin(slug);
 
 const pressSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      slug: "title.en",
-      slugPaddingSize: 2,
-      unique: true,
+      default: "press.title",
     },
-    title: {},
-    text: {},
-    inner_descr: {},
-    time: {
-      type: Date,
-      default: Date.now,
+    title: {
+      type: Object,
+      default: {}
+    },
+    text: {
+      type: Object,
+      default: {}
+    },
+    inner_descr: {
+      type: Object,
+      default: {}
     },
     active_status: {
       type: Boolean,
       default: false,
       required: true,
     },
-    outter_image: {
+    image: {
       type: String,
       required: false,
     },
-    inner_image: {
+    logo_image: {
       type: String,
       required: false,
     },
