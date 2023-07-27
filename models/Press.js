@@ -4,25 +4,33 @@ const pressSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      unique: true,
+      default: "press.title",
     },
-    time: {
-      type: Date,
-      default: Date.now,
+    title: {
+      type: Object,
+      default: {}
+    },
+    text: {
+      type: Object,
+      default: {}
+    },
+    inner_descr: {
+      type: Object,
+      default: {}
     },
     active_status: {
       type: Boolean,
       default: false,
       required: true,
     },
-    // outter_image: {
-    //   type: String,
-    //   required: false,
-    // },
-    // inner_image: {
-    //   type: String,
-    //   required: false,
-    // },
+    image: {
+      type: String,
+      required: false,
+    },
+    logo_image: {
+      type: String,
+      required: false,
+    },
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,
