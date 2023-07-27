@@ -66,50 +66,16 @@ export const create = async (req, res) => {
 };
 
 export const updateActiveStatus = async (req, res) => {
-  try {
-    const { _id } = req.body;
-    const id = mongoose.Types.ObjectId(_id);
-    let activeStatus = req.body.active_status;
-    let data = req.body;
+  const { _id, active_status } = req.body;
+  const filter = { _id };
+  const update = { active_status };
 
-    await Press.findOneAndUpdate({ _id: id }, {
-      slug: data.slug,
-      active_status: activeStatus,
+  try {
+    const updateToggleStatus = await Press.findOneAndUpdate(filter, update, {
+      new: true,
     });
 
-    const returnData = await Press.aggregate([
-      {
-        $match: {
-          _id: id,
-        },
-      },
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    res.status(200).json(returnData);
+    return res.status(200).send(updateToggleStatus);
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -117,64 +83,13 @@ export const updateActiveStatus = async (req, res) => {
 
 export const getAllPress = async (req, res) => {
   try {
-    // const press = await Press.find()
-    //   .populate("category")
-    //   .populate("persons")
-    //   .populate("pressTranslate")
-    //   .sort({ createdAt: "desc" })
-    //   .limit(limit)
-    //   .skip(limit * (page - 1))
-    //   .exec();
+    const press = await Press.find()
+      .populate("category")
+      .populate("persons")
+      .exec();
 
-    let limit = req.body.limit ? req.body.limit : 10;
-    let page = req.body.page ? req.body.page : 1;
-
-    const returnData = await Press.aggregate([
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $limit: limit + limit * (page - 1),
-      },
-      {
-        $skip: limit * (page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    const totalCount = await Press.countDocuments();
-    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
-
-    res.status(200).json({
-      returnData,
-      totalPages,
-    });
-
+    return res.status(200).json(press);
   } catch (error) {
-    console.log(error)
     return res.status(500).json(error);
   }
 };
@@ -183,74 +98,18 @@ export const getPressWithActiveStatus = async (req, res) => {
   const { active_status } = req.body;
 
   try {
-    let activeStatus = req.body.active_status;
-    let limit = req.body.limit ? req.body.limit : 10;
-    let page = req.body.page ? req.body.page : 1;
+    const pressWithActiveStatus = await Press.find({
+      active_status: active_status,
+    })
+      .populate("category")
+      .populate("persons")
+      .exec();
 
-    const returnData = await Press.aggregate([
-      {
-        $match: {
-          active_status: activeStatus,
-        },
-      },
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $limit: limit + limit * (page - 1),
-      },
-      {
-        $skip: limit * (page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    const totalCount = await Press.countDocuments();
-    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
-
-    res.status(200).json({
-      returnData,
-      totalPages,
-    });
-
+    return res.status(200).json(pressWithActiveStatus);
   } catch (error) {
     return res.status(500).json(error);
   }
 };
-
-function convertToSlug(title) {
-  const slug = title
-    .toLowerCase() // Convert to lowercase
-    .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
-    .trim(); // Remove leading/trailing spaces
-
-  return slug;
-}
 
 export const deleteOnePress = async (req, res) => {
   const { _id } = req.body;
