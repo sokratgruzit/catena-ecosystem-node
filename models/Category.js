@@ -5,13 +5,10 @@ import * as mongoose from "mongoose";
 
 const categorySchema = mongoose.Schema(
   {
-    title: {
-      type: Object,
-      default: {}
-    },
+    title: String,
     slug: {
       type: String,
-      default: "category.title",
+      default: "",
     },
     image: {
       type: String,
