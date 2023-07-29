@@ -1,43 +1,35 @@
-import slug from "mongoose-slug-updater";
 import * as mongoose from "mongoose";
-
-mongoose.plugin(slug);
 
 const eventSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      slug: "title.en",
-      slugPaddingSize: 2,
-      unique: true,
+      default: "event.title",
     },
-    title: {},
-    badge: {
-      type: String,
-      required: true,
+    title: {
+      type: Object,
+      default: {}
     },
-    text: {},
-    inner_descr: {},
-    time: {
-      type: Date,
-      default: Date.now,
+    text: {
+      type: Object,
+      default: {}
     },
-    cover_image: {
-      type: String,
-      required: true,
+    inner_descr: {
+      type: Object,
+      default: {}
     },
-    outter_image: {
-      type: String,
+    active_status: {
+      type: Boolean,
+      default: false,
       required: true,
     },
     image: {
       type: String,
-      required: true,
+      required: false,
     },
-    active_status: {
-      type: Boolean,
-      default: true,
-      required: true,
+    logo_image: {
+      type: String,
+      required: false,
     },
     category: [
       {
@@ -45,10 +37,14 @@ const eventSchema = new mongoose.Schema(
         ref: "Category",
       },
     ],
+    persons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Persons",
+      },
+    ],
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export const Event = mongoose.model("Event", eventSchema);
+export const Event = mongoose.model("event", eventSchema);

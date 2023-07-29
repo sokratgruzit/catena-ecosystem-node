@@ -4,10 +4,8 @@ import * as faqController from "./faq.controller.js";
 const router = Router();
 
 router.route("/create").post(faqController.create);
-router.route("/updateOneFaq").patch(faqController.updateOneFaq);
-router.route("/changeStatus").patch(faqController.changeStatus);
-router.route("/findeOneFaq").get(faqController.findOneFaq);
-router.route("/findeAllFaq").get(faqController.findAllFaq);
-router.route("/destroyOneFaq").delete(faqController.destroyOneFaq);
+router.route("/update/:_id").put(faqController.update);
+router.route("/remove/:_id").delete(faqController.remove);
+router.route("/get-all-faq").get(faqController.getAllFaq);
 
 export default router;

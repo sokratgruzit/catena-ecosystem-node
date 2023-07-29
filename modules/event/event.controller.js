@@ -1,90 +1,217 @@
-import { Event } from '../../models/Event.js';
-import { uploadImageMany } from '../../utils/uploadImageMany.js';
+import { Event } from "../../models/Event.js";
+import fs from "fs";
 
-export const createEvent = async (req, res) => {
-    const {
-      title,
-      text,
-      badge,
-      inner_descr,
-      time,
-      active_status,
-      categoryId,
-      userId,
-      slug
-    } = req.body;
+export const create = async (req, res) => {
+  const {
+    title,
+    text,
+    inner_descr,
+    active_status,
+    category,
+    persons,
+    image,
+    logo_image,
+    slug
+  } = req.body;
 
-    const outterImageFiles = req.files['outter_image'];
-    const innerImageFiles = req.files['cover_image'];
-    const imageFiles = req.files['image'];
-    const files = [...outterImageFiles, ...innerImageFiles, ...imageFiles];
+  if (!title || !text || !inner_descr) {
+    return res.status(400).send({
+      message: "Fill all fealds"
+    });
+  }
 
-    // if (!title || !text || !inner_descr) {
-    //     return res.status(400).send({
-    //         message: "Fill all fealds"
-    //     });
-    // }
-  
+  let exists = await Event.findOne({ slug });
+
+  if (exists) {
+    let imgPath = `uploads/event/${image}`;
+    let logoPath = `uploads/event/${logo_image}`;
+
+    fs.unlink(imgPath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+
+    fs.unlink(logoPath, async (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+
+    return res.status(200).json({ "message": "event already exists" });
+  } else {
     try {
-      const img = await uploadImageMany(userId, files, 'event');
-  
       const event = await Event.create({
         title,
         text,
-        badge,
         inner_descr,
-        time,
-        outter_image: img[0],
-        cover_image: img[1],
-        image: img[2],
+        image,
+        logo_image,
         active_status,
-        category: categoryId,
+        category,
+        persons,
         slug
       });
-
+  
       return res.status(200).json(event);
     } catch (error) {
       console.log(error);
       return res.status(500).json(error);
     }
+  }
 };
 
 export const updateActiveStatus = async (req, res) => {
-    const { _id, active_status } = req.body;
-    const filter = { _id };
-    const update = { active_status };
+  const { _id, active_status } = req.body;
+  const filter = { _id };
+  const update = { active_status };
 
-    try {
-        const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true })
+  try {
+    const updateToggleStatus = await Event.findOneAndUpdate(filter, update, {
+      new: true,
+    });
 
-        return res.status(200).send(updateToggleStatus);
-    } catch(error) {
-        return res.status(500).send({ error: "Failed to update active status" });
-    }
+    return res.status(200).send(updateToggleStatus);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
-export const getAllEvents = async (req, res) => {
-    try {
-        const event = await Event.find()
-        // .populate('category', 'title')
-        // .exec()
+export const getAllEvent = async (req, res) => {
+  try {
+    const event = await Event.find()
+      .populate("category")
+      .populate("persons")
+      .exec();
 
-        return res.status(200).json( event );
-    } catch(error) {
-        return res.status(500).send({ error: "Error to getting event" });
-    }
+    return res.status(200).json(event);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
-export const destroyOneEvent = async (req, res) => {
-    try {
-        const result = await Event.deleteOne({ _id: req.body._id});
+export const getEventWithActiveStatus = async (req, res) => {
+  const { active_status } = req.body;
 
-        if (result.acknowledged === true) {
-          return res.status(200).json({ message: "event successuly deleted" });
-        }
-        res.status(400).json({ message: "event deletion failed" });
-      } catch (e) {
-        console.log(e.message);
-        res.status(400).json({ message: e.message });
+  try {
+    const eventWithActiveStatus = await Event.find({
+      active_status: active_status,
+    })
+      .populate("category")
+      .populate("persons")
+      .exec();
+
+    return res.status(200).json(eventWithActiveStatus);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+export const deleteOneEvent = async (req, res) => {
+  const { _id } = req.body;
+  const event = await Event.findOne({ _id });
+
+  if (event) {
+    let imgPath = `uploads/event/${event.image}`;
+    let logoPath = `uploads/event/${event.logo_image}`;
+
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('File deleted successfully!');
       }
+    });
+
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+        res.status(400).json({
+          "message": "Something went wrong"
+        });
+      } else {
+        console.log('File deleted successfully!');
+        await Event.deleteOne({ _id });
+
+        res.status(200).json({
+          "message": "Event removed successfully"
+        });
+      }
+    });
+  } else {
+    res.status(200).json({
+      "message": "Event not found"
+    });
+  }
+};
+
+export const updateEvent = async (req, res) => {
+  const { 
+    _id, 
+    title, 
+    text, 
+    inner_descr, 
+    image, 
+    logo_image, 
+    active_status,
+    category,
+    persons
+  } = req.body;
+
+  if (!title || !text || !inner_descr) {
+    return res.status(200).send({
+      "message": "Fill all fealds"
+    });
+  }
+
+  const findOldImgs = await Event.findOne({ _id });
+  const oldImg = findOldImgs.image;
+  const oldLogoImg = findOldImgs.logo_image;
+
+  if (image && oldImg !== image) {
+    let imgPath = `uploads/event/${oldImg}`;
+
+    fs.unlink(imgPath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+  }
+
+  if (logo_image && oldLogoImg !== logo_image) {
+    let logoPath = `uploads/event/${oldLogoImg}`;
+
+    fs.unlink(logoPath, async (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+  }
+
+  const updatedEvent = await Event.findByIdAndUpdate(_id, {
+    title,
+    text,
+    inner_descr,
+    active_status,
+    persons,
+    category,
+    image,
+    logo_image
+  }, { new: true });
+
+  if (!updatedEvent) {
+    res.status(200).json({
+        "message": "Event not found",
+    });
+  } else {
+    res.status(200).json({ "message": "Event updated" });
+  }
 };

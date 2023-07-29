@@ -21,9 +21,7 @@ const adminSchema = new mongoose.Schema(
       ref: "Roles",
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export const Admin = mongoose.model("Admin", adminSchema);

@@ -14,7 +14,9 @@ import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./services/isAuthenticated.js";
 import faqRouter from "./modules/faq/faq.routes.js";
 import eventRouter from "./modules/event/event.routes.js";
-import anouncementRouter from "./modules/anouncement/anouncement.router.js";
+import permissionControler from "./modules/permissions/permissions.routes.js";
+import rolesControler from "./modules/roles/roles.routes.js";
+import announcementRouter from "./modules/announcement/announcement.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import adminRouter from "./modules/admin/admin.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
@@ -25,6 +27,8 @@ import pressRouter from "./modules/press/press.routes.js";
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
 import voteRouter from "./modules/vote/vote.routes.js";
+import translateRouter from "./modules/translate/translate.routes.js";
+import homePageSliderRouter from "./modules/homePageSlider/homePageSlider.routes.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -94,8 +98,13 @@ app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
 app.use("/event", eventRouter);
-app.use("/anouncement", anouncementRouter);
+app.use("/announcement", announcementRouter);
 app.use("/vote", voteRouter);
+app.use("/translate", translateRouter);
+app.use("/home-page-slider", homePageSliderRouter);
+app.use("/permissions", permissionControler);
+app.use("/roles", rolesControler);
+app.use('/uploads', express.static('uploads'));
 
 const PORT = process.env.PORT || 5000;
 

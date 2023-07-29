@@ -1,24 +1,29 @@
-import * as mongoose from "mongoose";
-import slug from "mongoose-slug-updater";
-
-mongoose.plugin(slug);
+import mongoose from "mongoose";
 
 const FaqSchema = new mongoose.Schema(
   {
-    question: {},
-    answer: {},
     slug: {
       type: String,
-      slug: "question.en",
-      slugPaddingSize: 2,
       unique: true,
     },
     active: {
       type: Boolean,
       default: true,
     },
+    translations: {
+      en: {
+        question: {
+          type: String,
+          required: true,
+        },
+        answer: {
+          type: String,
+          required: true,
+        },
+      },
+    },
   },
   { timestamps: true }
 );
 
-export const Faq = mongoose.model("faq", FaqSchema);
+export const Faq = mongoose.model("Faq", FaqSchema);

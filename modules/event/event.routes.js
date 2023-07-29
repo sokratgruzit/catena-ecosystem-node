@@ -1,22 +1,16 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import * as eventControler from "./event.controller.js";
-import { isAuthenticated } from "../../services/isAuthenticated.js";
 import multer from "multer";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
-const app = express();
 
-app.use(isAuthenticated);
-
-router.route("/create-event").post(upload.fields([
-    {name: "cover_image"},
-    {name: "outter_image"},
-    {name: "image"},
-]),eventControler.createEvent);
+router.route("/create").post(eventControler.create);
+router.route("/get-all-event").get(eventControler.getAllEvent);
 router.route("/update-active-status").put(eventControler.updateActiveStatus);
-router.route("/get-all-event").get(eventControler.getAllEvents);
-router.route("/destroy-one-event").delete(eventControler.destroyOneEvent);
+router.route("/get-active-event").get(eventControler.getEventWithActiveStatus);
+router.route("/delete").put(eventControler.deleteOneEvent);
+router.route("/update").post(eventControler.updateEvent);
 
 export default router;
