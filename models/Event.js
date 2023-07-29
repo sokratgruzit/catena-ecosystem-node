@@ -1,31 +1,35 @@
 import * as mongoose from "mongoose";
 
-const EventSchema = new mongoose.Schema(
+const eventSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      unique: true,
+      default: "event.title",
     },
-    time: {
-      type: Date,
-      default: Date.now,
+    title: {
+      type: Object,
+      default: {}
     },
-    cover_image: {
-      type: String,
-      required: true,
+    text: {
+      type: Object,
+      default: {}
     },
-    outter_image: {
-      type: String,
+    inner_descr: {
+      type: Object,
+      default: {}
+    },
+    active_status: {
+      type: Boolean,
+      default: false,
       required: true,
     },
     image: {
       type: String,
-      required: true,
+      required: false,
     },
-    active_status: {
-      type: Boolean,
-      default: true,
-      required: true,
+    logo_image: {
+      type: String,
+      required: false,
     },
     category: [
       {
@@ -33,10 +37,14 @@ const EventSchema = new mongoose.Schema(
         ref: "Category",
       },
     ],
+    persons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Persons",
+      },
+    ],
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export const Event = mongoose.model("event", EventSchema);
+export const Event = mongoose.model("event", eventSchema);

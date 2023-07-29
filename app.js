@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import path from "path";
 import fs from "fs";
+import multer from "multer";
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -21,6 +22,7 @@ import adminRouter from "./modules/admin/admin.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import categoryRouter from "./modules/category/category.routes.js";
 import personsRouter from "./modules/persons/persons.routes.js";
+import langsRouter from "./modules/languages/langs.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
@@ -41,18 +43,39 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.use(isAuthenticated);
-app.get("/test", (req, res) => {
-  res.send("test");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    let imgFolder = req.body.imgFolder;
+    
+    cb(null, `uploads/${imgFolder}`);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
 });
 
-app.get("/image/:folder/:img", (req, res) => {
+const upload = multer({ storage });
+
+app.post('/upload', upload.single('image'), (req, res) => {
+  return res.status(200).send({ status: true });
+});
+
+app.post('/upload-many', upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'logo_image', maxCount: 1 },
+]), (req, res) => {
+  return res.status(200).send({ status: true });
+});
+
+app.get("/uploads/:folder/:img", (req, res) => {
   try {
     let imgPath = path.join(
       __dirname,
       `./uploads/${req.params.folder}/${req.params.img}`,
     );
+
     if (fs.existsSync(imgPath)) {
       res.status(200).sendFile(imgPath);
     } else {
@@ -69,6 +92,7 @@ app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
+app.use("/langs", langsRouter);
 app.use("/press", pressRouter);
 app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);

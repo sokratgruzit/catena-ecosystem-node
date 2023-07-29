@@ -8,13 +8,13 @@ export const registerWalletAddress = async (req, res) => {
   try {
     let { address } = req.body;
 
-    if (!address) return res.status(400).send({ error: "Address is required" });
+    if (!address) return res.status(200).send({ error: "Address is required" });
     address = address.toLowerCase();
 
     const existingUser = await User.findOne({ address });
 
     if (existingUser)
-      return res.status(400).send({
+      return res.status(200).send({
         message: "A user with this address already exists",
       });
 

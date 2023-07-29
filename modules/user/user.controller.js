@@ -59,7 +59,7 @@ export async function getUserInfo(req, res) {
 export async function makeProfile(req, res) {
   try {
     let { address, fullname, email, mobile, dateOfBirth, nationality } = req.body;
-
+ 
     if (!address) return res.status(400).send("no address");
     address = address.toLowerCase();
 

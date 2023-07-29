@@ -1,24 +1,8 @@
 import { Category } from "../../models/Category.js";
-import { categoryTranslate } from "../../models/Category.Translate.js";
-import { uploadImageMany } from "../../utils/uploadImageMany.js";
+import fs from "fs";
 
-export const getAllCategories = async (req, res) => {
-    try {
-        const categories = await Category.find({})
-            .populate("categoryTranslate")
-
-        return res.status(200).json(categories);
-    } catch (error) {
-        return res.status(500).json(error);
-    }
-};
-
-export const category = async (req, res) => {
-    const { title } = req.body;
-    const randomString = Math.random().toString(15).slice(2, 30);
-
-
-    const files = [...req.files['image'], ...req.files['logo_image']]
+export const create = async (req, res) => {
+    const { title, slug, image, logo_image } = req.body;
 
     if (!title) {
         return res.status(400).send({
@@ -26,85 +10,142 @@ export const category = async (req, res) => {
         });
     }
 
-    try {
-        const image = await uploadImageMany(randomString, files, 'category')
-        const category = await Category.create({
-            title: title,
-            slug: convertToSlug(title),
-            image: image[0],
-            logo_image: image[1]
+    let exists = await Category.findOne({ slug });
+
+    if (exists) {
+        let imgPath = `uploads/category/${image}`;
+        let logoPath = `uploads/category/${logo_image}`;
+
+        fs.unlink(imgPath, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
         });
 
-        await categoryTranslate.create({
-            title: title,
-            category: category._id.toString()
+        fs.unlink(logoPath, async (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
         });
 
-        return res.status(200).json(category);
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(error);
-    }
-};
-
-export const updateCategory = async (req, res) => {
-    const { _id, title } = req.body;
-
-    const image = req.files['image'];
-    const logoImage = req.files['logo_image'];
-    const files = [...image, ...logoImage];
+        return res.status(200).json({ "message": "Category already exists" });
+    } else {
+        try {
+            const cat = await Category.create({
+                title,
+                image,
+                logo_image,
+                slug
+            });
     
-    try {
-        const randomString = Math.random().toString(15).slice(2, 30);
-        const imagesUpdate = await uploadImageMany(randomString, files, 'category')
-        const updatedCategory = await Category.findOneAndUpdate(
-            { _id: _id },
-            {
-                title: title,
-                image: imagesUpdate[0],
-                logo_image: imagesUpdate[1]
-            },
-            { new: true }
-        );
-
-        return res.status(200).json(updatedCategory)
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
+            return res.status(200).json(cat);
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({ error: "Error creating category" });
+        }
     }
 };
 
-function convertToSlug(title) {
-    const slug = title
-        .toLowerCase() // Convert to lowercase
-        .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
-        .replace(/\s+/g, "-") // Replace spaces with hyphens
-        .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
-        .trim(); // Remove leading/trailing spaces
+export const update = async (req, res) => {
+    const { _id, title, image, logo_image } = req.body;
 
-    return slug;
-}
+    if (!title) {
+        return res.status(400).send({
+            message: "Fill all fealds"
+        });
+    }
 
-export const deleteCategories = async (req, res) => {
-    const { _id } = req.body;
+    const findOldImgs = await Category.findOne({ _id });
+    const oldImg = findOldImgs.image;
+    const oldLogoImg = findOldImgs.logo_image;
 
-    try {
-        const categoryDelete = await Category.findOneAndDelete({ _id: _id });
+    if (image && oldImg !== image) {
+        let imgPath = `uploads/category/${oldImg}`;
 
-        return res.status(200).json(categoryDelete);
-    } catch (error) {
-        return res.status(500).json(error);
+        fs.unlink(imgPath, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
+        });
+    }
+
+    if (logo_image && oldLogoImg !== logo_image) {
+        let logoPath = `uploads/category/${oldLogoImg}`;
+
+        fs.unlink(logoPath, async (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
+        });
+    }
+
+    const updatedCat = await Category.findByIdAndUpdate(_id, {
+        title,
+        image,
+        logo_image
+    }, { new: true });
+
+    if (!updatedCat) {
+        res.status(400).json({
+            "message": "Category not found",
+        });
+    } else {
+        res.status(200).json({ "message": "Category updated" });
     }
 };
 
-export const deleteManyCategories = async (req, res) => {
+export const remove = async (req, res) => {
     const { _id } = req.body;
+    const cat = await Category.findOne({ _id });
 
+    if (cat) {
+        let imgPath = `uploads/category/${cat.image}`;
+        let logoPath = `uploads/category/${cat.logo_image}`;
+
+        fs.unlink(imgPath, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
+        });
+
+        fs.unlink(logoPath, async (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+                res.status(400).json({
+                    "message": "Something went wrong"
+                });
+            } else {
+                console.log('File deleted successfully!');
+                await Category.deleteOne({ _id });
+
+                res.status(200).json({
+                    "message": "Category removed successfully"
+                });
+            }
+        });
+    } else {
+        res.status(200).json({
+            "message": "Category not found"
+        });
+    }
+};
+
+export const getAllCategories = async (req, res) => {
     try {
-        const deleteMany = await Category.deleteMany({ _id: _id });
+        const categories = await Category.find();
 
-        return res.status(200).json(deleteMany);
+        return res.status(200).json(categories);
     } catch (error) {
-        return res.status(500).json(error);
+        return res.status(500).send({ error: "Error getting categories" });
     }
 };

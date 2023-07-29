@@ -1,129 +1,81 @@
 import { Press } from "../../models/Press.js";
-import { uploadImageMany } from "../../utils/uploadImageMany.js";
-import { pressTranslate } from "../../models/Press.Translate.js";
-import { languages } from "../../utils/languages.js";
-import * as mongoose from "mongoose";
+import fs from "fs";
 
-export const press = async (req, res) => {
-  // console.log(req.files)
-  console.log(req.body)
-  // const innerImageFiles = req.files['inner_image'];
-  // const outterImageFiles = req.files['outter_image'];
-  // const files = [...outterImageFiles, ...innerImageFiles];
+export const create = async (req, res) => {
+  const {
+    title,
+    text,
+    inner_descr,
+    active_status,
+    category,
+    persons,
+    image,
+    logo_image,
+    slug
+  } = req.body;
 
-  try {
-    let data = req.body;
-    let categoryId = data.categoryId;
-    // const randomString = Math.random().toString(15).slice(2, 30);
-    // const image = await uploadImageMany(randomString, files, 'press');
+  if (!title || !text || !inner_descr) {
+    return res.status(400).send({
+      message: "Fill all fealds"
+    });
+  }
 
-    let slug = convertToSlug(data.en.title);
+  let exists = await Press.findOne({ slug });
 
-    let translatedData = [];
-    const result = await Press.create({
-      slug,
-      // category: categoryId,
-      // persons: personsId,
-      // inner_image: image[0],
-      // outter_image: image[1],
+  if (exists) {
+    let imgPath = `uploads/press/${image}`;
+    let logoPath = `uploads/press/${logo_image}`;
+
+    fs.unlink(imgPath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
     });
 
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i].code,
-        title: data[languages[i].code]?.title,
-        text: data[languages[i].code]?.text,
-        inner_descr: data[languages[i].code]?.inner_descr,
-        press: result._id.toString(),
+    fs.unlink(logoPath, async (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+
+    return res.status(200).json({ "message": "Press already exists" });
+  } else {
+    try {
+      const press = await Press.create({
+        title,
+        text,
+        inner_descr,
+        image,
+        logo_image,
+        active_status,
+        category,
+        persons,
+        slug
       });
+  
+      return res.status(200).json(press);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
     }
-
-    await pressTranslate.insertMany(translatedData);
-
-    const returnData = await Press.aggregate([
-      {
-        $match: {
-          _id: result._id,
-        },
-      },
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    return res.status(200).json(returnData);
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json(error);
   }
 };
 
 export const updateActiveStatus = async (req, res) => {
-  try {
-    const { _id } = req.body;
-    const id = mongoose.Types.ObjectId(_id);
-    let activeStatus = req.body.active_status;
-    let data = req.body;
+  const { _id, active_status } = req.body;
+  const filter = { _id };
+  const update = { active_status };
 
-    await Press.findOneAndUpdate({ _id: id }, {
-      slug: data.slug,
-      active_status: activeStatus,
+  try {
+    const updateToggleStatus = await Press.findOneAndUpdate(filter, update, {
+      new: true,
     });
 
-    const returnData = await Press.aggregate([
-      {
-        $match: {
-          _id: id,
-        },
-      },
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    res.status(200).json(returnData);
+    return res.status(200).send(updateToggleStatus);
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -131,221 +83,135 @@ export const updateActiveStatus = async (req, res) => {
 
 export const getAllPress = async (req, res) => {
   try {
-    // const press = await Press.find()
-    //   .populate("category")
-    //   .populate("persons")
-    //   .populate("pressTranslate")
-    //   .sort({ createdAt: "desc" })
-    //   .limit(limit)
-    //   .skip(limit * (page - 1))
-    //   .exec();
+    const press = await Press.find()
+      .populate("category")
+      .populate("persons")
+      .exec();
 
-    let limit = req.body.limit ? req.body.limit : 10;
-    let page = req.body.page ? req.body.page : 1;
-
-    const returnData = await Press.aggregate([
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $limit: limit + limit * (page - 1),
-      },
-      {
-        $skip: limit * (page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    const totalCount = await Press.countDocuments();
-    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
-
-    res.status(200).json({
-      returnData,
-      totalPages,
-    });
-
+    return res.status(200).json(press);
   } catch (error) {
-    console.log(error)
     return res.status(500).json(error);
   }
 };
 
 export const getPressWithActiveStatus = async (req, res) => {
+  const { active_status } = req.body;
+
   try {
-    let activeStatus = req.body.active_status;
-    let limit = req.body.limit ? req.body.limit : 10;
-    let page = req.body.page ? req.body.page : 1;
+    const pressWithActiveStatus = await Press.find({
+      active_status: active_status,
+    })
+      .populate("category")
+      .populate("persons")
+      .exec();
 
-    const returnData = await Press.aggregate([
-      {
-        $match: {
-          active_status: activeStatus,
-        },
-      },
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $limit: limit + limit * (page - 1),
-      },
-      {
-        $skip: limit * (page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    const totalCount = await Press.countDocuments();
-    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
-
-    res.status(200).json({
-      returnData,
-      totalPages,
-    });
-
+    return res.status(200).json(pressWithActiveStatus);
   } catch (error) {
     return res.status(500).json(error);
   }
 };
-
-function convertToSlug(title) {
-  const slug = title
-    .toLowerCase() // Convert to lowercase
-    .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
-    .trim(); // Remove leading/trailing spaces
-
-  return slug;
-}
 
 export const deleteOnePress = async (req, res) => {
   const { _id } = req.body;
+  const press = await Press.findOne({ _id });
 
-  try {
-    const deletePress = await Press.findOneAndDelete({ _id: _id });
+  if (press) {
+    let imgPath = `uploads/press/${press.image}`;
+    let logoPath = `uploads/press/${press.logo_image}`;
 
-    return res.status(200).json(deletePress);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('File deleted successfully!');
+      }
+    });
 
-export const deleteManyPress = async (req, res) => {
-  const { _id } = req.body;
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+        res.status(400).json({
+          "message": "Something went wrong"
+        });
+      } else {
+        console.log('File deleted successfully!');
+        await Press.deleteOne({ _id });
 
-  try {
-    const deleteMany = await Press.deleteMany({ _id: _id });
-
-    return res.status(200).json(deleteMany);
-  } catch (error) {
-    return res.status(500).json(error);
+        res.status(200).json({
+          "message": "Press removed successfully"
+        });
+      }
+    });
+  } else {
+    res.status(200).json({
+      "message": "Press not found"
+    });
   }
 };
 
 export const updatePress = async (req, res) => {
+  const { 
+    _id, 
+    title, 
+    text, 
+    inner_descr, 
+    image, 
+    logo_image, 
+    active_status,
+    category,
+    persons
+  } = req.body;
 
-  try {
-    const { _id } = req.body;
-    console.log(_id)
-    const id = mongoose.Types.ObjectId(_id);
-    let data = req.body;
+  if (!title || !text || !inner_descr) {
+    return res.status(200).send({
+      "message": "Fill all fealds"
+    });
+  }
 
-    await Press.findOneAndUpdate({ _id: id }, { slug: data.slug });
-    let translatedData = [];
-    await pressTranslate.deleteMany({ announcement: id });
+  const findOldImgs = await Press.findOne({ _id });
+  const oldImg = findOldImgs.image;
+  const oldLogoImg = findOldImgs.logo_image;
 
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i].code,
-        title: data[languages[i].code]?.title,
-        text: data[languages[i].code]?.text,
-        inner_descr: data[languages[i].code]?.inner_descr,
-        press: id.toString(),
-      });
-    }
+  if (image && oldImg !== image) {
+    let imgPath = `uploads/press/${oldImg}`;
 
-    await pressTranslate.insertMany(translatedData);
+    fs.unlink(imgPath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+  }
 
-    const returnData = await Press.aggregate([
-      {
-        $match: {
-          _id: id,
-        },
-      },
-      {
-        $lookup: {
-          from: "presstranslates",
-          localField: "_id",
-          foreignField: "press",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "press",
-                in: {
-                  k: "$$press.lang",
-                  v: "$$press",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+  if (logo_image && oldLogoImg !== logo_image) {
+    let logoPath = `uploads/press/${oldLogoImg}`;
 
-    return res.status(200).json(returnData);
-  } catch (error) {
-    return res.status(500).json(error);
+    fs.unlink(logoPath, async (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+  }
+
+  const updatedPress = await Press.findByIdAndUpdate(_id, {
+    title,
+    text,
+    inner_descr,
+    active_status,
+    persons,
+    category,
+    image,
+    logo_image
+  }, { new: true });
+
+  if (!updatedPress) {
+    res.status(200).json({
+        "message": "Press not found",
+    });
+  } else {
+    res.status(200).json({ "message": "Press updated" });
   }
 };
