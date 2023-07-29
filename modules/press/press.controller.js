@@ -11,12 +11,12 @@ export const create = async (req, res) => {
     persons,
     image,
     logo_image,
-    slug
+    slug,
   } = req.body;
 
   if (!title || !text || !inner_descr) {
     return res.status(400).send({
-      message: "Fill all fealds"
+      message: "Fill all fealds",
     });
   }
 
@@ -27,22 +27,22 @@ export const create = async (req, res) => {
     let logoPath = `uploads/press/${logo_image}`;
 
     fs.unlink(imgPath, (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
 
     fs.unlink(logoPath, async (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
 
-    return res.status(200).json({ "message": "Press already exists" });
+    return res.status(200).json({ message: "Press already exists" });
   } else {
     try {
       const press = await Press.create({
@@ -54,9 +54,9 @@ export const create = async (req, res) => {
         active_status,
         category,
         persons,
-        slug
+        slug,
       });
-  
+
       return res.status(200).json(press);
     } catch (error) {
       console.log(error);
@@ -94,6 +94,20 @@ export const getAllPress = async (req, res) => {
   }
 };
 
+export const getOnePress = async (req, res) => {
+  const { slug } = req.body;
+  try {
+    const press = await Press.findOne({ slug })
+      .populate("category")
+      .populate("persons")
+      .exec();
+
+    return res.status(200).json(press);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 export const getPressWithActiveStatus = async (req, res) => {
   const { active_status } = req.body;
 
@@ -121,50 +135,50 @@ export const deleteOnePress = async (req, res) => {
 
     fs.unlink(imgPath, (err) => {
       if (err) {
-        console.error('Error deleting file:', err);
+        console.error("Error deleting file:", err);
       } else {
-        console.log('File deleted successfully!');
+        console.log("File deleted successfully!");
       }
     });
 
     fs.unlink(logoPath, async (err) => {
       if (err) {
-        console.error('Error deleting file:', err);
+        console.error("Error deleting file:", err);
         res.status(400).json({
-          "message": "Something went wrong"
+          message: "Something went wrong",
         });
       } else {
-        console.log('File deleted successfully!');
+        console.log("File deleted successfully!");
         await Press.deleteOne({ _id });
 
         res.status(200).json({
-          "message": "Press removed successfully"
+          message: "Press removed successfully",
         });
       }
     });
   } else {
     res.status(200).json({
-      "message": "Press not found"
+      message: "Press not found",
     });
   }
 };
 
 export const updatePress = async (req, res) => {
-  const { 
-    _id, 
-    title, 
-    text, 
-    inner_descr, 
-    image, 
-    logo_image, 
+  const {
+    _id,
+    title,
+    text,
+    inner_descr,
+    image,
+    logo_image,
     active_status,
     category,
-    persons
+    persons,
   } = req.body;
 
   if (!title || !text || !inner_descr) {
     return res.status(200).send({
-      "message": "Fill all fealds"
+      message: "Fill all fealds",
     });
   }
 
@@ -176,11 +190,11 @@ export const updatePress = async (req, res) => {
     let imgPath = `uploads/press/${oldImg}`;
 
     fs.unlink(imgPath, (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
   }
 
@@ -188,30 +202,34 @@ export const updatePress = async (req, res) => {
     let logoPath = `uploads/press/${oldLogoImg}`;
 
     fs.unlink(logoPath, async (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
   }
 
-  const updatedPress = await Press.findByIdAndUpdate(_id, {
-    title,
-    text,
-    inner_descr,
-    active_status,
-    persons,
-    category,
-    image,
-    logo_image
-  }, { new: true });
+  const updatedPress = await Press.findByIdAndUpdate(
+    _id,
+    {
+      title,
+      text,
+      inner_descr,
+      active_status,
+      persons,
+      category,
+      image,
+      logo_image,
+    },
+    { new: true }
+  );
 
   if (!updatedPress) {
     res.status(200).json({
-        "message": "Press not found",
+      message: "Press not found",
     });
   } else {
-    res.status(200).json({ "message": "Press updated" });
+    res.status(200).json({ message: "Press updated" });
   }
 };
