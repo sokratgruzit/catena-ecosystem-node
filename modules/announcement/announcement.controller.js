@@ -7,8 +7,8 @@ import * as mongoose from "mongoose";
 export const findAllActiveAnnouncement = async (req, res) => {
   try {
     let activeStatus = req.body.active_status;
-    let limit = req.body.limit ? req.body.limit:10;
-    let page = req.body.page ? req.body.page:1;
+    let limit = req.body.limit ? req.body.limit : 10;
+    let page = req.body.page ? req.body.page : 1;
 
     const returnData = await Announcement.aggregate([
       {
@@ -63,322 +63,394 @@ export const findAllActiveAnnouncement = async (req, res) => {
   }
 };
 
-export const findByPagination = async (req, res) => {
-  try {
-    let limit = req.limit;
-    let req_page = req.page;
-    let data = {};
+// export const findByPagination = async (req, res) => {
+//   try {
+//     let limit = req.limit;
+//     let req_page = req.page;
+//     let data = {};
 
-    let result = await Announcement.find(data)
-      .sort({ createdAt: "desc" })
-      .limit(limit)
-      .skip(limit * (req_page - 1));
+//     let result = await Announcement.find(data)
+//       .sort({ createdAt: "desc" })
+//       .limit(limit)
+//       .skip(limit * (req_page - 1));
 
-    let total_pages = await Announcement.count(data);
+//     let total_pages = await Announcement.count(data);
 
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
+//     return res.status(200).json(result);
+//   } catch (error) {
+//     return res.status(500).json(error);
+//   }
+// };
 
-export const getAllAnnouncement = async (req, res) => {
-  try {
-    let limit = req.body.limit ? req.body.limit:10;
-    let page = req.body.page ? req.body.page:1;
+// export const getAllAnnouncement = async (req, res) => {
+//   try {
 
-    const returnData = await Announcement.aggregate([
-      {
-        $lookup: {
-          from: "anouncementtranslates",
-          localField: "_id",
-          foreignField: "announcement",
-          as: "translations",
-        },
-      },
-      {
-        $limit: limit + limit * (page - 1),
-      },
-      {
-        $skip: limit * (page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "announcement",
-                in: {
-                  k: "$$announcement.lang",
-                  v: "$$announcement",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+//     // console.log(res)
+//     console.log(req.data)
 
-    const totalCount = await Announcement.countDocuments();
-    const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
 
-    res.status(200).json({
-      returnData,
-      totalPages,
-    });
-  } catch (error) {
-    return res.status(500).send({ error: "Error to getting Announcement" });
-  }
-};
+//     // let limit = req.body.limit ? req.body.limit:10;
+//     // let page = req.body.page ? req.body.page:1;
 
-export const createAnnouncement = async (req, res) => {
-  // const { name, title, text, inner_descr, time, active_status, categoryId, userId, slug } = req.body;
+//     // const returnData = await Announcement.aggregate([
+//     //   {
+//     //     $lookup: {
+//     //       from: "anouncementtranslates",
+//     //       localField: "_id",
+//     //       foreignField: "announcement",
+//     //       as: "translations",
+//     //     },
+//     //   },
+//     //   {
+//     //     $limit: limit + limit * (page - 1),
+//     //   },
+//     //   {
+//     //     $skip: limit * (page - 1),
+//     //   },
+//     //   {
+//     //     $sort: { createdAt: -1 },
+//     //   },
+//     //   {
+//     //     $addFields: {
+//     //       translations: {
+//     //         $arrayToObject: {
+//     //           $map: {
+//     //             input: "$translations",
+//     //             as: "announcement",
+//     //             in: {
+//     //               k: "$$announcement.lang",
+//     //               v: "$$announcement",
+//     //             },
+//     //           },
+//     //         },
+//     //       },
+//     //     },
+//     //   },
+//     // ]);
 
-  // const coverImageFiles = req.files['cover_image'];
-  // const ImageFiles = req.files['image'];
-  // const files = [...coverImageFiles, ...ImageFiles];
+//     // const totalCount = await Announcement.countDocuments();
+//     // const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
 
-  try {
-    // const img = await uploadImageMany(userId, files, 'announcement');
+//     res.status(200).json({
+//       // returnData,
+//       // totalPages,
+//     });
+//   } catch (error) {
+//     return res.status(500).send({ error: "Error to getting Announcement" });
+//   }
+// };
 
-    // const announcement = await Announcement.create({
-    //   name: name,
-    //   image: img[0],
-    //   title: title,
-    //   text: text,
-    //   inner_descr: inner_descr,
-    //   time: time,
-    //   cover_image: img[1],
-    //   active_status: active_status,
-    //   category: categoryId,
-    //   slug
-    // })
-    let data = req.body;
-    let slug = convertToSlug(data.en.title);
+// let tableData;
+// tableData = td?.map((item, index) => {
+//   return (
+//     <div
+//       key={index}
+//       className={`table-parent ${mobileExpand === index ? "active" : ""}`}
+//     >
+//       <div
+//         className="table"
+//         style={{
+//           width: `calc(100% - ${mobile ? "75px" : "50px"})`,
+//           cursor: "pointer",
+//         }}
+//         onClick={() => {
+//           mobileExpandFunc(index);
+//         }}
+//       >
+//         <div
+//           className={`td ${th[0].mobileWidth ? true : false}`}
+//           style={{ width: `${mobile ? th[0].mobileWidth : th[0].width}%` }}
+//         >
+//           <span>{item?.title["en"]["event.title"]}</span>
+//         </div>
+//         <div
+//           className={`td ${th[1].mobileWidth ? true : false}`}
+//           style={{ width: `${mobile ? th[1].mobileWidth : th[1].width}%` }}
+//         >
+//           <span>{item?.text["en"]["event.text"]}</span>
+//         </div>
+//         <div
+//           className={`td ${th[4].mobileWidth ? true : false}`}
+//           style={{ width: `${mobile ? th[4].mobileWidth : th[4].width}%` }}
+//         >
+//           <img
+//             className={styles.itemImg}
+//             src={`http://localhost:4003/uploads/event/${item?.logo_image}`}
+//             alt="img"
+//           />
+//         </div>
+//       </div>
+//       <div
+//         className="icon-place"
+//         onClick={() => {
+//           mobileExpandFunc(index);
+//         }}
+//       >
+//         <ArrowDown />
+//       </div>
+//       <div className="table-more" style={{ display: "flex" }}>
+//         <MoreButton dropdownData={dynamicDropDown(item)} />
+//       </div>
+//       <div className="table-mobile">
+//         <div className="table-mobile-content">
+//           <div className="td">
+//             <div className="mobile-ttl">{th[4].name}</div>
+//             <img
+//               className={styles.itemImg}
+//               src={`http://localhost:4003/uploads/event/${item?.logo_image}`}
+//               alt="img"
+//             />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
 
-    let translatedData = [];
-    const result = await Announcement.create({ slug });
+// export const createAnnouncement = async (req, res) => {
+//   // const { name, title, text, inner_descr, time, active_status, categoryId, userId, slug } = req.body;
 
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i]?.code,
-        name: data[languages[i].code]?.name,
-        title: data[languages[i].code]?.title,
-        text: data[languages[i].code]?.text,
-        inner_descr: data[languages[i].code]?.inner_descr,
-        announcement: result._id.toString(),
-      });
-    }
-    console.log(translatedData);
+//   // const coverImageFiles = req.files['cover_image'];
+//   // const ImageFiles = req.files['image'];
+//   // const files = [...coverImageFiles, ...ImageFiles];
 
-    await anouncementTranslate.insertMany(translatedData);
+//   try {
+//     // const img = await uploadImageMany(userId, files, 'announcement');
 
-    const returnData = await Announcement.aggregate([
-      {
-        $match: {
-          _id: result._id,
-        },
-      },
-      {
-        $lookup: {
-          from: "anouncementtranslates",
-          localField: "_id",
-          foreignField: "announcement",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "announcement",
-                in: {
-                  k: "$$announcement.lang",
-                  v: "$$announcement",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+//     // const announcement = await Announcement.create({
+//     //   name: name,
+//     //   image: img[0],
+//     //   title: title,
+//     //   text: text,
+//     //   inner_descr: inner_descr,
+//     //   time: time,
+//     //   cover_image: img[1],
+//     //   active_status: active_status,
+//     //   category: categoryId,
+//     //   slug
+//     // })
+//     let data = req.body;
+//     let slug = convertToSlug(data.en.title);
 
-    console.log(returnData);
-    return res.status(200).json(returnData);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
-  }
-};
+//     let translatedData = [];
+//     const result = await Announcement.create({ slug });
 
-export const updateActiveStatus = async (req, res) => {
-  try {
-    const { _id } = req.body;
-    const id = mongoose.Types.ObjectId(_id);
-    let activeStatus = req.body.active_status;
-    let data = req.body;
+//     for (let i = 0; i < languages.length; i++) {
+//       translatedData.push({
+//         lang: languages[i]?.code,
+//         name: data[languages[i].code]?.name,
+//         title: data[languages[i].code]?.title,
+//         text: data[languages[i].code]?.text,
+//         inner_descr: data[languages[i].code]?.inner_descr,
+//         announcement: result._id.toString(),
+//       });
+//     }
+//     console.log(translatedData);
 
-    await Announcement.findOneAndUpdate({ _id: id }, {
-      slug: data.slug,
-      active_status: activeStatus,
-    });
+//     await anouncementTranslate.insertMany(translatedData);
 
-    const returnData = await Announcement.aggregate([
-      {
-        $match: {
-          _id: id,
-        },
-      },
-      {
-        $lookup: {
-          from: "anouncementtranslates",
-          localField: "_id",
-          foreignField: "announcement",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "announcement",
-                in: {
-                  k: "$$announcement.lang",
-                  v: "$$announcement",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+//     const returnData = await Announcement.aggregate([
+//       {
+//         $match: {
+//           _id: result._id,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "anouncementtranslates",
+//           localField: "_id",
+//           foreignField: "announcement",
+//           as: "translations",
+//         },
+//       },
+//       {
+//         $addFields: {
+//           translations: {
+//             $arrayToObject: {
+//               $map: {
+//                 input: "$translations",
+//                 as: "announcement",
+//                 in: {
+//                   k: "$$announcement.lang",
+//                   v: "$$announcement",
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     ]);
 
-    res.status(200).json(returnData);
-  } catch (error) {
-    console.log(error)
-    return res.status(500).send({ error: "Failed to update active status" });
-  }
-};
+//     console.log(returnData);
+//     return res.status(200).json(returnData);
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json(error);
+//   }
+// };
 
-export const update = async (req, res) => {
-  // const {
-  //   _id,
-  //   name,
-  //   title,
-  //   text,
-  //   badge,
-  //   inner_descr } = req.body;
-  // const filter = { _id };
-  // const update = { title, text, badge, inner_descr, name };
+// export const updateActiveStatus = async (req, res) => {
+//   try {
+//     const { _id } = req.body;
+//     const id = mongoose.Types.ObjectId(_id);
+//     let activeStatus = req.body.active_status;
+//     let data = req.body;
 
-  try {
-    // const updateToggleStatus = await Announcement.findOneAndUpdate(filter, update, { new: true })
+//     await Announcement.findOneAndUpdate({ _id: id }, {
+//       slug: data.slug,
+//       active_status: activeStatus,
+//     });
 
-    // return res.status(200).send(updateToggleStatus);
+//     const returnData = await Announcement.aggregate([
+//       {
+//         $match: {
+//           _id: id,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "anouncementtranslates",
+//           localField: "_id",
+//           foreignField: "announcement",
+//           as: "translations",
+//         },
+//       },
+//       {
+//         $addFields: {
+//           translations: {
+//             $arrayToObject: {
+//               $map: {
+//                 input: "$translations",
+//                 as: "announcement",
+//                 in: {
+//                   k: "$$announcement.lang",
+//                   v: "$$announcement",
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     ]);
 
-    const { _id } = req.body;
-    const id = mongoose.Types.ObjectId(_id);
-    let data = req.body;
+//     res.status(200).json(returnData);
+//   } catch (error) {
+//     console.log(error)
+//     return res.status(500).send({ error: "Failed to update active status" });
+//   }
+// };
 
-    await Announcement.findOneAndUpdate({ _id: id }, { slug: data.slug });
-    let translatedData = [];
-    await anouncementTranslate.deleteMany({ announcement: id });
+// export const update = async (req, res) => {
+//   // const {
+//   //   _id,
+//   //   name,
+//   //   title,
+//   //   text,
+//   //   badge,
+//   //   inner_descr } = req.body;
+//   // const filter = { _id };
+//   // const update = { title, text, badge, inner_descr, name };
 
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i].code,
-        name: data[languages[i].code]?.name,
-        title: data[languages[i].code]?.title,
-        text: data[languages[i].code]?.text,
-        badge: data[languages[i].code]?.badge,
-        inner_descr: data[languages[i].code]?.inner_descr,
-        announcement: id.toString(),
-      });
-    }
+//   try {
+//     // const updateToggleStatus = await Announcement.findOneAndUpdate(filter, update, { new: true })
 
-    await anouncementTranslate.insertMany(translatedData);
+//     // return res.status(200).send(updateToggleStatus);
 
-    const returnData = await Announcement.aggregate([
-      {
-        $match: {
-          _id: id,
-        },
-      },
-      {
-        $lookup: {
-          from: "anouncementtranslates",
-          localField: "_id",
-          foreignField: "announcement",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "announcement",
-                in: {
-                  k: "$$announcement.lang",
-                  v: "$$announcement",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+//     const { _id } = req.body;
+//     const id = mongoose.Types.ObjectId(_id);
+//     let data = req.body;
 
-  return res.status(200).json(returnData)
-  } catch (error) {
-    return res.status(500).send({ error: "Failed to update active status" });
-  }
-};
+//     await Announcement.findOneAndUpdate({ _id: id }, { slug: data.slug });
+//     let translatedData = [];
+//     await anouncementTranslate.deleteMany({ announcement: id });
 
-function convertToSlug(title) {
-  const slug = title
-    .toLowerCase() // Convert to lowercase
-    .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
-    .trim(); // Remove leading/trailing spaces
+//     for (let i = 0; i < languages.length; i++) {
+//       translatedData.push({
+//         lang: languages[i].code,
+//         name: data[languages[i].code]?.name,
+//         title: data[languages[i].code]?.title,
+//         text: data[languages[i].code]?.text,
+//         badge: data[languages[i].code]?.badge,
+//         inner_descr: data[languages[i].code]?.inner_descr,
+//         announcement: id.toString(),
+//       });
+//     }
 
-  return slug;
-}
+//     await anouncementTranslate.insertMany(translatedData);
 
-export const destroyOneAnnouncement = async (req, res) => {
-  try {
-    const result = await Announcement.deleteOne({ _id: req.body._id });
+//     const returnData = await Announcement.aggregate([
+//       {
+//         $match: {
+//           _id: id,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "anouncementtranslates",
+//           localField: "_id",
+//           foreignField: "announcement",
+//           as: "translations",
+//         },
+//       },
+//       {
+//         $addFields: {
+//           translations: {
+//             $arrayToObject: {
+//               $map: {
+//                 input: "$translations",
+//                 as: "announcement",
+//                 in: {
+//                   k: "$$announcement.lang",
+//                   v: "$$announcement",
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     ]);
 
-    if (result.acknowledged === true) {
-      return res
-        .status(200)
-        .json({ message: "Announcement successuly deleted" });
-    }
-    res.status(400).json({ message: "Announcement deletion failed" });
-  } catch (e) {
-    console.log(e.message);
-    res.status(400).json({ message: e.message });
-  }
-};
+//     return res.status(200).json(returnData)
+//   } catch (error) {
+//     return res.status(500).send({ error: "Failed to update active status" });
+//   }
+// };
 
-export const deleteManyAnnouncement = async (req, res) => {
-  const { _id } = req.body;
+// function convertToSlug(title) {
+//   const slug = title
+//     .toLowerCase() // Convert to lowercase
+//     .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
+//     .replace(/\s+/g, "-") // Replace spaces with hyphens
+//     .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
+//     .trim(); // Remove leading/trailing spaces
 
-  try {
-    const deleteMany = await Announcement.deleteMany({ _id: _id });
+//   return slug;
+// }
 
-    return res.status(200).json(deleteMany);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
+// export const destroyOneAnnouncement = async (req, res) => {
+//   try {
+//     const result = await Announcement.deleteOne({ _id: req.body._id });
+
+//     if (result.acknowledged === true) {
+//       return res
+//         .status(200)
+//         .json({ message: "Announcement successuly deleted" });
+//     }
+//     res.status(400).json({ message: "Announcement deletion failed" });
+//   } catch (e) {
+//     console.log(e.message);
+//     res.status(400).json({ message: e.message });
+//   }
+// };
+
+// export const deleteManyAnnouncement = async (req, res) => {
+//   const { _id } = req.body;
+
+//   try {
+//     const deleteMany = await Announcement.deleteMany({ _id: _id });
+
+//     return res.status(200).json(deleteMany);
+//   } catch (error) {
+//     return res.status(500).json(error);
+//   }
+// };
