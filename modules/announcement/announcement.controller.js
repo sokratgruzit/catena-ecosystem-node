@@ -4,64 +4,66 @@ import { anouncementTranslate } from "../../models/Anouncements.Translate.js";
 import { languages } from "../../utils/languages.js";
 import * as mongoose from "mongoose";
 
-export const findAllActiveAnnouncement = async (req, res) => {
-  try {
-    let activeStatus = req.body.active_status;
-    let limit = req.body.limit ? req.body.limit : 10;
-    let page = req.body.page ? req.body.page : 1;
+import fs from "fs";
 
-    const returnData = await Announcement.aggregate([
-      {
-        $match: {
-          active_status: activeStatus,
-        },
-      },
-      {
-        $lookup: {
-          from: "anouncementtranslates",
-          localField: "_id",
-          foreignField: "announcement",
-          as: "translations",
-        },
-      },
-      {
-        $limit: limit + limit * (page - 1),
-      },
-      {
-        $skip: limit * (page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "announcement",
-                in: {
-                  k: "$$announcement.lang",
-                  v: "$$announcement",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+// export const findAllActiveAnnouncement = async (req, res) => {
+//   try {
+//     let activeStatus = req.body.active_status;
+//     let limit = req.body.limit ? req.body.limit : 10;
+//     let page = req.body.page ? req.body.page : 1;
 
-    const totalCount = await Announcement.countDocuments();
-    const totalPages = Math.ceil(totalCount / (limit || 10));
+//     const returnData = await Announcement.aggregate([
+//       {
+//         $match: {
+//           active_status: activeStatus,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "anouncementtranslates",
+//           localField: "_id",
+//           foreignField: "announcement",
+//           as: "translations",
+//         },
+//       },
+//       {
+//         $limit: limit + limit * (page - 1),
+//       },
+//       {
+//         $skip: limit * (page - 1),
+//       },
+//       {
+//         $sort: { createdAt: -1 },
+//       },
+//       {
+//         $addFields: {
+//           translations: {
+//             $arrayToObject: {
+//               $map: {
+//                 input: "$translations",
+//                 as: "announcement",
+//                 in: {
+//                   k: "$$announcement.lang",
+//                   v: "$$announcement",
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     ]);
 
-    res.status(200).json({
-      returnData,
-      totalPages,
-    });
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
+//     const totalCount = await Announcement.countDocuments();
+//     const totalPages = Math.ceil(totalCount / (limit || 10));
+
+//     res.status(200).json({
+//       returnData,
+//       totalPages,
+//     });
+//   } catch (error) {
+//     return res.status(500).json(error);
+//   }
+// };
 
 // export const findByPagination = async (req, res) => {
 //   try {
@@ -207,87 +209,20 @@ export const findAllActiveAnnouncement = async (req, res) => {
 //   );
 // });
 
-// export const createAnnouncement = async (req, res) => {
-//   // const { name, title, text, inner_descr, time, active_status, categoryId, userId, slug } = req.body;
+export const create = async (req, res) => {
+  console.log(req)
+  try {
+    const announcement = await Announcement.create({
+      slug,
+    });
 
-//   // const coverImageFiles = req.files['cover_image'];
-//   // const ImageFiles = req.files['image'];
-//   // const files = [...coverImageFiles, ...ImageFiles];
+    return res.status(200).json(announcement);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
 
-//   try {
-//     // const img = await uploadImageMany(userId, files, 'announcement');
-
-//     // const announcement = await Announcement.create({
-//     //   name: name,
-//     //   image: img[0],
-//     //   title: title,
-//     //   text: text,
-//     //   inner_descr: inner_descr,
-//     //   time: time,
-//     //   cover_image: img[1],
-//     //   active_status: active_status,
-//     //   category: categoryId,
-//     //   slug
-//     // })
-//     let data = req.body;
-//     let slug = convertToSlug(data.en.title);
-
-//     let translatedData = [];
-//     const result = await Announcement.create({ slug });
-
-//     for (let i = 0; i < languages.length; i++) {
-//       translatedData.push({
-//         lang: languages[i]?.code,
-//         name: data[languages[i].code]?.name,
-//         title: data[languages[i].code]?.title,
-//         text: data[languages[i].code]?.text,
-//         inner_descr: data[languages[i].code]?.inner_descr,
-//         announcement: result._id.toString(),
-//       });
-//     }
-//     console.log(translatedData);
-
-//     await anouncementTranslate.insertMany(translatedData);
-
-//     const returnData = await Announcement.aggregate([
-//       {
-//         $match: {
-//           _id: result._id,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "anouncementtranslates",
-//           localField: "_id",
-//           foreignField: "announcement",
-//           as: "translations",
-//         },
-//       },
-//       {
-//         $addFields: {
-//           translations: {
-//             $arrayToObject: {
-//               $map: {
-//                 input: "$translations",
-//                 as: "announcement",
-//                 in: {
-//                   k: "$$announcement.lang",
-//                   v: "$$announcement",
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       },
-//     ]);
-
-//     console.log(returnData);
-//     return res.status(200).json(returnData);
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json(error);
-//   }
-// };
+};
 
 // export const updateActiveStatus = async (req, res) => {
 //   try {
