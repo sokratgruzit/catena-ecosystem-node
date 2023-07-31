@@ -210,18 +210,67 @@ import fs from "fs";
 // });
 
 export const create = async (req, res) => {
-  console.log(req)
-  try {
-    const announcement = await Announcement.create({
-      slug,
-    });
+  const {
+    title,
+    text,
+    inner_descr,
+    active_status,
+    category,
+    persons,
+    image,
+    logo_image,
+    slug,
+  } = req.body;
 
-    return res.status(200).json(announcement);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
+  if (!title || !text || !inner_descr) {
+    return res.status(400).send({
+      message: "Fill all fealds",
+    });
   }
 
+  let exists = await Press.findOne({ slug });
+
+  if (exists) {
+    let imgPath = `uploads/press/${image}`;
+    let logoPath = `uploads/press/${logo_image}`;
+
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
+
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
+
+    return res.status(200).json({ message: "Press already exists" });
+  } else {
+    try {
+      const press = await Press.create({
+        title,
+        text,
+        inner_descr,
+        image,
+        logo_image,
+        active_status,
+        category,
+        persons,
+        slug,
+      });
+
+      return res.status(200).json(press);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
+    }
+  }
 };
 
 // export const updateActiveStatus = async (req, res) => {
