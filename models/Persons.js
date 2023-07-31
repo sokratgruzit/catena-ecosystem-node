@@ -2,10 +2,17 @@ import * as mongoose from "mongoose";
 
 const personsSchema = mongoose.Schema(
   {
-    title: {},
-    status: {
+    title: {
+      type: Object,
+      default: {}
+    },
+    slug: {
       type: String,
-      required: true,
+      default: "persons.title",
+    },
+    status: {
+      type: Object,
+      default: {}
     },
     image: {
       type: String,

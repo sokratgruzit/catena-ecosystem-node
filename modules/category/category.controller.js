@@ -1,11 +1,8 @@
 import { Category } from "../../models/Category.js";
-import { categoryTranslate } from "../../models/Category.Translate.js";
-import { uploadImageMany } from "../../utils/uploadImageMany.js";
+import fs from "fs";
 
-export const category = async (req, res) => {
-    const { title, userId } = req.body;
-    console.log(req.body)
-    const files = [...req.files['image'], ...req.files['logo_image']]
+export const create = async (req, res) => {
+    const { title, slug, image, logo_image } = req.body;
 
     if (!title) {
         return res.status(400).send({
@@ -13,75 +10,142 @@ export const category = async (req, res) => {
         });
     }
 
-    try {
-        const image = await uploadImageMany(userId, files, 'category')
-        const category = await Category.create({
-            title: title,
-            image: image[0],
-            logo_image: image[1]
+    let exists = await Category.findOne({ slug });
+
+    if (exists) {
+        let imgPath = `uploads/category/${image}`;
+        let logoPath = `uploads/category/${logo_image}`;
+
+        fs.unlink(imgPath, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
         });
 
-        await categoryTranslate.create({
-            title: title,
-            category: category._id.toString()
+        fs.unlink(logoPath, async (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
         });
 
-        return res.status(200).json(category);
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(error);
+        return res.status(200).json({ "message": "Category already exists" });
+    } else {
+        try {
+            const cat = await Category.create({
+                title,
+                image,
+                logo_image,
+                slug
+            });
+    
+            return res.status(200).json(cat);
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({ error: "Error creating category" });
+        }
+    }
+};
+
+export const update = async (req, res) => {
+    const { _id, title, image, logo_image } = req.body;
+
+    if (!title) {
+        return res.status(400).send({
+            message: "Fill all fealds"
+        });
+    }
+
+    const findOldImgs = await Category.findOne({ _id });
+    const oldImg = findOldImgs.image;
+    const oldLogoImg = findOldImgs.logo_image;
+
+    if (image && oldImg !== image) {
+        let imgPath = `uploads/category/${oldImg}`;
+
+        fs.unlink(imgPath, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
+        });
+    }
+
+    if (logo_image && oldLogoImg !== logo_image) {
+        let logoPath = `uploads/category/${oldLogoImg}`;
+
+        fs.unlink(logoPath, async (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
+        });
+    }
+
+    const updatedCat = await Category.findByIdAndUpdate(_id, {
+        title,
+        image,
+        logo_image
+    }, { new: true });
+
+    if (!updatedCat) {
+        res.status(400).json({
+            "message": "Category not found",
+        });
+    } else {
+        res.status(200).json({ "message": "Category updated" });
+    }
+};
+
+export const remove = async (req, res) => {
+    const { _id } = req.body;
+    const cat = await Category.findOne({ _id });
+
+    if (cat) {
+        let imgPath = `uploads/category/${cat.image}`;
+        let logoPath = `uploads/category/${cat.logo_image}`;
+
+        fs.unlink(imgPath, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully!');
+            }
+        });
+
+        fs.unlink(logoPath, async (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+                res.status(400).json({
+                    "message": "Something went wrong"
+                });
+            } else {
+                console.log('File deleted successfully!');
+                await Category.deleteOne({ _id });
+
+                res.status(200).json({
+                    "message": "Category removed successfully"
+                });
+            }
+        });
+    } else {
+        res.status(200).json({
+            "message": "Category not found"
+        });
     }
 };
 
 export const getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.find({})
-        .populate("categoryTranslate")
-        
+        const categories = await Category.find();
+
         return res.status(200).json(categories);
     } catch (error) {
-        return res.status(500).json(error);
-    }
-};
-
-export const update = async (req, res) => {
-    const { _id, title } = req.body;
-    // const randomString = Math.random().toString(15).slice(2, 30);
-  
-    try {
-      // const image = await imageUpload(randomString, req.file, "persons");
-  
-      const result = await Category.findOneAndUpdate({_id},{
-        title: title,
-        // image: image,
-      }, { new: true });
-  
-      return res.status(200).json(result);
-    } catch (error) {
-      return res.status(500).json(error);
-    }
-  };
-
-export const deleteCategorie = async (req, res) => {
-    const { _id } = req.body;
-
-    try {
-        const categoryDelete = await Category.findOneAndDelete({ _id: _id });
-
-        return res.status(200).json(categoryDelete);
-    } catch (error) {
-        return res.status(500).json(error);
-    }
-};
-
-export const deleteManyCategories = async (req, res) => {
-    const { _id } = req.body;
-
-    try {
-        const deleteMany = await Category.deleteMany({ _id: _id });
-
-        return res.status(200).json(deleteMany);
-    } catch (error) {
-        return res.status(500).json(error);
+        return res.status(500).send({ error: "Error getting categories" });
     }
 };

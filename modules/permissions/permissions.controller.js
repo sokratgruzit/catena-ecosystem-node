@@ -1,14 +1,13 @@
 import { Permissions } from '../../models/Permissions.js';
 
 export const get = async (req, res) => {
+  try {
+    const result = await Permissions.find()
 
-    try {
-        const result = await Permissions.find()
-
-        return res.status(200).json( result );
-    } catch(error) {
-        return res.status(500).send({ error: "Error to getting permissions" });
-    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).send({ error: "Error to getting permissions" });
+  }
 };
 
 export const create = async (req, res) => {

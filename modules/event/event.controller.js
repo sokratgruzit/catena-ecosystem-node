@@ -1,353 +1,217 @@
-import { Event } from '../../models/Event.js';
-import { eventTranslate } from '../../models/Event.Translate.js';
-import { uploadImageMany } from '../../utils/uploadImageMany.js';
-import { languages } from '../../utils/languages.js';
-import * as mongoose from "mongoose";
+import { Event } from "../../models/Event.js";
+import fs from "fs";
 
-export const findAllActiveEvent = async (req, res) => {
-  try {
-    let activeStates = req.body.active_status;
+export const create = async (req, res) => {
+  const {
+    title,
+    text,
+    inner_descr,
+    active_status,
+    category,
+    persons,
+    image,
+    logo_image,
+    slug
+  } = req.body;
 
-    const returnData = await Event.aggregate([
-      {
-        $match: {
-          active_status: activeStates,
-        },
-      },
-      {
-        $lookup: {
-          from: "eventtranslates",
-          localField: "_id",
-          foreignField: "event",
-          as: "translations",
-        },
-      },
-      {
-        $limit: req.body.limit + req.body.limit * (req.body.page - 1),
-      },
-      {
-        $skip: req.body.limit * (req.body.page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "event",
-                in: {
-                  k: "$$event.lang",
-                  v: "$$event",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    return res.status(200).json(returnData);
-  } catch (error) {
-    return res.status(500).json(error);
+  if (!title || !text || !inner_descr) {
+    return res.status(400).send({
+      message: "Fill all fealds"
+    });
   }
-};
 
-export const getAllEvents = async (req, res) => {
-  try {
-    const returnData = await Event.aggregate([
-      {
-        $lookup: {
-          from: "eventtranslates",
-          localField: "_id",
-          foreignField: "event",
-          as: "translations",
-        },
-      },
-      {
-        $limit: req.body.limit + req.body.limit * (req.body.page - 1),
-      },
-      {
-        $skip: req.body.limit * (req.body.page - 1),
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "event",
-                in: {
-                  k: "$$event.lang",
-                  v: "$$event",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+  let exists = await Event.findOne({ slug });
 
-    return res.status(200).json(returnData);
-  } catch (error) {
-    console.log(error)
-    return res.status(500).send({ error: "Error to getting event" });
-  }
-};
+  if (exists) {
+    let imgPath = `uploads/event/${image}`;
+    let logoPath = `uploads/event/${logo_image}`;
 
-export const createEvent = async (req, res) => {
-  const { userId } = req.body
-
-  const outterImageFiles = req.files['outter_image'];
-  const innerImageFiles = req.files['cover_image'];
-  const imageFiles = req.files['image'];
-  const files = [...outterImageFiles, ...innerImageFiles, ...imageFiles];
-
-  try {
-    const image = await uploadImageMany(userId, files, 'press');
-    let data = req.body;
-    let slug = convertToSlug(data.en.title);
-
-    const result = await Event.create({
-      slug: slug,
-      outter_image: image[0],
-      cover_image: image[1],
-      image: image[2],
+    fs.unlink(imgPath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
     });
 
-    let translatedData = [];
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i]?.code,
-        title: data[languages[i]?.code]?.title,
-        badge: data[languages[i]?.code]?.badge,
-        text: data[languages[i]?.code]?.text,
-        inner_descr: data[languages[i]?.code]?.inner_descr,
-        event: result._id.toString(),
+    fs.unlink(logoPath, async (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+
+    return res.status(200).json({ "message": "event already exists" });
+  } else {
+    try {
+      const event = await Event.create({
+        title,
+        text,
+        inner_descr,
+        image,
+        logo_image,
+        active_status,
+        category,
+        persons,
+        slug
       });
+  
+      return res.status(200).json(event);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
     }
-
-    await eventTranslate.insertMany(translatedData);
-
-    const returnData = await Event.aggregate([
-      {
-        $match: {
-          _id: result._id,
-        },
-      },
-      {
-        $lookup: {
-          from: "eventtranslates",
-          localField: "_id",
-          foreignField: "event",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "event",
-                in: {
-                  k: "$$event.lang",
-                  v: "$$event",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    return res.status(200).json(returnData);
-  } catch (error) {
-    console.log(error)
-    return res.status(400).json(error)
   }
 };
 
 export const updateActiveStatus = async (req, res) => {
-  try {
-    const { _id } = req.body;
-    const id = mongoose.Types.ObjectId(_id);
-    let data = req.body;
+  const { _id, active_status } = req.body;
+  const filter = { _id };
+  const update = { active_status };
 
-    await Event.findOneAndUpdate({ _id: id }, {
-      slug: data.slug,
-      active_status: data.active_status
+  try {
+    const updateToggleStatus = await Event.findOneAndUpdate(filter, update, {
+      new: true,
     });
 
-    let translatedData = [];
-    await eventTranslate.deleteMany({ event: id });
-
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i].code,
-        title: data[languages[i].code]?.title,
-        badge: data[languages[i].code]?.badge,
-        text: data[languages[i].code]?.text,
-        inner_descr: data[languages[i].code]?.inner_descr,
-        event: id.toString(),
-      });
-    }
-
-    await eventTranslate.insertMany(translatedData);
-
-    const returnData = await Event.aggregate([
-      {
-        $match: {
-          _id: id,
-        },
-      },
-      {
-        $lookup: {
-          from: "eventtranslates",
-          localField: "_id",
-          foreignField: "event",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "event",
-                in: {
-                  k: "$$event.lang",
-                  v: "$$event",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-    
-    return res.status(200).send(returnData);
+    return res.status(200).send(updateToggleStatus);
   } catch (error) {
-    return res.status(500).send({ error: "Failed to update active status" });
-  }
-};
-
-export const update = async (req, res) => {
-
-  // const outterImageFiles = req.files['outter_image'];
-  // const innerImageFiles = req.files['cover_image'];
-  // const imageFiles = req.files['image'];
-  // const files = [...outterImageFiles, ...innerImageFiles, ...imageFiles];
-
-  // const filter = { _id };
-  // const update = { title, text, badge, inner_descr, cover_image };
-  try {
-    // const updateToggleStatus = await Event.findOneAndUpdate(filter, update, { new: true });
-
-    // return res.status(200).send(updateToggleStatus);
-
-    const { _id } = req.body;
-    const id = mongoose.Types.ObjectId(_id);
-    let data = req.body;
-
-    await Event.findOneAndUpdate({ _id: id }, {
-      slug: data.slug
-    });
-    let translatedData = [];
-    await eventTranslate.deleteMany({ event: id });
-    for (let i = 0; i < languages.length; i++) {
-      translatedData.push({
-        lang: languages[i].code,
-        title: data[languages[i].code]?.title,
-        text: data[languages[i].code]?.text,
-        badge: data[languages[i].code]?.badge,
-        inner_descr: data[languages[i].code]?.inner_descr,
-        event: id.toString(),
-      });
-    }
-
-    await eventTranslate.insertMany(translatedData);
-
-    const returnData = await Event.aggregate([
-      {
-        $match: {
-          _id: id,
-        },
-      },
-      {
-        $lookup: {
-          from: "eventtranslates",
-          localField: "_id",
-          foreignField: "event",
-          as: "translations",
-        },
-      },
-      {
-        $addFields: {
-          translations: {
-            $arrayToObject: {
-              $map: {
-                input: "$translations",
-                as: "event",
-                in: {
-                  k: "$$event.lang",
-                  v: "$$event",
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
-
-    console.log(returnData)
-
-    return res.status(200).json(returnData);
-  } catch (error) {
-    console.log(error)
     return res.status(500).json(error);
   }
 };
 
-function convertToSlug(title) {
-  const slug = title
-    .toLowerCase() // Convert to lowercase
-    .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
-    .trim(); // Remove leading/trailing spaces
+export const getAllEvent = async (req, res) => {
+  try {
+    const event = await Event.find()
+      .populate("category")
+      .populate("persons")
+      .exec();
 
-  return slug;
-}
+    return res.status(200).json(event);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
-export const deleteManyEvents = async (req, res) => {
-  const { _id } = req.body;
+export const getEventWithActiveStatus = async (req, res) => {
+  const { active_status } = req.body;
 
   try {
-    const deleteMany = await Event.deleteMany({ _id: _id });
+    const eventWithActiveStatus = await Event.find({
+      active_status: active_status,
+    })
+      .populate("category")
+      .populate("persons")
+      .exec();
 
-    return res.status(200).json(deleteMany);
+    return res.status(200).json(eventWithActiveStatus);
   } catch (error) {
     return res.status(500).json(error);
   }
 };
 
 export const deleteOneEvent = async (req, res) => {
-  try {
-    const result = await Event.deleteOne({ _id: req.body._id });
+  const { _id } = req.body;
+  const event = await Event.findOne({ _id });
 
-    if (result.acknowledged === true) {
-      return res.status(200).json({ message: "event successuly deleted" });
-    }
-    res.status(400).json({ message: "event deletion failed" });
-  } catch (e) {
-    console.log(e.message);
-    res.status(400).json({ message: e.message });
+  if (event) {
+    let imgPath = `uploads/event/${event.image}`;
+    let logoPath = `uploads/event/${event.logo_image}`;
+
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('File deleted successfully!');
+      }
+    });
+
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+        res.status(400).json({
+          "message": "Something went wrong"
+        });
+      } else {
+        console.log('File deleted successfully!');
+        await Event.deleteOne({ _id });
+
+        res.status(200).json({
+          "message": "Event removed successfully"
+        });
+      }
+    });
+  } else {
+    res.status(200).json({
+      "message": "Event not found"
+    });
+  }
+};
+
+export const updateEvent = async (req, res) => {
+  const { 
+    _id, 
+    title, 
+    text, 
+    inner_descr, 
+    image, 
+    logo_image, 
+    active_status,
+    category,
+    persons
+  } = req.body;
+
+  if (!title || !text || !inner_descr) {
+    return res.status(200).send({
+      "message": "Fill all fealds"
+    });
+  }
+
+  const findOldImgs = await Event.findOne({ _id });
+  const oldImg = findOldImgs.image;
+  const oldLogoImg = findOldImgs.logo_image;
+
+  if (image && oldImg !== image) {
+    let imgPath = `uploads/event/${oldImg}`;
+
+    fs.unlink(imgPath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+  }
+
+  if (logo_image && oldLogoImg !== logo_image) {
+    let logoPath = `uploads/event/${oldLogoImg}`;
+
+    fs.unlink(logoPath, async (err) => {
+        if (err) {
+            console.error('Error deleting file:', err);
+        } else {
+            console.log('File deleted successfully!');
+        }
+    });
+  }
+
+  const updatedEvent = await Event.findByIdAndUpdate(_id, {
+    title,
+    text,
+    inner_descr,
+    active_status,
+    persons,
+    category,
+    image,
+    logo_image
+  }, { new: true });
+
+  if (!updatedEvent) {
+    res.status(200).json({
+        "message": "Event not found",
+    });
+  } else {
+    res.status(200).json({ "message": "Event updated" });
   }
 };

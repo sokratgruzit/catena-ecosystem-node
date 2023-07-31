@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const FaqSchema = new mongoose.Schema(
   {
@@ -10,8 +10,20 @@ const FaqSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    translations: {
+      en: {
+        question: {
+          type: String,
+          required: true,
+        },
+        answer: {
+          type: String,
+          required: true,
+        },
+      },
+    },
   },
   { timestamps: true }
 );
 
-export const Faq = mongoose.model("faq", FaqSchema);
+export const Faq = mongoose.model("Faq", FaqSchema);

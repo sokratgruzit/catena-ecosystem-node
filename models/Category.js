@@ -1,13 +1,17 @@
 import * as mongoose from "mongoose";
+//import slug from "mongoose-slug-updater";
+
+//mongoose.plugin(slug);
 
 const categorySchema = mongoose.Schema(
   {
-    title: {},
+    title: {
+      type: Object,
+      default: {}
+    },
     slug: {
       type: String,
-      slug: "title",
-      slugPaddingSize: 2,
-      unique: true,
+      default: "category.title",
     },
     image: {
       type: String,
@@ -16,10 +20,6 @@ const categorySchema = mongoose.Schema(
     logo_image: {
       type: String,
       required: true,
-    },
-    categoryTranslate: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "categoryTranslate"
     },
   },
   {
