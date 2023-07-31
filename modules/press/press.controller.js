@@ -44,23 +44,27 @@ export const create = async (req, res) => {
 
     return res.status(200).json({ message: "Press already exists" });
   } else {
-    try {
-      const press = await Press.create({
-        title,
-        text,
-        inner_descr,
-        image,
-        logo_image,
-        active_status,
-        category,
-        persons,
-        slug,
-      });
-
-      return res.status(200).json(press);
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(error);
+    if (category[0] === "" || persons[0] === "") {
+      return res.status(200).json({ "message": "Please choose a category and a person"});
+    } else {
+      try {
+        const press = await Press.create({
+          title,
+          text,
+          inner_descr,
+          image,
+          logo_image,
+          active_status,
+          category,
+          persons,
+          slug,
+        });
+  
+        return res.status(200).json(press);
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+      }
     }
   }
 };
@@ -210,26 +214,30 @@ export const updatePress = async (req, res) => {
     });
   }
 
-  const updatedPress = await Press.findByIdAndUpdate(
-    _id,
-    {
-      title,
-      text,
-      inner_descr,
-      active_status,
-      persons,
-      category,
-      image,
-      logo_image,
-    },
-    { new: true }
-  );
-
-  if (!updatedPress) {
-    res.status(200).json({
-      message: "Press not found",
-    });
+  if (category[0] === "" || persons[0] === "") {
+    return res.status(200).json({ "message": "Please choose a category and a person"});
   } else {
-    res.status(200).json({ message: "Press updated" });
+    const updatedPress = await Press.findByIdAndUpdate(
+      _id,
+      {
+        title,
+        text,
+        inner_descr,
+        active_status,
+        persons,
+        category,
+        image,
+        logo_image,
+      },
+      { new: true }
+    );
+  
+    if (!updatedPress) {
+      res.status(200).json({
+        message: "Press not found",
+      });
+    } else {
+      res.status(200).json({ message: "Press updated" });
+    }
   }
 };
