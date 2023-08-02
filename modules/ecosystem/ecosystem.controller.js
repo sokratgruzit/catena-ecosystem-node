@@ -149,49 +149,41 @@ export const updateEcosystem = async (req, res) => {
   }
 };
 
-// export const updateActiveStatus = async (req, res) => {
-//   const { _id, active_status } = req.body;
-//   const filter = { _id };
-//   const update = { active_status };
+export const updateActiveStatus = async (req, res) => {
+  const { _id, active_status } = req.body;
+  const filter = { _id };
+  const update = { active_status };
 
-//   try {
-//     const updateToggleStatus = await Press.findOneAndUpdate(filter, update, {
-//       new: true,
-//     });
+  try {
+    const updateToggleStatus = await Ecosystem.findOneAndUpdate(filter, update, {
+      new: true,
+    });
 
-//     return res.status(200).send(updateToggleStatus);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+    return res.status(200).send(updateToggleStatus);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
-// export const getOnePress = async (req, res) => {
-//   const { slug } = req.body;
-//   try {
-//     const press = await Press.findOne({ slug })
-//       .populate("category")
-//       .populate("persons")
-//       .exec();
+export const getOneEcosystem = async (req, res) => {
+  const { exchange_name } = req.body;
+  try {
+    const ecosystem = await Ecosystem.findOne({ exchange_name })
 
-//     return res.status(200).json(press);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+    return res.status(200).json(ecosystem);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
-// export const getPressWithActiveStatus = async (req, res) => {
-//   const { active_status } = req.body;
+export const getEcosystemWithActiveStatus = async (req, res) => {
+  try {
+    const ecosystemWithActiveStatus = await Ecosystem.find({
+      active_status: true,
+    })
 
-//   try {
-//     const pressWithActiveStatus = await Press.find({
-//       active_status: active_status,
-//     })
-//       .populate("category")
-//       .populate("persons")
-//       .exec();
-
-//     return res.status(200).json(pressWithActiveStatus);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+    return res.status(200).json(ecosystemWithActiveStatus);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
