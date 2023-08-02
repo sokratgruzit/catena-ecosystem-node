@@ -148,17 +148,15 @@ export const deleteOnePress = async (req, res) => {
     fs.unlink(logoPath, async (err) => {
       if (err) {
         console.error("Error deleting file:", err);
-        res.status(400).json({
-          message: "Something went wrong",
-        });
       } else {
         console.log("File deleted successfully!");
-        await Press.deleteOne({ _id });
-
-        res.status(200).json({
-          message: "Press removed successfully",
-        });
       }
+    });
+
+    await Press.deleteOne({ _id });
+
+    res.status(200).json({
+      message: "Press removed successfully",
     });
   } else {
     res.status(200).json({
