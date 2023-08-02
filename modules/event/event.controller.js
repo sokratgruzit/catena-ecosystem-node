@@ -11,12 +11,12 @@ export const create = async (req, res) => {
     persons,
     image,
     logo_image,
-    slug
+    slug,
   } = req.body;
 
   if (!title || !text || !inner_descr) {
     return res.status(400).send({
-      message: "Fill all fealds"
+      message: "Fill all fealds",
     });
   }
 
@@ -27,22 +27,22 @@ export const create = async (req, res) => {
     let logoPath = `uploads/event/${logo_image}`;
 
     fs.unlink(imgPath, (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
 
     fs.unlink(logoPath, async (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
 
-    return res.status(200).json({ "message": "event already exists" });
+    return res.status(200).json({ message: "event already exists" });
   } else {
     try {
       const event = await Event.create({
@@ -54,14 +54,24 @@ export const create = async (req, res) => {
         active_status,
         category,
         persons,
-        slug
+        slug,
       });
-  
+
       return res.status(200).json(event);
     } catch (error) {
       console.log(error);
       return res.status(500).json(error);
     }
+  }
+};
+
+export const getOneEvent = async (req, res) => {
+  const { slug } = req.body;
+  try {
+    const event = await Event.findOne({ slug });
+    return res.status(200).json(event);
+  } catch (error) {
+    return res.status(500).json(error);
   }
 };
 
@@ -121,50 +131,50 @@ export const deleteOneEvent = async (req, res) => {
 
     fs.unlink(imgPath, (err) => {
       if (err) {
-        console.error('Error deleting file:', err);
+        console.error("Error deleting file:", err);
       } else {
-        console.log('File deleted successfully!');
+        console.log("File deleted successfully!");
       }
     });
 
     fs.unlink(logoPath, async (err) => {
       if (err) {
-        console.error('Error deleting file:', err);
+        console.error("Error deleting file:", err);
         res.status(400).json({
-          "message": "Something went wrong"
+          message: "Something went wrong",
         });
       } else {
-        console.log('File deleted successfully!');
+        console.log("File deleted successfully!");
         await Event.deleteOne({ _id });
 
         res.status(200).json({
-          "message": "Event removed successfully"
+          message: "Event removed successfully",
         });
       }
     });
   } else {
     res.status(200).json({
-      "message": "Event not found"
+      message: "Event not found",
     });
   }
 };
 
 export const updateEvent = async (req, res) => {
-  const { 
-    _id, 
-    title, 
-    text, 
-    inner_descr, 
-    image, 
-    logo_image, 
+  const {
+    _id,
+    title,
+    text,
+    inner_descr,
+    image,
+    logo_image,
     active_status,
     category,
-    persons
+    persons,
   } = req.body;
 
   if (!title || !text || !inner_descr) {
     return res.status(200).send({
-      "message": "Fill all fealds"
+      message: "Fill all fealds",
     });
   }
 
@@ -176,11 +186,11 @@ export const updateEvent = async (req, res) => {
     let imgPath = `uploads/event/${oldImg}`;
 
     fs.unlink(imgPath, (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
   }
 
@@ -188,30 +198,34 @@ export const updateEvent = async (req, res) => {
     let logoPath = `uploads/event/${oldLogoImg}`;
 
     fs.unlink(logoPath, async (err) => {
-        if (err) {
-            console.error('Error deleting file:', err);
-        } else {
-            console.log('File deleted successfully!');
-        }
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
     });
   }
 
-  const updatedEvent = await Event.findByIdAndUpdate(_id, {
-    title,
-    text,
-    inner_descr,
-    active_status,
-    persons,
-    category,
-    image,
-    logo_image
-  }, { new: true });
+  const updatedEvent = await Event.findByIdAndUpdate(
+    _id,
+    {
+      title,
+      text,
+      inner_descr,
+      active_status,
+      persons,
+      category,
+      image,
+      logo_image,
+    },
+    { new: true }
+  );
 
   if (!updatedEvent) {
     res.status(200).json({
-        "message": "Event not found",
+      message: "Event not found",
     });
   } else {
-    res.status(200).json({ "message": "Event updated" });
+    res.status(200).json({ message: "Event updated" });
   }
 };
