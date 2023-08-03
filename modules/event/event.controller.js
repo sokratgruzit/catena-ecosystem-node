@@ -23,8 +23,8 @@ export const create = async (req, res) => {
   let exists = await Event.findOne({ slug });
 
   if (exists) {
-    let imgPath = `uploads/event/${image}`;
-    let logoPath = `uploads/event/${logo_image}`;
+    let imgPath = `uploads/events/${image}`;
+    let logoPath = `uploads/events/${logo_image}`;
 
     fs.unlink(imgPath, (err) => {
       if (err) {
@@ -126,8 +126,8 @@ export const deleteOneEvent = async (req, res) => {
   const event = await Event.findOne({ _id });
 
   if (event) {
-    let imgPath = `uploads/event/${event.image}`;
-    let logoPath = `uploads/event/${event.logo_image}`;
+    let imgPath = `uploads/events/${event.image}`;
+    let logoPath = `uploads/events/${event.logo_image}`;
 
     fs.unlink(imgPath, (err) => {
       if (err) {
@@ -183,7 +183,7 @@ export const updateEvent = async (req, res) => {
   const oldLogoImg = findOldImgs.logo_image;
 
   if (image && oldImg !== image) {
-    let imgPath = `uploads/event/${oldImg}`;
+    let imgPath = `uploads/events/${oldImg}`;
 
     fs.unlink(imgPath, (err) => {
       if (err) {
@@ -195,7 +195,7 @@ export const updateEvent = async (req, res) => {
   }
 
   if (logo_image && oldLogoImg !== logo_image) {
-    let logoPath = `uploads/event/${oldLogoImg}`;
+    let logoPath = `uploads/events/${oldLogoImg}`;
 
     fs.unlink(logoPath, async (err) => {
       if (err) {
