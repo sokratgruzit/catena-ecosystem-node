@@ -24,11 +24,11 @@ import categoryRouter from "./modules/category/category.routes.js";
 import personsRouter from "./modules/persons/persons.routes.js";
 import langsRouter from "./modules/languages/langs.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
+import ecosystemRouter from "./modules/ecosystem/ecosystem.routes.js";
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
 import voteRouter from "./modules/vote/vote.routes.js";
 import translateRouter from "./modules/translate/translate.routes.js";
-import homePageSliderRouter from "./modules/homePageSlider/homePageSlider.routes.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -94,17 +94,17 @@ app.use("/category", categoryRouter);
 app.use("/persons", personsRouter);
 app.use("/langs", langsRouter);
 app.use("/press", pressRouter);
+app.use("/ecosystem", ecosystemRouter);
 app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
 app.use("/event", eventRouter);
 app.use("/announcement", announcementRouter);
 app.use("/vote", voteRouter);
-app.use("/translate", translateRouter);
-app.use("/home-page-slider", homePageSliderRouter);
+app.use("/translates", translateRouter);
 app.use("/permissions", permissionControler);
 app.use("/roles", rolesControler);
-app.use('/uploads', express.static('uploads'));
+//app.use('/uploads', express.static('uploads'));
 
 const PORT = process.env.PORT || 5000;
 
