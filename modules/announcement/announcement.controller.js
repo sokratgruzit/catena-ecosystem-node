@@ -1,8 +1,4 @@
 import { Announcement } from "../../models/Announcement.js";
-import { uploadImageMany } from "../../utils/uploadImageMany.js";
-import { anouncementTranslate } from "../../models/Anouncements.Translate.js";
-import { languages } from "../../utils/languages.js";
-import * as mongoose from "mongoose";
 
 import fs from "fs";
 

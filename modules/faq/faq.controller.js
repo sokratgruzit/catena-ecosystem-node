@@ -1,6 +1,4 @@
 import { Faq } from "../../models/Faq.js";
-import { faqTranslate } from "../../models/Faq.Translate.js";
-import { languages } from "../../utils/languages.js";
 
 export const create = async (req, res) => {
   try {
