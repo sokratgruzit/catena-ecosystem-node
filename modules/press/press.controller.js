@@ -128,7 +128,6 @@ export const getPressWithActiveStatus = async (req, res) => {
 export const deleteOnePress = async (req, res) => {
   const { _id } = req.body;
   const press = await Press.findOne({ _id });
-
   if (press) {
     let imgPath = `uploads/press/${press.image}`;
     let logoPath = `uploads/press/${press.logo_image}`;
