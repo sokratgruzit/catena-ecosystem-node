@@ -1,5 +1,4 @@
 import { User } from "../../models/User.js";
-import { imageUpload } from "../../utils/uploadImage.js";
 
 import nodemailer from "nodemailer";
 import { verification_template } from "../../utils/email_template.js";
@@ -65,8 +64,6 @@ export async function makeProfile(req, res) {
 
     const foundUser = await User.findOne({ address });
     if (!foundUser) return res.status(400).send("no user found");
-
-    await imageUpload(address, req.file, "profile");
 
     if (foundUser.isEmailVerified && foundUser?.email && foundUser?.email === email) {
       // User is already verified and the email hasn't changed, no need to send a new verification email
