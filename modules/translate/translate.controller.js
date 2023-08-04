@@ -28,7 +28,9 @@ export const create = async (req, res) => {
             { new: true });
         }
 
-        return res.status(200).json(translates);
+        let updated = await Translates.find({});
+
+        return res.status(200).json(updated);
     } catch (error) {
         return res.status(500).json(error);
     }
