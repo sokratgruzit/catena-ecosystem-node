@@ -6,21 +6,43 @@ export const create = async (req, res) => {
     exchange_name,
     inner_descr,
     active_status,
-    // svg,
     color,
+    logo_image,
     exchange_link,
   } = req.body;
 
-  // console.log(req.body)
+  if (!exchange_name || !inner_descr || !active_status || !color || !exchange_link) {
+    return res.status(400).send({
+      message: "Fill all fealds",
+    });
+  }
 
+  let exists = await Ecosystem.findOne({
+    exchange_name,
+    exchange_link,
+  });
+
+  if (exists) {
+    let logoPath = `uploads/ecosystem/${logo_image}`;
+
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
+
+    return res.status(200).json({ message: "Exchange already exists" });
+  } else {
   try {
     const ecosystem = await Ecosystem.create({
       exchange_name,
       inner_descr,
       active_status,
-      // svg,
       color,
       exchange_link,
+      logo_image
     });
 
     return res.status(200).json(ecosystem);
@@ -28,23 +50,7 @@ export const create = async (req, res) => {
     console.log(error);
     return res.status(500).json(error);
   }
-
-  // if (!exchangeName || !inner_descr || !svg || !color || !exchange_link) {
-  //   return res.status(400).send({
-  //     message: "Fill all fealds",
-  //   });
-  // }
-
-  // let exists = await Ecosystem.findOne({
-  //   exchangeName,
-  //   color,
-  //   exchange_link,
-  // });
-
-  // if (exists) {
-  //   return res.status(200).json({ message: "Exchange already exists" });
-  // } else {
-  // }
+  }
 };
 
 export const getAllEcosystem = async (req, res) => {
@@ -57,158 +63,127 @@ export const getAllEcosystem = async (req, res) => {
   }
 };
 
-// export const updateActiveStatus = async (req, res) => {
-//   const { _id, active_status } = req.body;
-//   const filter = { _id };
-//   const update = { active_status };
+export const deleteOne = async (req, res) => {
+  const { _id } = req.body;
 
-//   try {
-//     const updateToggleStatus = await Press.findOneAndUpdate(filter, update, {
-//       new: true,
-//     });
+  const ecosystem = await Ecosystem.findOne({ _id });
+  console.log(ecosystem)
 
-//     return res.status(200).send(updateToggleStatus);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+  if (ecosystem) {
+    let logoPath = `uploads/ecosystem/${ecosystem.logo_image}`;
 
-// export const getOnePress = async (req, res) => {
-//   const { slug } = req.body;
-//   try {
-//     const press = await Press.findOne({ slug })
-//       .populate("category")
-//       .populate("persons")
-//       .exec();
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+        res.status(400).json({
+          message: "Something went wrong",
+        });
+      } else {
+        console.log("File deleted successfully!");
+        await Ecosystem.deleteOne({ _id });
 
-//     return res.status(200).json(press);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+        res.status(200).json({
+          message: "Ecosystem removed successfully",
+        });
+      }
+    });
+  } else {
+    res.status(200).json({
+      message: "Ecosystem not found",
+    });
+  }
+};
 
-// export const getPressWithActiveStatus = async (req, res) => {
-//   const { active_status } = req.body;
 
-//   try {
-//     const pressWithActiveStatus = await Press.find({
-//       active_status: active_status,
-//     })
-//       .populate("category")
-//       .populate("persons")
-//       .exec();
+export const updateEcosystem = async (req, res) => {
+  const {
+    _id,
+    exchange_name,
+    inner_descr,
+    active_status,
+    color,
+    logo_image,
+    exchange_link,
+  } = req.body;
 
-//     return res.status(200).json(pressWithActiveStatus);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+  if (!exchange_name || !inner_descr || !active_status || !color || !exchange_link) {
+    return res.status(400).send({
+      message: "Fill all fealds",
+    });
+  }
 
-// export const deleteOnePress = async (req, res) => {
-//   const { _id } = req.body;
-//   const press = await Press.findOne({ _id });
+  const findOldImgs = await Ecosystem.findOne({ _id });
+  const oldLogoImg = findOldImgs.logo_image;
 
-//   if (press) {
-//     let imgPath = `uploads/press/${press.image}`;
-//     let logoPath = `uploads/press/${press.logo_image}`;
+  if (logo_image && oldLogoImg !== logo_image) {
+    let logoPath = `uploads/ecosystem/${oldLogoImg}`;
 
-//     fs.unlink(imgPath, (err) => {
-//       if (err) {
-//         console.error("Error deleting file:", err);
-//       } else {
-//         console.log("File deleted successfully!");
-//       }
-//     });
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
+  }
 
-//     fs.unlink(logoPath, async (err) => {
-//       if (err) {
-//         console.error("Error deleting file:", err);
-//         res.status(400).json({
-//           message: "Something went wrong",
-//         });
-//       } else {
-//         console.log("File deleted successfully!");
-//         await Press.deleteOne({ _id });
+  const updatedEcosystem = await Ecosystem.findByIdAndUpdate(
+    _id,
+    {
+      exchange_name,
+      inner_descr,
+      active_status,
+      color,
+      logo_image,
+      exchange_link,
+    },
+    { new: true }
+  );
 
-//         res.status(200).json({
-//           message: "Press removed successfully",
-//         });
-//       }
-//     });
-//   } else {
-//     res.status(200).json({
-//       message: "Press not found",
-//     });
-//   }
-// };
+  if (!updatedEcosystem) {
+    res.status(200).json({
+      message: "Press not found",
+    });
+  } else {
+    res.status(200).json({ message: "Press updated" });
+  }
+};
 
-// export const updatePress = async (req, res) => {
-//   const {
-//     _id,
-//     title,
-//     text,
-//     inner_descr,
-//     image,
-//     logo_image,
-//     active_status,
-//     category,
-//     persons,
-//   } = req.body;
+export const updateActiveStatus = async (req, res) => {
+  const { _id, active_status } = req.body;
+  const filter = { _id };
+  const update = { active_status };
 
-//   if (!title || !text || !inner_descr) {
-//     return res.status(200).send({
-//       message: "Fill all fealds",
-//     });
-//   }
+  try {
+    const updateToggleStatus = await Ecosystem.findOneAndUpdate(filter, update, {
+      new: true,
+    });
 
-//   const findOldImgs = await Press.findOne({ _id });
-//   const oldImg = findOldImgs.image;
-//   const oldLogoImg = findOldImgs.logo_image;
+    return res.status(200).send(updateToggleStatus);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
-//   if (image && oldImg !== image) {
-//     let imgPath = `uploads/press/${oldImg}`;
+export const getOneEcosystem = async (req, res) => {
+  const { exchange_name } = req.body;
+  try {
+    const ecosystem = await Ecosystem.findOne({ exchange_name })
 
-//     fs.unlink(imgPath, (err) => {
-//       if (err) {
-//         console.error("Error deleting file:", err);
-//       } else {
-//         console.log("File deleted successfully!");
-//       }
-//     });
-//   }
+    return res.status(200).json(ecosystem);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
-//   if (logo_image && oldLogoImg !== logo_image) {
-//     let logoPath = `uploads/press/${oldLogoImg}`;
+export const getEcosystemWithActiveStatus = async (req, res) => {
+  try {
+    const ecosystemWithActiveStatus = await Ecosystem.find({
+      active_status: true,
+    })
 
-//     fs.unlink(logoPath, async (err) => {
-//       if (err) {
-//         console.error("Error deleting file:", err);
-//       } else {
-//         console.log("File deleted successfully!");
-//       }
-//     });
-//   }
-
-//   const updatedPress = await Press.findByIdAndUpdate(
-//     _id,
-//     {
-//       title,
-//       text,
-//       inner_descr,
-//       active_status,
-//       persons,
-//       category,
-//       image,
-//       logo_image,
-//     },
-//     { new: true }
-//   );
-
-//   if (!updatedPress) {
-//     res.status(200).json({
-//       message: "Press not found",
-//     });
-//   } else {
-//     res.status(200).json({ message: "Press updated" });
-//   }
-// };
+    return res.status(200).json(ecosystemWithActiveStatus);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};

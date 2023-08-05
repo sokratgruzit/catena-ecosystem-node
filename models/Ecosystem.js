@@ -2,10 +2,6 @@ import * as mongoose from "mongoose";
 
 const ecosystemShema = new mongoose.Schema(
     {
-        // slug: {
-        //     type: String,
-        //     default: "ecosystem.title",
-        // },
         color: {
             type: String,
             default: "",
@@ -23,12 +19,10 @@ const ecosystemShema = new mongoose.Schema(
         active_status: {
             type: Boolean,
             default: false,
-            // required: true,
         },
-        // svg: {
-        //     type: String,
-        //     // required: false,
-        // },
+        logo_image: {
+            type: String,
+        },
         // tab: {
         //     type: Object,
         //     required: false,
