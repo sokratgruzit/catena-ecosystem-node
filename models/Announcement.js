@@ -2,25 +2,37 @@ import * as mongoose from "mongoose";
 
 const AnnouncementSchema = new mongoose.Schema(
   {
-    slug: {
-      type: String,
-      unique: true,
+    // slug: {
+    //   type: String,
+    //   default: "press.title",
+    // },
+    title: {
+      type: Object,
+      default: {}
+    },
+    text: {
+      type: Object,
+      default: {}
+    },
+    inner_descr: {
+      type: Object,
+      default: {}
     },
     time: {
       type: Date,
       default: Date.now,
     },
+    active_status: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     image: {
       type: String,
-      required: true,
+      required: false,
     },
     cover_image: {
       type: String,
-      required: true,
-    },
-    active_status: {
-      type: Boolean,
-      default: true,
       required: true,
     },
     category: [
