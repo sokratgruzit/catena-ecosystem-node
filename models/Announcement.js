@@ -10,14 +10,14 @@ const AnnouncementSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    // image: {
-    //   type: String,
-    //   required: true,
-    // },
-    // cover_image: {
-    //   type: String,
-    //   required: true,
-    // },
+    image: {
+      type: String,
+      required: true,
+    },
+    cover_image: {
+      type: String,
+      required: true,
+    },
     active_status: {
       type: Boolean,
       default: true,
