@@ -10,6 +10,18 @@ export const getAllTranslates = async (req, res) => {
     }
 };
 
+export const getPageTranslates = async (req, res) => {
+    const { page } = req.body;
+
+    try {
+        const translates = await Translates.findOne({ page });
+
+        return res.status(200).json(translates.translates);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
 export const create = async (req, res) => {
     const { translates, page, _id } = req.body;
     let trans;
