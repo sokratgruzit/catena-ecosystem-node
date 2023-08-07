@@ -1,4 +1,5 @@
 import { Translates } from "../../models/Translates.js";
+import { Languages } from "../../models/Languages.js";
 
 export const getAllTranslates = async (req, res) => {
     try {
@@ -6,7 +7,7 @@ export const getAllTranslates = async (req, res) => {
 
         return res.status(200).json(translates);
     } catch (error) {
-        return res.status(500).json(error);
+        return res.status(200).json(error);
     }
 };
 
@@ -14,26 +15,38 @@ export const getPageTranslates = async (req, res) => {
     const { page } = req.body;
 
     try {
-        const translates = await Translates.findOne({ page });
+        let translates = await Translates.findOne({ page });
+        const langs = await Languages.find({});
+
+        if (!translates) {
+            let locales = langs[0].list;
+            translates = {};
+
+            locales.filter(loc => {
+                translates[loc.code] = {};
+                return loc;
+            });
+            
+            return res.status(200).json(translates);
+        }
 
         return res.status(200).json(translates.translates);
     } catch (error) {
-        return res.status(500).json(error);
+        return res.status(200).json(error);
     }
 };
 
 export const create = async (req, res) => {
     const { translates, page, _id } = req.body;
-    let trans;
-
+    
     try {
         if (_id === null) {
-            trans = await Translates.create({
-                translates,
-                page
+            await Translates.create({
+                page: page,
+                translates: translates
             });
         } else {
-            trans = await Translates.findByIdAndUpdate(_id, {
+            await Translates.findByIdAndUpdate(_id, {
                 page,
                 translates
             },
@@ -44,6 +57,7 @@ export const create = async (req, res) => {
 
         return res.status(200).json(updated);
     } catch (error) {
+        console.log(error);
         return res.status(500).json(error);
     }
 };
