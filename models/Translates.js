@@ -2,8 +2,14 @@ import * as mongoose from "mongoose";
 
 const translatesSchema = new mongoose.Schema(
     {
-        page: String,
-        translates: {},
+        page: {
+            type: String,
+            unique: false,
+        },
+        translates: {
+            type: Object,
+            unique: false,
+        },
     }, { timestamps: true }
 );
 
