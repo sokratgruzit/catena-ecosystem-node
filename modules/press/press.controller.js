@@ -1,4 +1,5 @@
 import { Press } from "../../models/Press.js";
+import { paginateResults } from "../../utils/pagination.js";
 import fs from "fs";
 
 export const create = async (req, res) => {
@@ -45,7 +46,9 @@ export const create = async (req, res) => {
     return res.status(200).json({ message: "Press already exists" });
   } else {
     if (category[0] === "" || persons[0] === "") {
-      return res.status(200).json({ "message": "Please choose a category and a person"});
+      return res
+        .status(200)
+        .json({ message: "Please choose a category and a person" });
     } else {
       try {
         const press = await Press.create({
@@ -59,7 +62,7 @@ export const create = async (req, res) => {
           persons,
           slug,
         });
-  
+
         return res.status(200).json(press);
       } catch (error) {
         console.log(error);
@@ -87,6 +90,27 @@ export const updateActiveStatus = async (req, res) => {
 
 export const getAllPress = async (req, res) => {
   try {
+    const { page, limit } = req.query;
+
+    const { results: press, totalPages, currentPage } = await paginateResults(
+      Press,
+      {},
+      page,
+      limit
+    );
+
+    return res.status(200).json({
+      press,
+      totalPages,
+      currentPage,
+    });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+export const getAllPressByYears = async (req, res) => {
+  try {
     const press = await Press.find()
       .populate("category")
       .populate("persons")
@@ -97,6 +121,17 @@ export const getAllPress = async (req, res) => {
     return res.status(500).json(error);
   }
 };
+
+export const getAllPressSlug = async (req, res) => {
+  try {
+    const press = await Press.find({}, { slug: 1, _id: 0 });
+
+    return res.status(200).json(press);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};  
+
 
 export const getOnePress = async (req, res) => {
   const { slug } = req.body;
@@ -213,7 +248,9 @@ export const updatePress = async (req, res) => {
   }
 
   if (category[0] === "" || persons[0] === "") {
-    return res.status(200).json({ "message": "Please choose a category and a person"});
+    return res
+      .status(200)
+      .json({ message: "Please choose a category and a person" });
   } else {
     const updatedPress = await Press.findByIdAndUpdate(
       _id,
@@ -229,7 +266,7 @@ export const updatePress = async (req, res) => {
       },
       { new: true }
     );
-  
+
     if (!updatedPress) {
       res.status(200).json({
         message: "Press not found",
