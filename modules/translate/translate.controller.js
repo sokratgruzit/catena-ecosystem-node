@@ -6,7 +6,7 @@ export const getAllTranslates = async (req, res) => {
 
         return res.status(200).json(translates);
     } catch (error) {
-        return res.status(500).json(error);
+        return res.status(200).json(error);
     }
 };
 
@@ -18,7 +18,7 @@ export const getPageTranslates = async (req, res) => {
 
         return res.status(200).json(translates.translates);
     } catch (error) {
-        return res.status(500).json(error);
+        return res.status(200).json(error);
     }
 };
 

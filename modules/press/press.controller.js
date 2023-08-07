@@ -1,4 +1,5 @@
 import { Press } from "../../models/Press.js";
+import { paginateResults } from "../../utils/pagination.js";
 import fs from "fs";
 
 export const create = async (req, res) => {
@@ -45,7 +46,9 @@ export const create = async (req, res) => {
     return res.status(200).json({ message: "Press already exists" });
   } else {
     if (category[0] === "" || persons[0] === "") {
-      return res.status(200).json({ "message": "Please choose a category and a person"});
+      return res
+        .status(200)
+        .json({ message: "Please choose a category and a person" });
     } else {
       try {
         const press = await Press.create({
@@ -59,7 +62,7 @@ export const create = async (req, res) => {
           persons,
           slug,
         });
-  
+
         return res.status(200).json(press);
       } catch (error) {
         console.log(error);
@@ -87,57 +90,34 @@ export const updateActiveStatus = async (req, res) => {
 
 export const getAllPress = async (req, res) => {
   try {
-    const press = await Press.find()
-      .populate("category")
-      .populate("persons")
-      .exec();
+    const { page, limit } = req.query;
+
+    const { results: press, totalPages, currentPage } = await paginateResults(
+      Press,
+      {},
+      page,
+      limit
+    );
+
+    return res.status(200).json({
+      press,
+      totalPages,
+      currentPage,
+    });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+export const getAllPressSlug = async (req, res) => {
+  try {
+    const press = await Press.find({}, { slug: 1, _id: 0 });
 
     return res.status(200).json(press);
   } catch (error) {
     return res.status(500).json(error);
   }
-};
-// export const getAllPress = async (req, res) => {
-//   try {
-//     let { page, limit } = req.query; // Using query parameters instead of req.body
-
-//     // Convert query parameters to integers
-//     page = parseInt(page, 10);
-//     limit = parseInt(limit, 10);
-
-//     // Set default values for page and limit if not provided
-//     if (!page || isNaN(page) || page < 1) {
-//       page = 1;
-//     }
-//     if (!limit || isNaN(limit) || limit < 1) {
-//       limit = 10; // Default limit
-//     }
-
-//     // Calculate the number of documents to skip based on the page and limit
-//     const skipCount = (page - 1) * limit;
-
-//     const press = await Press.find()
-//       .skip(skipCount)
-//       .limit(limit)
-//       .populate("category")
-//       .populate("persons")
-//       .exec();
-
-//     // Calculate the total number of press articles
-//     const totalPressCount = await Press.countDocuments();
-
-//     // Calculate the total number of pages based on the limit and total count
-//     const totalPages = Math.ceil(totalPressCount / limit);
-
-//     return res.status(200).json({
-//       press,
-//       totalPages,
-//       currentPage: page,
-//     });
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+};  
 
 
 export const getOnePress = async (req, res) => {
@@ -255,7 +235,9 @@ export const updatePress = async (req, res) => {
   }
 
   if (category[0] === "" || persons[0] === "") {
-    return res.status(200).json({ "message": "Please choose a category and a person"});
+    return res
+      .status(200)
+      .json({ message: "Please choose a category and a person" });
   } else {
     const updatedPress = await Press.findByIdAndUpdate(
       _id,
@@ -271,7 +253,7 @@ export const updatePress = async (req, res) => {
       },
       { new: true }
     );
-  
+
     if (!updatedPress) {
       res.status(200).json({
         message: "Press not found",
