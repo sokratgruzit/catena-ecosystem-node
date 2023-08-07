@@ -29,7 +29,7 @@ export const getPageTranslates = async (req, res) => {
             
             return res.status(200).json(translates);
         }
-
+        
         return res.status(200).json(translates.translates);
     } catch (error) {
         return res.status(200).json(error);
