@@ -10,22 +10,22 @@ const applicationSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
-        pone: {
-            type: Number
+        phone: {
+            type: String,
         },
         descr: {
             type: String,
             default: ""
         },
         question1: {
-            type: Boolean,
-            default: false,
-            required: true,
+            type: String,
+            default: "",
+            // required: true,
         },
         question2: {
-            type: Boolean,
-            default: false,
-            required: true,
+            type: String,
+            default: "",
+            // required: true,
         },
         lenguage: {
             type: String,
@@ -43,7 +43,7 @@ const applicationSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
-        image: {
+        file: {
             type: String,
             required: false,
         },

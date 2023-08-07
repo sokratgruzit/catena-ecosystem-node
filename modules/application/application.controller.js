@@ -5,55 +5,53 @@ export const create = async (req, res) => {
   const {
     name,
     email,
-    pone,
+    phone,
     descr,
     question1,
     question2,
-    lenguage,
+    language,
     info,
     gitHub,
     linkedin,
-    image,
+    file,
     jobId,
   } = req.body;
 
-  if (!name || !email || !pone) {
-    return res.status(400).send({
-      message: "Fill all fealds",
-    });
-  }
+  console.log(req.body)
+  // if (!name || !email || !phone) {
+  //   return res.status(400).send({
+  //     message: "Fill all fealds",
+  //   });
+  // }
 
-  let exists = await Application.findOne({ pone });
+  // let exists = await Application.findOne({ phone });
 
-  if (exists) {
-    let imgPath = `uploads/application/${image}`;
+  // if (exists) {
+  //   let imgPath = `uploads/application/${file}`;
 
-    fs.unlink(imgPath, (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      } else {
-        console.log("File deleted successfully!");
-      }
-    });
+  //   fs.unlink(imgPath, (err) => {
+  //     if (err) {
+  //       console.error("Error deleting file:", err);
+  //     } else {
+  //       console.log("File deleted successfully!");
+  //     }
+  //   });
 
-    return res.status(200).json({ message: "application already exists" });
-  } else {
-    if (category[0] === "" || persons[0] === "") {
-      return res.status(200).json({ "message": "Please choose a category and a person"});
-    } else {
+  //   return res.status(200).json({ message: "application already exists" });
+  // } else {
       try {
         const application = await Application.create({
           name,
           email,
-          pone,
+          phone,
           descr,
           question1,
           question2,
-          lenguage,
+          language,
           info,
           gitHub,
           linkedin,
-          image,
+          file,
           jobId,
         });
   
@@ -62,8 +60,7 @@ export const create = async (req, res) => {
         console.log(error);
         return res.status(500).json(error);
       }
-    }
-  }
+  // }
 };
 
 export const getAllApplication = async (req, res) => {
@@ -95,7 +92,7 @@ export const deleteOneApplication = async (req, res) => {
   const application = await Application.findOne({ _id });
 
   if (application) {
-    let imgPath = `uploads/application/${application.image}`;
+    let imgPath = `uploads/application/${application.file}`;
 
     fs.unlink(imgPath, (err) => {
       if (err) {
@@ -123,8 +120,8 @@ export const deleteOneApplication = async (req, res) => {
 //     title,
 //     text,
 //     inner_descr,
-//     image,
-//     logo_image,
+//     file,
+//     logo_file,
 //     active_status,
 //     category,
 //     persons,
@@ -137,10 +134,10 @@ export const deleteOneApplication = async (req, res) => {
 //   }
 
 //   const findOldImgs = await Press.findOne({ _id });
-//   const oldImg = findOldImgs.image;
-//   const oldLogoImg = findOldImgs.logo_image;
+//   const oldImg = findOldImgs.file;
+//   const oldLogoImg = findOldImgs.logo_file;
 
-//   if (image && oldImg !== image) {
+//   if (file && oldImg !== file) {
 //     let imgPath = `uploads/press/${oldImg}`;
 
 //     fs.unlink(imgPath, (err) => {
@@ -152,7 +149,7 @@ export const deleteOneApplication = async (req, res) => {
 //     });
 //   }
 
-//   if (logo_image && oldLogoImg !== logo_image) {
+//   if (logo_file && oldLogoImg !== logo_file) {
 //     let logoPath = `uploads/press/${oldLogoImg}`;
 
 //     fs.unlink(logoPath, async (err) => {
@@ -176,8 +173,8 @@ export const deleteOneApplication = async (req, res) => {
 //         active_status,
 //         persons,
 //         category,
-//         image,
-//         logo_image,
+//         file,
+//         logo_file,
 //       },
 //       { new: true }
 //     );
