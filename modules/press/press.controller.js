@@ -97,6 +97,48 @@ export const getAllPress = async (req, res) => {
     return res.status(500).json(error);
   }
 };
+// export const getAllPress = async (req, res) => {
+//   try {
+//     let { page, limit } = req.query; // Using query parameters instead of req.body
+
+//     // Convert query parameters to integers
+//     page = parseInt(page, 10);
+//     limit = parseInt(limit, 10);
+
+//     // Set default values for page and limit if not provided
+//     if (!page || isNaN(page) || page < 1) {
+//       page = 1;
+//     }
+//     if (!limit || isNaN(limit) || limit < 1) {
+//       limit = 10; // Default limit
+//     }
+
+//     // Calculate the number of documents to skip based on the page and limit
+//     const skipCount = (page - 1) * limit;
+
+//     const press = await Press.find()
+//       .skip(skipCount)
+//       .limit(limit)
+//       .populate("category")
+//       .populate("persons")
+//       .exec();
+
+//     // Calculate the total number of press articles
+//     const totalPressCount = await Press.countDocuments();
+
+//     // Calculate the total number of pages based on the limit and total count
+//     const totalPages = Math.ceil(totalPressCount / limit);
+
+//     return res.status(200).json({
+//       press,
+//       totalPages,
+//       currentPage: page,
+//     });
+//   } catch (error) {
+//     return res.status(500).json(error);
+//   }
+// };
+
 
 export const getOnePress = async (req, res) => {
   const { slug } = req.body;
