@@ -17,12 +17,7 @@ const applicationSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
-        question1: {
-            type: String,
-            default: "",
-            // required: true,
-        },
-        question2: {
+        quiz: {
             type: String,
             default: "",
             // required: true,
