@@ -6,63 +6,80 @@ const careerShema = new mongoose.Schema(
             type: Object,
             default: {}
         },
-        inner_descr: {
+        department: {
             type: Object,
             default: {}
         },
-        slug: {
-            type: String,
-            unique: true,
+        summary: {
+            type: Object,
+            default: {}
           },
-        active_status: {
-            type: Boolean,
-            default: false,
-        },
-        job_type: {
-            type: String,
-            default: ""
-        },
-        remote: {
-            type: Boolean,
-            default: false,
-        },
-        department: {
-            type: String,
-        },
         responsibilities: {
-            type: Array,
-            defoult: []
+            type: Object,
+            default: {},
         },
         requirements: {
-            type: Array,
-            defoult: []
+            type: Object,
+            default: {}
         },
         benefits: {
-            type: Array,
-            defoult: []
-        },
-        // working_at_core_multichain: {
-        //     type: Array,
-        //     defoult: []
-        // },
-        // how_we_work: {
-        //     type: Object,
-        //     defoult: {}
-        // },
-        // about_core_multichain: {
-        //     type: Object,
-        //     defoult: {}
-        // },
-        job_level: {
             type: Object,
-            defoult: {}
+            default: {},
         },
-        lenguages: {
+        about_core_multichain: {
+            type: Object,
+            default:{}
+        },
+        worcking_at_core_multichain: {
+            type: Object,
+            default:{}
+        },
+        how_we_work: {
+            type: Object,
+            default:{}
+        },
+        job_level: {
             type: String,
             defoult: ""
         },
+        salary_range_from: {
+            type: String,
+            defoult: ""
+        },
+        salary_range_to: {
+            type: String,
+            defoult: ""
+        },
+        educational_level: {
+            type: String,
+            defoult: ""
+        },
+        career_languages: {
+            type: String,
+            defoult: ""
+        },
+        locations: {
+            type: String,
+            defoult: ""
+        },
+        type: {
+            type: String,
+            default: false,
+        },
         featured: {
             type: Boolean,
+            default: false,
+        },
+        job_posting_from: {
+            type: Number,
+            default: false,
+        },
+        job_posting_to: {
+            type: Number,
+            default: false,
+        },
+        job_id: {
+            type: Number,
             default: false,
         },
     },

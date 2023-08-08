@@ -4,6 +4,7 @@ import * as translateController from "./translate.controller.js";
 const router = Router();
 
 router.route("/get-translates").get(translateController.getAllTranslates);
+router.route("/get-page-translates").post(translateController.getPageTranslates);
 router.route("/create").post(translateController.create);
 // router.route("/update-translate").put(translateController.updateTranslate);
 // router.route("/delete-translate").delete(translateController.deleteTranslate);
