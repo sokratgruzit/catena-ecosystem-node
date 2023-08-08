@@ -1,9 +1,9 @@
 const corsOptions = {
   credentials: true,
-  //origin: "http://localhost:3000",
-  origin: (origin, callback) => {
-    callback(null, true);
-  },
+  origin: "https://catena-react-admin-module.vercel.app",
+  // origin: (origin, callback) => {
+  //   callback(null, true);
+  // },
 };
 
 export default corsOptions;
