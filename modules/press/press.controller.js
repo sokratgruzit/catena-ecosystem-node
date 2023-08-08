@@ -109,6 +109,19 @@ export const getAllPress = async (req, res) => {
   }
 };
 
+export const getAllPressByYears = async (req, res) => {
+  try {
+    const press = await Press.find()
+      .populate("category")
+      .populate("persons")
+      .exec();
+
+    return res.status(200).json(press);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 export const getAllPressSlug = async (req, res) => {
   try {
     const press = await Press.find({}, { slug: 1, _id: 0 });

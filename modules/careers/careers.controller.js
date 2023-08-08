@@ -1,98 +1,165 @@
 import { Career } from "../../models/Career.js";
-import fs from "fs";
 
 export const create = async (req, res) => {
     const {
-      title,
-      text,
-      inner_descr,
-      active_status,
-      category,
-      image,
-      cover_image,
+        title,
+        department,
+        summary,
+        responsibilities,
+        requirements,
+        benefits,
+        about_core_multichain,
+        worcking_at_core_multichain,
+        how_we_work,
+        job_level,
+        salary_range_from,
+        salary_range_to,
+        career_languages,
+        locations,
+        type,
+        featured,
+        job_posting_from,
+        job_posting_to,
+        job_id
     } = req.body;
-  
+
     console.log(req.body)
-  
-    if (!title || !text || !inner_descr) {
-      return res.status(400).send({
-        message: "Fill all fealds",
-      });
-    }
-  
+
+    // if (!title || !inner_descr || !slug || !job_type || !department || !responsibilities || !requirements || !job_level) {
+    //     return res.status(400).send({
+    //         message: "Fill all fealds",
+    //     });
+    // }
+
     let exists = await Career.findOne({ title });
-  
+
     if (exists) {
-      let imgPath = `uploads/careers/${image}`;
-      let coverImage = `uploads/careers/${cover_image}`;
-  
-      fs.unlink(imgPath, (err) => {
-        if (err) {
-          console.error("Error deleting file:", err);
-        } else {
-          console.log("File deleted successfully!");
-        }
-      });
-  
-      fs.unlink(coverImage, async (err) => {
-        if (err) {
-          console.error("Error deleting file:", err);
-        } else {
-          console.log("File deleted successfully!");
-        }
-      });
-  
-      return res.status(200).json({ message: "Press already exists" });
+        return res.status(200).json({ message: "already exists" });
     } else {
-      try {
-        const press = await Career.create({
-          title,
-          text,
-          inner_descr,
-          image,
-          cover_image,
-          active_status,
-          category,
-        });
-  
-        return res.status(200).json(press);
-      } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
-      }
+        try {
+            const career = await Career.create({
+                title,
+                department,
+                summary,
+                responsibilities,
+                requirements,
+                benefits,
+                about_core_multichain,
+                worcking_at_core_multichain,
+                how_we_work,
+                job_level,
+                salary_range_from,
+                salary_range_to,
+                career_languages,
+                locations,
+                type,
+                featured,
+                job_posting_from,
+                job_posting_to,
+                job_id
+            });
+
+            return res.status(200).json(career);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error);
+        }
     }
-  };
+};
 
-// export const deleteCareer = async (req, res) => {
-//     const data = req.body;
+export const deleteCareer = async (req, res) => {
+    const { _id } = req.body
+    try {
+        const removeCareer = await Career.findOneAndDelete({ _id: _id });
+        if (!removeCareer) {
+            return res.status(404).json({ error: "FAQ not found" });
+        }
+        res.status(200).json({ message: "FAQ removed successfully" });
+    } catch (error) {
+        console.error("Error removing FAQ:", error);
+        res.status(500).json({ error: "Failed to remove FAQ" });
+    }
+};
 
-//     try {
-//         console.log(data);
-//         return res.status(200).json("hello")
+export const editCareer = async (req, res) => {
+    const {
+        _id,
+        title,
+        department,
+        summary,
+        responsibilities,
+        requirements,
+        benefits,
+        about_core_multichain,
+        worcking_at_core_multichain,
+        how_we_work,
+        job_level,
+        salary_range_from,
+        salary_range_to,
+        career_languages,
+        locations,
+        type,
+        featured,
+        job_posting_from,
+        job_posting_to,
+        job_id
+    } = req.body;
 
-//     } catch (error) {
-//         return res.status(500).send({ error: "Error Deleting Career" })
-//     }
-// };
+    console.log(req.body)
+    try {
+        const updateCareer = await Career.findOneAndUpdate(
+            { _id: _id },
+            {
+                title,
+                department,
+                summary,
+                responsibilities,
+                requirements,
+                benefits,
+                about_core_multichain,
+                worcking_at_core_multichain,
+                how_we_work,
+                job_level,
+                salary_range_from,
+                salary_range_to,
+                career_languages,
+                locations,
+                type,
+                featured,
+                job_posting_from,
+                job_posting_to,
+                job_id
+            },
+            { new: true }
+        );
+        if (!updateCareer) {
+            return res.status(404).json({ error: "FAQ not found" });
+        } 
+        else {
+            res.status(200).json(updateCareer);
+        }
+    } catch (error) {
+        console.error("Error updating FAQ:", error);
+        res.status(500).json({ error: "Failed to update FAQ" });
+    }
+};
 
-// export const editCareer = async (req, res) => {
-//     const data = req.body;
+export const getAllCareers = async (req, res) => {
+    try {
+        const career = await Career.find();
 
-//     try {
-//         console.log(data);
-//         return res.status(200).json("hello");
-//     } catch (error) {
-//         return req.status(500).send({ error: "Error Editing Career" })
-//     }
-// };
+        return res.status(200).json(career);
+    } catch (error) {
+        return req.status(500).send({ error: "Error Editing Career" })
+    }
+};
 
-// export const getAllCareers = async (req, res) => {
-//     const data = req.body;
+export const getActiveCareers = async (req, res) => {
+    try {
+        const career = await Career.find({ active_status: true });
 
-//     try {
-//         console.log(data);
-//         return res.status(200).json("hello");
-//     } catch (error) {
-//         return req.status(500).send({ error: "Error Editing Career" })
-//     }
-// };
+        return res.status(200).json(career);
+    } catch (error) {
+        return req.status(500).send({ error: "Error Editing Career" })
+    }
+};
