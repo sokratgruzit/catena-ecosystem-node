@@ -63,15 +63,13 @@ export const remove = async (req, res) => {
 
 export const getAllFaq = async (req, res) => {
   try {
-    const allFaqs = await FAQ.find({});
-
-    if (!allFaqs || allFaqs.length === 0) {
-      return res.status(404).json({ message: "No FAQs found" });
+    const faq = await FAQ.find();
+    if (!faq) {
+      return res.status(404).json({ error: "FAQ not found" });
     }
-
-    res.status(200).json(allFaqs);
+    res.status(200).json(faq);
   } catch (error) {
-    console.error("Error retrieving FAQs:", error);
-    res.status(500).json({ error: "Failed to get FAQs" });
+    console.error("Error getting FAQ:", error);
+    res.status(500).json({ error: "Failed to get FAQ" });
   }
 };
