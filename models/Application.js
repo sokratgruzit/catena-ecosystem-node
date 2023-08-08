@@ -4,39 +4,48 @@ const applicationSchema = new mongoose.Schema(
     {
         name: {
             type: String,
-            default: ""
+            default: "",
+            required: false,
         },
         email: {
             type: String,
-            default: ""
+            default: "",
+            required: false,
         },
         phone: {
-            type: String,
+            type: Object,
+            default: {},
+            required: false,
         },
         descr: {
             type: String,
-            default: ""
-        },
-        quiz: {
-            type: String,
             default: "",
-            // required: true,
+            required: false,
         },
+        // quiz: {
+        //     type: String,
+        //     default: "",
+        //     // required: true,
+        // },
         lenguage: {
             type: String,
-            default: ""
+            default: "",
+            required: false,
         },
         info: {
             type: String,
-            default: ""
+            default: "",
+            required: false,
         },
         gitHub: {
             type: String,
-            default: ""
+            default: "",
+            required: false,
         },
         linkedin: {
             type: String,
-            default: ""
+            default: "",
+            required: false,
         },
         file: {
             type: String,

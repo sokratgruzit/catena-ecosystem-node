@@ -1,29 +1,27 @@
-import mongoose from "mongoose";
+import * as mongoose from "mongoose";
 
-const FaqSchema = new mongoose.Schema(
-  {
-    slug: {
-      type: String,
-      unique: true,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
-    translations: {
-      en: {
-        question: {
-          type: String,
-          required: true,
-        },
-        answer: {
-          type: String,
-          required: true,
-        },
-      },
-    },
+const faqSchema = new mongoose.Schema({
+  question: {
+    type: Object,
+    required: true,
   },
-  { timestamps: true }
-);
+  answer: {
+    type: Object,
+    required: true,
+  },
+  slug: {
+    type: Object,
+    required: true,
+    unique: true,
+  },
+  active_status: {
+    type: Boolean,
+    default: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-export const Faq = mongoose.model("Faq", FaqSchema);
+export const FAQ = mongoose.model("FAQ", faqSchema);

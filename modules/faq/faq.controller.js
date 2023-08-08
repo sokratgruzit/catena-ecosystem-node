@@ -1,31 +1,39 @@
-import { Faq } from "../../models/Faq.js";
+import { FAQ } from "../../models/Faq.js";
 
 export const create = async (req, res) => {
-  try {
-    const { slug, active, translations } = req.body;
+  const { question, answer, slug, active_status } = req.body;
 
-    if (!slug) {
-      return res.status(400).json({ error: "Slug is required" });
+  if (!question || !answer) {
+    return res.status(400).send({
+      message: "Fill all fields",
+    });
+  }
+
+  let exists = await FAQ.findOne({ slug });
+
+  if (exists) {
+    return res.status(200).json({ message: "FAQ already exists" });
+  } else {
+    try {
+      const faq = await FAQ.create({
+        question,
+        answer,
+        slug,
+        active_status,
+      });
+
+      return res.status(200).json(faq);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
     }
-
-    const existingFaq = await Faq.findOne({ slug });
-
-    if (existingFaq) {
-      return res.status(409).json({ error: "Slug already exists" });
-    }
-
-    const newFaq = await Faq.create({ slug, active, translations });
-    res.status(201).json(newFaq);
-  } catch (error) {
-    console.error("Error creating FAQ:", error);
-    res.status(500).json({ error: "Failed to create FAQ" });
   }
 };
 
 export const update = async (req, res) => {
   try {
     const { slug, active, translations } = req.body;
-    const updatedFaq = await Faq.findOneAndUpdate(
+    const updatedFaq = await FAQ.findOneAndUpdate(
       { _id: req.params._id },
       { slug, active, translations },
       { new: true }
@@ -42,7 +50,7 @@ export const update = async (req, res) => {
 
 export const remove = async (req, res) => {
   try {
-    const removedFaq = await Faq.findOneAndDelete({ _id: req.params._id }); 
+    const removedFaq = await FAQ.findOneAndDelete({ _id: req.params._id });
     if (!removedFaq) {
       return res.status(404).json({ error: "FAQ not found" });
     }
@@ -55,15 +63,13 @@ export const remove = async (req, res) => {
 
 export const getAllFaq = async (req, res) => {
   try {
-    const allFaqs = await Faq.find({});
-
-    if (!allFaqs || allFaqs.length === 0) {
-      return res.status(404).json({ message: "No FAQs found" });
+    const faq = await FAQ.find();
+    if (!faq) {
+      return res.status(404).json({ error: "FAQ not found" });
     }
-
-    res.status(200).json(allFaqs);
+    res.status(200).json(faq);
   } catch (error) {
-    console.error("Error retrieving FAQs:", error);
-    res.status(500).json({ error: "Failed to get FAQs" });
+    console.error("Error getting FAQ:", error);
+    res.status(500).json({ error: "Failed to get FAQ" });
   }
 };
