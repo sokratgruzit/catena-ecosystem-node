@@ -31,12 +31,11 @@ import fs from "fs";
 //         $sort: { createdAt: -1 },
 //       },
 //       {
-//         $addFields: {
+//         $addFields: {translateFindWithKey
 //           translations: {
 //             $arrayToObject: {
-//               $map: {
-//                 input: "$translations",
-//                 as: "announcement",
+//               $map: {translateFindWithKey
+//                 as: "announcement",translateFindWithKey
 //                 in: {
 //                   k: "$$announcement.lang",
 //                   v: "$$announcement",
