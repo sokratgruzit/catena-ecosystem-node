@@ -3,6 +3,9 @@ import { FAQ } from "../../models/Faq.js";
 export const create = async (req, res) => {
   const { question, answer, slug, active_status } = req.body;
 
+  console.log(req.body);
+
+
   if (!question || !answer) {
     return res.status(400).send({
       message: "Fill all fields",
