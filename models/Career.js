@@ -64,6 +64,7 @@ const careerShema = new mongoose.Schema(
         },
         type: {
             type: String,
+            defoult: "",
             default: false,
         },
         featured: {
@@ -71,15 +72,18 @@ const careerShema = new mongoose.Schema(
             default: false,
         },
         job_posting_from: {
-            type: Number,
+            type: String,
+            defoult: "",
             default: false,
         },
         job_posting_to: {
-            type: Number,
+            type: String,
+            defoult: "",
             default: false,
         },
         job_id: {
-            type: Number,
+            type: String,
+            defoult: "",
             default: false,
         },
     },
