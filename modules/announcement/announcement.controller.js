@@ -1,5 +1,4 @@
 import { Announcement } from "../../models/Announcement.js";
-
 import fs from "fs";
 
 // export const findAllActiveAnnouncement = async (req, res) => {
@@ -32,12 +31,11 @@ import fs from "fs";
 //         $sort: { createdAt: -1 },
 //       },
 //       {
-//         $addFields: {
+//         $addFields: {translateFindWithKey
 //           translations: {
 //             $arrayToObject: {
-//               $map: {
-//                 input: "$translations",
-//                 as: "announcement",
+//               $map: {translateFindWithKey
+//                 as: "announcement",translateFindWithKey
 //                 in: {
 //                   k: "$$announcement.lang",
 //                   v: "$$announcement",
@@ -80,130 +78,6 @@ import fs from "fs";
 //   }
 // };
 
-// export const getAllAnnouncement = async (req, res) => {
-//   try {
-
-//     // console.log(res)
-//     console.log(req.data)
-
-
-//     // let limit = req.body.limit ? req.body.limit:10;
-//     // let page = req.body.page ? req.body.page:1;
-
-//     // const returnData = await Announcement.aggregate([
-//     //   {
-//     //     $lookup: {
-//     //       from: "anouncementtranslates",
-//     //       localField: "_id",
-//     //       foreignField: "announcement",
-//     //       as: "translations",
-//     //     },
-//     //   },
-//     //   {
-//     //     $limit: limit + limit * (page - 1),
-//     //   },
-//     //   {
-//     //     $skip: limit * (page - 1),
-//     //   },
-//     //   {
-//     //     $sort: { createdAt: -1 },
-//     //   },
-//     //   {
-//     //     $addFields: {
-//     //       translations: {
-//     //         $arrayToObject: {
-//     //           $map: {
-//     //             input: "$translations",
-//     //             as: "announcement",
-//     //             in: {
-//     //               k: "$$announcement.lang",
-//     //               v: "$$announcement",
-//     //             },
-//     //           },
-//     //         },
-//     //       },
-//     //     },
-//     //   },
-//     // ]);
-
-//     // const totalCount = await Announcement.countDocuments();
-//     // const totalPages = Math.ceil(totalCount / (req.body.limit || 10));
-
-//     res.status(200).json({
-//       // returnData,
-//       // totalPages,
-//     });
-//   } catch (error) {
-//     return res.status(500).send({ error: "Error to getting Announcement" });
-//   }
-// };
-
-// let tableData;
-// tableData = td?.map((item, index) => {
-//   return (
-//     <div
-//       key={index}
-//       className={`table-parent ${mobileExpand === index ? "active" : ""}`}
-//     >
-//       <div
-//         className="table"
-//         style={{
-//           width: `calc(100% - ${mobile ? "75px" : "50px"})`,
-//           cursor: "pointer",
-//         }}
-//         onClick={() => {
-//           mobileExpandFunc(index);
-//         }}
-//       >
-//         <div
-//           className={`td ${th[0].mobileWidth ? true : false}`}
-//           style={{ width: `${mobile ? th[0].mobileWidth : th[0].width}%` }}
-//         >
-//           <span>{item?.title["en"]["event.title"]}</span>
-//         </div>
-//         <div
-//           className={`td ${th[1].mobileWidth ? true : false}`}
-//           style={{ width: `${mobile ? th[1].mobileWidth : th[1].width}%` }}
-//         >
-//           <span>{item?.text["en"]["event.text"]}</span>
-//         </div>
-//         <div
-//           className={`td ${th[4].mobileWidth ? true : false}`}
-//           style={{ width: `${mobile ? th[4].mobileWidth : th[4].width}%` }}
-//         >
-//           <img
-//             className={styles.itemImg}
-//             src={`http://localhost:4003/uploads/event/${item?.logo_image}`}
-//             alt="img"
-//           />
-//         </div>
-//       </div>
-//       <div
-//         className="icon-place"
-//         onClick={() => {
-//           mobileExpandFunc(index);
-//         }}
-//       >
-//         <ArrowDown />
-//       </div>
-//       <div className="table-more" style={{ display: "flex" }}>
-//         <MoreButton dropdownData={dynamicDropDown(item)} />
-//       </div>
-//       <div className="table-mobile">
-//         <div className="table-mobile-content">
-//           <div className="td">
-//             <div className="mobile-ttl">{th[4].name}</div>
-//             <img
-//               className={styles.itemImg}
-//               src={`http://localhost:4003/uploads/event/${item?.logo_image}`}
-//               alt="img"
-//             />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// });
 
 export const create = async (req, res) => {
   const {
@@ -212,11 +86,11 @@ export const create = async (req, res) => {
     inner_descr,
     active_status,
     category,
-    persons,
     image,
-    logo_image,
-    slug,
+    cover_image,
   } = req.body;
+
+  console.log(req.body)
 
   if (!title || !text || !inner_descr) {
     return res.status(400).send({
@@ -224,11 +98,11 @@ export const create = async (req, res) => {
     });
   }
 
-  let exists = await Press.findOne({ slug });
+  let exists = await Announcement.findOne({ title });
 
   if (exists) {
-    let imgPath = `uploads/press/${image}`;
-    let logoPath = `uploads/press/${logo_image}`;
+    let imgPath = `uploads/announcement/${image}`;
+    let coverImage = `uploads/announcement/${cover_image}`;
 
     fs.unlink(imgPath, (err) => {
       if (err) {
@@ -238,7 +112,7 @@ export const create = async (req, res) => {
       }
     });
 
-    fs.unlink(logoPath, async (err) => {
+    fs.unlink(coverImage, async (err) => {
       if (err) {
         console.error("Error deleting file:", err);
       } else {
@@ -249,16 +123,14 @@ export const create = async (req, res) => {
     return res.status(200).json({ message: "Press already exists" });
   } else {
     try {
-      const press = await Press.create({
+      const press = await Announcement.create({
         title,
         text,
         inner_descr,
         image,
-        logo_image,
+        cover_image,
         active_status,
         category,
-        persons,
-        slug,
       });
 
       return res.status(200).json(press);
@@ -268,169 +140,139 @@ export const create = async (req, res) => {
     }
   }
 };
+export const getAllAnnouncement = async (req, res) => {
+  try {
+    const announcement = await Announcement.find();
 
-// export const updateActiveStatus = async (req, res) => {
-//   try {
-//     const { _id } = req.body;
-//     const id = mongoose.Types.ObjectId(_id);
-//     let activeStatus = req.body.active_status;
-//     let data = req.body;
+    return res.status(200).json(announcement);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
-//     await Announcement.findOneAndUpdate({ _id: id }, {
-//       slug: data.slug,
-//       active_status: activeStatus,
-//     });
+export const deleteOneAnnouncement = async (req, res) => {
+  const { _id } = req.body;
+  const announcement = await Announcement.findOne({ _id });
 
-//     const returnData = await Announcement.aggregate([
-//       {
-//         $match: {
-//           _id: id,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "anouncementtranslates",
-//           localField: "_id",
-//           foreignField: "announcement",
-//           as: "translations",
-//         },
-//       },
-//       {
-//         $addFields: {
-//           translations: {
-//             $arrayToObject: {
-//               $map: {
-//                 input: "$translations",
-//                 as: "announcement",
-//                 in: {
-//                   k: "$$announcement.lang",
-//                   v: "$$announcement",
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       },
-//     ]);
+  if (announcement) {
+    let imgPath = `uploads/announcement/${announcement.image}`;
+    let coverPath = `uploads/announcement/${announcement.cover_image}`;
 
-//     res.status(200).json(returnData);
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(500).send({ error: "Failed to update active status" });
-//   }
-// };
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
 
-// export const update = async (req, res) => {
-//   // const {
-//   //   _id,
-//   //   name,
-//   //   title,
-//   //   text,
-//   //   badge,
-//   //   inner_descr } = req.body;
-//   // const filter = { _id };
-//   // const update = { title, text, badge, inner_descr, name };
+    fs.unlink(coverPath, async (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
 
-//   try {
-//     // const updateToggleStatus = await Announcement.findOneAndUpdate(filter, update, { new: true })
+    await Announcement.deleteOne({ _id });
 
-//     // return res.status(200).send(updateToggleStatus);
+    res.status(200).json({
+      message: "announcement removed successfully",
+    });
+  } else {
+    res.status(200).json({
+      message: "announcement not found",
+    });
+  }
+};
 
-//     const { _id } = req.body;
-//     const id = mongoose.Types.ObjectId(_id);
-//     let data = req.body;
+export const updateActiveStatus = async (req, res) => {
+  const { _id, active_status } = req.body;
+  const filter = { _id };
+  const update = { active_status };
 
-//     await Announcement.findOneAndUpdate({ _id: id }, { slug: data.slug });
-//     let translatedData = [];
-//     await anouncementTranslate.deleteMany({ announcement: id });
+  try {
+    const updateToggleStatus = await Announcement.findOneAndUpdate(filter, update, {
+      new: true,
+    });
 
-//     for (let i = 0; i < languages.length; i++) {
-//       translatedData.push({
-//         lang: languages[i].code,
-//         name: data[languages[i].code]?.name,
-//         title: data[languages[i].code]?.title,
-//         text: data[languages[i].code]?.text,
-//         badge: data[languages[i].code]?.badge,
-//         inner_descr: data[languages[i].code]?.inner_descr,
-//         announcement: id.toString(),
-//       });
-//     }
+    return res.status(200).send(updateToggleStatus);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
-//     await anouncementTranslate.insertMany(translatedData);
+export const updateAnnouncement = async (req, res) => {
+  const {
+    _id,
+    title,
+    text,
+    inner_descr,
+    image,
+    cover_image,
+    active_status,
+    category,
+  } = req.body;
 
-//     const returnData = await Announcement.aggregate([
-//       {
-//         $match: {
-//           _id: id,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "anouncementtranslates",
-//           localField: "_id",
-//           foreignField: "announcement",
-//           as: "translations",
-//         },
-//       },
-//       {
-//         $addFields: {
-//           translations: {
-//             $arrayToObject: {
-//               $map: {
-//                 input: "$translations",
-//                 as: "announcement",
-//                 in: {
-//                   k: "$$announcement.lang",
-//                   v: "$$announcement",
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       },
-//     ]);
+  console.log(req.body)
 
-//     return res.status(200).json(returnData)
-//   } catch (error) {
-//     return res.status(500).send({ error: "Failed to update active status" });
-//   }
-// };
+  if (!title || !text || !inner_descr) {
+    return res.status(200).send({
+      message: "Fill all fealds",
+    });
+  }
 
-// function convertToSlug(title) {
-//   const slug = title
-//     .toLowerCase() // Convert to lowercase
-//     .replace(/[^\w\s-]/g, "") // Remove non-word characters (except spaces and hyphens)
-//     .replace(/\s+/g, "-") // Replace spaces with hyphens
-//     .replace(/--+/g, "-") // Replace multiple consecutive hyphens with a single hyphen
-//     .trim(); // Remove leading/trailing spaces
+  const findOldImgs = await Announcement.findOne({ _id });
+  const oldImg = findOldImgs.image;
+  const oldLogoImg = findOldImgs.cover_image;
 
-//   return slug;
-// }
+  if (image && oldImg !== image) {
+    let imgPath = `uploads/announcement/${oldImg}`;
 
-// export const destroyOneAnnouncement = async (req, res) => {
-//   try {
-//     const result = await Announcement.deleteOne({ _id: req.body._id });
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
+  }
 
-//     if (result.acknowledged === true) {
-//       return res
-//         .status(200)
-//         .json({ message: "Announcement successuly deleted" });
-//     }
-//     res.status(400).json({ message: "Announcement deletion failed" });
-//   } catch (e) {
-//     console.log(e.message);
-//     res.status(400).json({ message: e.message });
-//   }
-// };
+  if (cover_image && oldLogoImg !== cover_image) {
+    let logoPath = `uploads/announcement/${oldLogoImg}`;
 
-// export const deleteManyAnnouncement = async (req, res) => {
-//   const { _id } = req.body;
+    fs.unlink(logoPath, async (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
+  }
 
-//   try {
-//     const deleteMany = await Announcement.deleteMany({ _id: _id });
-
-//     return res.status(200).json(deleteMany);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
+  if (category[0] === "" || persons[0] === "") {
+    return res.status(200).json({ "message": "Please choose a category and a person"});
+  } else {
+    const updatedAnnouncement = await Announcement.findByIdAndUpdate(
+      _id,
+      {
+        title,
+        text,
+        inner_descr,
+        active_status,
+        category,
+        image,
+        cover_image,
+      },
+      { new: true }
+    );
+  
+    if (!updatedAnnouncement) {
+      res.status(200).json({
+        message: "Announcementnot found",
+      });
+    } else {
+      res.status(200).json({ message: "Announcementupdated" });
+    }
+  }
+};
