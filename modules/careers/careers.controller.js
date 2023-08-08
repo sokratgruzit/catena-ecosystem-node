@@ -3,32 +3,35 @@ import { Career } from "../../models/Career.js";
 export const create = async (req, res) => {
     const {
         title,
-        inner_descr,
-        slug,
-        active_status,
-        job_type,
-        remote,
         department,
+        summary,
         responsibilities,
         requirements,
         benefits,
-        working_at_core_multichain,
-        how_we_work,
         about_core_multichain,
+        worcking_at_core_multichain,
+        how_we_work,
         job_level,
-        lenguages,
-        featured
+        salary_range_from,
+        salary_range_to,
+        career_languages,
+        locations,
+        type,
+        featured,
+        job_posting_from,
+        job_posting_to,
+        job_id
     } = req.body;
 
     console.log(req.body)
 
-    if (!title || !inner_descr || !slug || !job_type || !department || !responsibilities || !requirements || !job_level) {
-        return res.status(400).send({
-            message: "Fill all fealds",
-        });
-    }
+    // if (!title || !inner_descr || !slug || !job_type || !department || !responsibilities || !requirements || !job_level) {
+    //     return res.status(400).send({
+    //         message: "Fill all fealds",
+    //     });
+    // }
 
-    let exists = await Career.findOne({ slug });
+    let exists = await Career.findOne({ title });
 
     if (exists) {
         return res.status(200).json({ message: "already exists" });
@@ -36,21 +39,24 @@ export const create = async (req, res) => {
         try {
             const career = await Career.create({
                 title,
-                inner_descr,
-                slug,
-                active_status,
-                job_type,
-                remote,
                 department,
+                summary,
                 responsibilities,
                 requirements,
                 benefits,
-                working_at_core_multichain,
-                how_we_work,
                 about_core_multichain,
+                worcking_at_core_multichain,
+                how_we_work,
                 job_level,
-                lenguages,
-                featured
+                salary_range_from,
+                salary_range_to,
+                career_languages,
+                locations,
+                type,
+                featured,
+                job_posting_from,
+                job_posting_to,
+                job_id
             });
 
             return res.status(200).json(career);
@@ -79,21 +85,24 @@ export const editCareer = async (req, res) => {
     const {
         _id,
         title,
-        inner_descr,
-        slug,
-        active_status,
-        job_type,
-        remote,
         department,
+        summary,
         responsibilities,
         requirements,
         benefits,
-        working_at_core_multichain,
-        how_we_work,
         about_core_multichain,
+        worcking_at_core_multichain,
+        how_we_work,
         job_level,
-        lenguages,
-        featured
+        salary_range_from,
+        salary_range_to,
+        career_languages,
+        locations,
+        type,
+        featured,
+        job_posting_from,
+        job_posting_to,
+        job_id
     } = req.body;
 
     console.log(req.body)
@@ -102,21 +111,24 @@ export const editCareer = async (req, res) => {
             { _id: _id },
             {
                 title,
-                inner_descr,
-                slug,
-                active_status,
-                job_type,
-                remote,
                 department,
+                summary,
                 responsibilities,
                 requirements,
                 benefits,
-                working_at_core_multichain,
-                how_we_work,
                 about_core_multichain,
+                worcking_at_core_multichain,
+                how_we_work,
                 job_level,
-                lenguages,
-                featured
+                salary_range_from,
+                salary_range_to,
+                career_languages,
+                locations,
+                type,
+                featured,
+                job_posting_from,
+                job_posting_to,
+                job_id
             },
             { new: true }
         );

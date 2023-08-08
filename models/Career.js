@@ -11,31 +11,32 @@ const careerShema = new mongoose.Schema(
             default: {}
         },
         summary: {
-            type: String,
-            unique: true,
+            type: Object,
+            default: {}
           },
         responsibilities: {
-            type: Boolean,
-            default: false,
+            type: Object,
+            default: {},
         },
         requirements: {
-            type: String,
-            default: ""
+            type: Object,
+            default: {}
         },
         benefits: {
-            type: Boolean,
-            default: false,
+            type: Object,
+            default: {},
         },
         about_core_multichain: {
-            type: String,
+            type: Object,
+            default:{}
         },
         worcking_at_core_multichain: {
-            type: Array,
-            defoult: []
+            type: Object,
+            default:{}
         },
         how_we_work: {
-            type: Array,
-            defoult: []
+            type: Object,
+            default:{}
         },
         job_level: {
             type: String,
@@ -50,7 +51,7 @@ const careerShema = new mongoose.Schema(
             defoult: ""
         },
         educational_level: {
-            type: Object,
+            type: String,
             defoult: ""
         },
         career_languages: {
