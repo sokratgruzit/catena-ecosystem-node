@@ -17,32 +17,32 @@ export const create = async (req, res) => {
   } = req.body;
 
   console.log(req.body)
-  // if (!name || !email || !phone) {
-  //   return res.status(400).send({
-  //     message: "Fill all fealds",
-  //   });
-  // }
+  if (!name || !email || !phone) {
+    return res.status(400).send({
+      message: "Fill all fealds",
+    });
+  }
 
-  // let exists = await Application.findOne({ phone });
+  let exists = await Application.findOne({ phone });
 
-  // if (exists) {
-  //   let imgPath = `uploads/application/${file}`;
+  if (exists) {
+    let imgPath = `uploads/application/${file}`;
 
-  //   fs.unlink(imgPath, (err) => {
-  //     if (err) {
-  //       console.error("Error deleting file:", err);
-  //     } else {
-  //       console.log("File deleted successfully!");
-  //     }
-  //   });
+    fs.unlink(imgPath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully!");
+      }
+    });
 
-  //   return res.status(200).json({ message: "application already exists" });
-  // } else {
+    return res.status(200).json({ message: "application already exists" });
+  } else {
       try {
         const application = await Application.create({
           name,
           email,
-          phone,
+          phone: phone.toString(),
           descr,
           quiz,
           language,
@@ -58,7 +58,7 @@ export const create = async (req, res) => {
         console.log(error);
         return res.status(500).json(error);
       }
-  // }
+  }
 };
 
 export const getAllApplication = async (req, res) => {
@@ -112,7 +112,6 @@ export const deleteOneApplication = async (req, res) => {
   }
 };
 
-// export const updatePress = async (req, res) => {
 //   const {
 //     _id,
 //     title,
