@@ -13,8 +13,8 @@ const applicationSchema = new mongoose.Schema(
             required: false,
         },
         phone: {
-            type: String,
-            default: "0",
+            type: Object,
+            default: {},
             required: false,
         },
         descr: {

@@ -42,7 +42,7 @@ export const create = async (req, res) => {
         const application = await Application.create({
           name,
           email,
-          phone: phone.toString(),
+          phone,
           descr,
           quiz,
           language,
