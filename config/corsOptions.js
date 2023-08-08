@@ -1,6 +1,6 @@
 const corsOptions = {
   credentials: true,
-  origin: "https://catena-react-admin-module.vercel.app",
+  origin: "https://catena.motoburti.ge",
   // origin: (origin, callback) => {
   //   callback(null, true);
   // },
