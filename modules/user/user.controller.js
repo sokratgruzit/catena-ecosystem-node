@@ -10,10 +10,8 @@ export async function getUserInfo(req, res) {
     if (!address) return res.status(400).send("no address");
     address = address.toLowerCase();
 
-    // const userId = req.userId;
-    // if (!userId) return res.status(404).send("unauthorized");
-
     const user = await User.findOne({ address: address });
+
     if (!user) return res.status(404).send("no user found");
 
     const returnUser = {
@@ -32,32 +30,9 @@ export async function getUserInfo(req, res) {
   }
 }
 
-// export async function makeProfile(req, res) {
-//   try {
-//     let { address, fullname, email, mobile, dateOfBirth, nationality } = req.body;
-
-//     if (!address) return res.status(400).send("no address");
-//     address = address.toLowerCase();
-
-//     const foundUser = await User.findOne({ address });
-//     if (!foundUser) return res.status(400).send("no user found");
-
-//     await imageUpload(address, req.file, "profile");
-//     const updatedUser = await User.findOneAndUpdate(
-//       { address },
-//       { fullname, email, mobile, dateOfBirth, nationality },
-//       { new: true },
-//     );
-
-//     res.status(200).send({ result: updatedUser });
-//   } catch (e) {
-//     return res.status(404).send("something went wrong");
-//   }
-// }
-
 export async function makeProfile(req, res) {
   try {
-    let { address, fullname, email, mobile, dateOfBirth, nationality } = req.body;
+    let { address, fullname, email, mobile, dateOfBirth, password } = req.body;
  
     if (!address) return res.status(400).send("no address");
     address = address.toLowerCase();
@@ -77,6 +52,7 @@ export async function makeProfile(req, res) {
       foundUser.isEmailVerified = false;
       foundUser.email = "";
       foundUser.tempEmail = email;
+      foundUser.password = password;
       await foundUser.save();
       await send_verification_mail(email, token);
       // Send verification email to the new email
@@ -93,16 +69,23 @@ export async function makeProfile(req, res) {
       foundUser.emailVerificationToken = undefined;
       foundUser.tempEmail = undefined;
       foundUser.email = "";
+      foundUser.password = "";
       await foundUser.save();
     }
 
+    let clearedUser = {};
     const updatedUser = await User.findOneAndUpdate(
       { address },
-      { fullname, mobile, dateOfBirth, nationality },
+      { fullname, mobile, dateOfBirth, password },
       { new: true },
     );
 
-    res.status(200).send({ result: updatedUser });
+    clearedUser.email = updatedUser.isEmailVerified ? updatedUser.email : updatedUser.tempEmail;
+    clearedUser.dateOfBirth = updatedUser.dateOfBirth;
+    clearedUser.mobile = updatedUser.mobile;
+    clearedUser.fullname = updatedUser.fullname;
+
+    res.status(200).send(clearedUser);
   } catch (e) {
     console.log(e);
     return res.status(404).send("something went wrong");

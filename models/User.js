@@ -5,10 +5,9 @@ import crypto from "crypto";
 const userSchema = new mongoose.Schema({
   address: { type: String, required: true, unique: true },
   fullname: { type: String, required: false },
-  email: { type: String, required: false, unique: true },
+  email: { type: String, required: false, unique: false },
   mobile: { type: String, required: false },
   dateOfBirth: { type: Date, required: false },
-  nationality: { type: String, required: false },
   password: { type: String, required: false },
   isEmailVerified: {
     type: Boolean,
