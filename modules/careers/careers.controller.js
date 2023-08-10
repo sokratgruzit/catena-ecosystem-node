@@ -20,18 +20,21 @@ export const create = async (req, res) => {
         featured,
         job_posting_from,
         job_posting_to,
-        job_id
     } = req.body;
 
-    console.log(req.body)
+    if (!title || !department) {
+        return res.status(400).send({
+            message: "Fill all fealds",
+        });
+    }
 
-    // if (!title || !inner_descr || !slug || !job_type || !department || !responsibilities || !requirements || !job_level) {
-    //     return res.status(400).send({
-    //         message: "Fill all fealds",
-    //     });
-    // }
-
-    let exists = await Career.findOne({ title });
+    let exists = await Career.findOne({ slug });
+    let allCareer = await Career.find();
+    let row = "00000" + (allCareer.length + 1);
+    let ROW = row.slice(-6);
+    let dep = department.substring(0, 2);
+    let DEP = dep.toUpperCase();
+    let slug = DEP + ROW;
 
     if (exists) {
         return res.status(200).json({ message: "already exists" });
@@ -56,7 +59,7 @@ export const create = async (req, res) => {
                 featured,
                 job_posting_from,
                 job_posting_to,
-                job_id
+                slug
             });
 
             return res.status(200).json(career);
@@ -102,7 +105,7 @@ export const editCareer = async (req, res) => {
         featured,
         job_posting_from,
         job_posting_to,
-        job_id
+        slug
     } = req.body;
 
     console.log(req.body)
@@ -128,7 +131,7 @@ export const editCareer = async (req, res) => {
                 featured,
                 job_posting_from,
                 job_posting_to,
-                job_id
+                slug
             },
             { new: true }
         );
@@ -157,6 +160,17 @@ export const getAllCareers = async (req, res) => {
 export const getActiveCareers = async (req, res) => {
     try {
         const career = await Career.find({ active_status: true });
+
+        return res.status(200).json(career);
+    } catch (error) {
+        return req.status(500).send({ error: "Error Editing Career" })
+    }
+};
+
+export const getCareerById = async (req, res) => {
+    const { _id } = req.body
+    try {
+        const career = await Career.find({ _id });
 
         return res.status(200).json(career);
     } catch (error) {

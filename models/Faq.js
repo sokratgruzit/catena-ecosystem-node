@@ -1,27 +1,17 @@
 import * as mongoose from "mongoose";
 
-const faqSchema = new mongoose.Schema({
-  question: {
-    type: Object,
-    required: true,
+const faqSchema = new mongoose.Schema(
+  {
+    question: {
+      type: Object,
+      default: {},
+    },
+    answer: {
+      type: Object,
+      default: {},
+    },
   },
-  answer: {
-    type: Object,
-    required: true,
-  },
-  slug: {
-    type: Object,
-    required: true,
-    unique: true,
-  },
-  active_status: {
-    type: Boolean,
-    default: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
 export const FAQ = mongoose.model("FAQ", faqSchema);
