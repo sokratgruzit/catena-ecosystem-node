@@ -1,7 +1,7 @@
 import { FAQ } from "../../models/Faq.js";
 
 export const create = async (req, res) => {
-  const { question, answer, slug, active_status } = req.body;
+  const { question, answer } = req.body;
 
   if (!question || !answer) {
     return res.status(400).send({
@@ -9,7 +9,7 @@ export const create = async (req, res) => {
     });
   }
 
-  let exists = await FAQ.findOne({ slug });
+  let exists = await FAQ.findOne({ question });
 
   if (exists) {
     return res.status(200).json({ message: "FAQ already exists" });
@@ -18,8 +18,6 @@ export const create = async (req, res) => {
       const faq = await FAQ.create({
         question,
         answer,
-        slug,
-        active_status,
       });
 
       return res.status(200).json(faq);
@@ -31,11 +29,21 @@ export const create = async (req, res) => {
 };
 
 export const update = async (req, res) => {
+  const { question, answer } = req.body;
+
+  if (!question || !answer) {
+    return res.status(400).send({
+      message: "Fill all fields",
+    });
+  }
+
   try {
-    const { slug, active, translations } = req.body;
     const updatedFaq = await FAQ.findOneAndUpdate(
       { _id: req.params._id },
-      { slug, active, translations },
+      {
+        question,
+        answer,
+      },
       { new: true }
     );
     if (!updatedFaq) {

@@ -13,15 +13,21 @@ export const registerWalletAddress = async (req, res) => {
 
     const existingUser = await User.findOne({ address });
 
-    if (existingUser)
+    if (existingUser) {
       return res.status(200).send({
         message: "A user with this address already exists",
       });
-
-    const user = new User({ address });
-    await user.save();
-
-    res.status(200).send({ message: "user saved successfully" });
+    }
+    
+    try {
+      const user = new User({ address });
+      await user.save();
+  
+      res.status(200).send({ message: "user saved successfully" });
+    } catch (e) {
+      console.log(e);
+      res.status(200).send({ message: e });
+    }
   } catch (e) {
     return res.status(500).send({ error: "something went wrong" });
   }
