@@ -20,7 +20,6 @@ export const create = async (req, res) => {
         featured,
         job_posting_from,
         job_posting_to,
-        job_id
     } = req.body;
 
     console.log(req.body)
@@ -32,6 +31,12 @@ export const create = async (req, res) => {
     // }
 
     let exists = await Career.findOne({ title });
+    let allCareer = await Career.find();
+    let row = "00000" + (allCareer.length + 1);
+    let ROW = row.slice(-6);
+    let dep = department.substring(0, 2);
+    let DEP = dep.toUpperCase();
+    let job_id = DEP + ROW;
 
     if (exists) {
         return res.status(200).json({ message: "already exists" });
