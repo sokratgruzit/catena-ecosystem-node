@@ -17,10 +17,10 @@ export async function getUserInfo(req, res) {
     const returnUser = {
       address: user.address,
       fullname: user.fullname,
-      email: user.email,
+      email: user.isEmailVerified ? user.email : user.tempEmail,
       mobile: user.mobile,
       dateOfBirth: user.dateOfBirth,
-      nationality: user.nationality,
+      _id: user._id
     };
 
     return res.status(200).send({ user: returnUser });
@@ -32,7 +32,7 @@ export async function getUserInfo(req, res) {
 
 export async function makeProfile(req, res) {
   try {
-    let { address, fullname, email, mobile, dateOfBirth, password } = req.body;
+    let { address, fullname, email, mobile, dateOfBirth, password, locale } = req.body;
  
     if (!address) return res.status(400).send("no address");
     address = address.toLowerCase();
@@ -54,14 +54,14 @@ export async function makeProfile(req, res) {
       foundUser.tempEmail = email;
       foundUser.password = password;
       await foundUser.save();
-      await send_verification_mail(email, token);
+      await sendVerificationEmail(email, token, locale);
       // Send verification email to the new email
     } else if (!foundUser.isEmailVerified && email) {
       // User is not verified, and a new email is provided, send a verification email
       const token = foundUser.generateEmailVerificationToken();
       foundUser.tempEmail = email;
       await foundUser.save();
-      await send_verification_mail(email, token);
+      await sendVerificationEmail(foundUser.tempEmail, token, locale);
       // Send verification email to the new email
     } else {
       foundUser.isEmailVerified = false;
@@ -74,9 +74,13 @@ export async function makeProfile(req, res) {
     }
 
     let clearedUser = {};
+    let query = { fullname, mobile, dateOfBirth, password };
+
+    if (password === "") query = { fullname, mobile, dateOfBirth };
+
     const updatedUser = await User.findOneAndUpdate(
       { address },
-      { fullname, mobile, dateOfBirth, password },
+      query,
       { new: true },
     );
 
@@ -93,28 +97,33 @@ export async function makeProfile(req, res) {
 }
 
 export async function verifyEmail(req, res) {
+  const { token } = req.params;
+
   try {
     const user = await User.findOne({
-      emailVerificationToken: req.params.token,
+      emailVerificationToken: token,
       emailVerificationExpires: { $gt: Date.now() },
     });
 
     if (!user) {
       return res.status(400).send("Invalid or expired token.");
     }
+
     user.isEmailVerified = true;
     user.emailVerificationToken = undefined;
     user.emailVerificationExpires = undefined;
     user.email = user.tempEmail;
     user.tempEmail = undefined;
+
     await user.save();
+
     res.status(200).send("Email verified");
   } catch (e) {
     res.status(404).send("Something went wrong");
   }
 }
 
-export async function send_verification_mail(email, verification_code) {
+export async function sendVerificationEmail(email, verificationCode, locale) {
   try {
     var transporter = nodemailer.createTransport({
       service: "gmail",
@@ -129,7 +138,7 @@ export async function send_verification_mail(email, verification_code) {
       to: email,
       subject: "Verification Email",
       html: verification_template(
-        process.env.FRONTEND_URL + "/verify/email/" + verification_code,
+        `${process.env.FRONTEND_URL}/${locale}/overview/verify-email?token=${verificationCode}`,
       ),
     };
 
@@ -141,52 +150,4 @@ export async function send_verification_mail(email, verification_code) {
   }
 }
 
-// export async function makeProfile(req, res) {
-//   try {
-//     let { address, fullname, email, mobile, dateOfBirth, nationality } = req.body;
-//     address = address.toLowerCase();
 
-//     const image = await imageUpload(
-//       address,
-//       req.files.image,
-//       req.files.image.path,
-//       "profile",
-//     );
-//     const updatedUser = await User.findOneAndUpdate(
-//       { address },
-//       { fullname, email, mobile, dateOfBirth, nationality },
-//       { new: true },
-//     );
-
-//     res.status(200).send({ result: updatedUser });
-//   } catch (e) {
-//     console.log(e);
-//     return res.status(404).send("something went wrong");
-//   }
-// }
-// export async function validateAddress(req, res, next) {
-//   const form = formidable({ multiples: true });
-
-//   form.parse(req, async (err, fields, files) => {
-//     if (err) {
-//       console.error("Error", err);
-//       throw err;
-//     }
-
-//     console.log(fields);
-//     console.log(files);
-
-//     let { address } = fields;
-
-//     if (!address) return res.status(400).send("no address");
-//     address = address.toLowerCase();
-
-//     const foundUser = await User.findOne({ address });
-//     if (!foundUser) return res.status(400).send("no user found");
-
-//     req.body = fields; // save the fields to req.body so they can be used in the next middleware
-//     req.files = files; // save the files to req.files so they can be used in the next middleware
-
-//     next(); // Go to the next middleware
-//   });
-// }
