@@ -22,13 +22,11 @@ export const create = async (req, res) => {
         job_posting_to,
     } = req.body;
 
-    console.log(req.body)
-
-    // if (!title || !inner_descr || !slug || !job_type || !department || !responsibilities || !requirements || !job_level) {
-    //     return res.status(400).send({
-    //         message: "Fill all fealds",
-    //     });
-    // }
+    if (!title || !department) {
+        return res.status(400).send({
+            message: "Fill all fealds",
+        });
+    }
 
     let exists = await Career.findOne({ slug });
     let allCareer = await Career.find();
