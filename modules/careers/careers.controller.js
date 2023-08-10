@@ -30,13 +30,13 @@ export const create = async (req, res) => {
     //     });
     // }
 
-    let exists = await Career.findOne({ title });
+    let exists = await Career.findOne({ slug });
     let allCareer = await Career.find();
     let row = "00000" + (allCareer.length + 1);
     let ROW = row.slice(-6);
     let dep = department.substring(0, 2);
     let DEP = dep.toUpperCase();
-    let job_id = DEP + ROW;
+    let slug = DEP + ROW;
 
     if (exists) {
         return res.status(200).json({ message: "already exists" });
@@ -61,7 +61,7 @@ export const create = async (req, res) => {
                 featured,
                 job_posting_from,
                 job_posting_to,
-                job_id
+                slug
             });
 
             return res.status(200).json(career);
@@ -107,7 +107,7 @@ export const editCareer = async (req, res) => {
         featured,
         job_posting_from,
         job_posting_to,
-        job_id
+        slug
     } = req.body;
 
     console.log(req.body)
@@ -133,7 +133,7 @@ export const editCareer = async (req, res) => {
                 featured,
                 job_posting_from,
                 job_posting_to,
-                job_id
+                slug
             },
             { new: true }
         );
