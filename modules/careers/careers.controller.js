@@ -29,6 +29,7 @@ export const create = async (req, res) => {
     }
 
     let exists = await Career.findOne({ slug });
+    
     let allCareer = await Career.find();
     let row = "00000" + (allCareer.length + 1);
     let ROW = row.slice(-6);
