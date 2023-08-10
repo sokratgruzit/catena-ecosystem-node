@@ -29,7 +29,7 @@ export const create = async (req, res) => {
     }
 
     let exists = await Career.findOne({ slug });
-    
+
     let allCareer = await Career.find();
     let row = "00000" + (allCareer.length + 1);
     let ROW = row.slice(-6);
@@ -169,12 +169,36 @@ export const getActiveCareers = async (req, res) => {
 };
 
 export const getCareerById = async (req, res) => {
-    const { _id } = req.body
+    const { slug } = req.body
     try {
-        const career = await Career.find({ _id });
+        const career = await Career.find({ slug });
 
         return res.status(200).json(career);
     } catch (error) {
         return req.status(500).send({ error: "Error Editing Career" })
     }
 };
+
+export const getAllCareerSlug = async (req, res) => {
+    try {
+      const career = await Career.find({}, { slug: 1, _id: 0 });
+  
+      return res.status(200).json(career);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  }; 
+
+  export const getOneCareer = async (req, res) => {
+    const { slug } = req.body;
+    try {
+      const career = await Career.findOne({ slug })
+        .populate("category")
+        .populate("persons")
+        .exec();
+  
+      return res.status(200).json(career);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  };
