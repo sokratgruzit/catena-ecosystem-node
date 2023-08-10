@@ -6,6 +6,10 @@ const pressSchema = new mongoose.Schema(
       type: String,
       default: "press.title",
     },
+    year: {
+      type: String,
+      default: "2023",
+    },
     title: {
       type: Object,
       default: {}
