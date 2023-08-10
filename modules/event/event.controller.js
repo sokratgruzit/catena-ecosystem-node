@@ -104,6 +104,16 @@ export const getAllEvent = async (req, res) => {
   }
 };
 
+export const getAllEventSlug = async (req, res) => {
+  try {
+    const events = await Event.find({}, { slug: 1, _id: 0 });
+
+    return res.status(200).json(events);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};  
+
 export const getEventWithActiveStatus = async (req, res) => {
   const { active_status } = req.body;
 
