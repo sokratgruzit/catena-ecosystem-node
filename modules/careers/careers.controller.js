@@ -166,15 +166,24 @@ export const getAllCareersSlug = async (req, res) => {
   }
 };
 
-export const getOneCareers = async (req, res) => {
-  const { slug } = req.body;
-  try {
-    const careers = await Career.findOne({ slug })
-      .populate("category")
-      .populate("persons")
-      .exec();
+// export const getOneCareers = async (req, res) => {
+//   const { slug } = req.body;
+//   console.log(res.data);
+//   try {
+//     const careers = await Career.findOne({ slug });
+//     return res.status(200).json(careers);
+//   } catch (error) {
+//     return res.status(500).json(error);
+//   }
+// };
 
-    return res.status(200).json(careers);
+export const getOneCareers = async (req, res) => {
+  const { slug } = req.query; // Change req.body to req.query
+  console.log(slug); // Log the slug parameter to check if it's correctly received
+
+  try {
+    const career = await Career.findOne({ slug });
+    return res.status(200).json(career);
   } catch (error) {
     return res.status(500).json(error);
   }
