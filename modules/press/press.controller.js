@@ -135,7 +135,11 @@ export const getAllPressSlug = async (req, res) => {
   try {
     const press = await Press.find({}, { slug: 1, _id: 0 });
 
-    return res.status(200).json(press);
+    if (press && press.length > 0) {
+      return res.status(200).json(press);
+    } else {
+      return res.status(200).json([]);
+    }
   } catch (error) {
     return res.status(500).json(error);
   }

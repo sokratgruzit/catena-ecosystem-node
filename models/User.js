@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
+//Users model
 const userSchema = new mongoose.Schema({
   address: { type: String, required: true, unique: true },
   fullname: { type: String, required: false },
@@ -16,6 +17,7 @@ const userSchema = new mongoose.Schema({
   emailVerificationToken: String,
   emailVerificationExpires: Date,
   tempEmail: String,
+  status: Boolean
 });
 
 userSchema.methods.generateEmailVerificationToken = function () {

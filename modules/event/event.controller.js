@@ -116,7 +116,11 @@ export const getAllEventSlug = async (req, res) => {
   try {
     const events = await Event.find({}, { slug: 1, _id: 0 });
 
-    return res.status(200).json(events);
+    if (events && events.length > 0) {
+      return res.status(200).json(events);
+    } else {
+      return res.status(200).json([]);
+    }
   } catch (error) {
     return res.status(500).json(error);
   }
