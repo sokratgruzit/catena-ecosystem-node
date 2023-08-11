@@ -28,13 +28,14 @@ export const create = async (req, res) => {
     });
   }
 
-  let exists = await Career.findOne({ title });
-  let allCareer = await Career.find();
-  let row = "00000" + (allCareer.length + 1);
-  let ROW = row.slice(-6);
-  let dep = department.substring(0, 2);
-  let DEP = dep.toUpperCase();
-  let slug = DEP + ROW;
+    let exists = await Career.findOne({ title });
+
+    let allCareer = await Career.find();
+    let row = "00000" + (allCareer.length + 1);
+    let ROW = row.slice(-6);
+    let dep = department.substring(0, 2);
+    let DEP = dep.toUpperCase();
+    let slug = DEP + ROW;
 
   if (exists) {
     return res.status(200).json({ message: "already exists" });
@@ -166,20 +167,9 @@ export const getAllCareersSlug = async (req, res) => {
   }
 };
 
-// export const getOneCareers = async (req, res) => {
-//   const { slug } = req.body;
-//   console.log(res.data);
-//   try {
-//     const careers = await Career.findOne({ slug });
-//     return res.status(200).json(careers);
-//   } catch (error) {
-//     return res.status(500).json(error);
-//   }
-// };
-
-export const getOneCareers = async (req, res) => {
-  const { slug } = req.query; // Change req.body to req.query
-  console.log(slug); // Log the slug parameter to check if it's correctly received
+export const getOneCareer = async (req, res) => {
+  const { slug } = req.query;
+  console.log(slug);
 
   try {
     const career = await Career.findOne({ slug });
@@ -200,12 +190,26 @@ export const getActiveCareers = async (req, res) => {
 };
 
 export const getCareerById = async (req, res) => {
-  const { _id } = req.body;
-  try {
-    const career = await Career.find({ _id });
+    const { slug } = req.body
+    try {
+        const career = await Career.find({ slug });
 
     return res.status(200).json(career);
   } catch (error) {
     return req.status(500).send({ error: "Error Editing Career" });
   }
 };
+
+export const getAllCareerSlug = async (req, res) => {
+    try {
+        const career = await Career.find({}, { slug: 1, _id: 0 });
+        
+        if (career && career.length > 0) {
+            return res.status(200).json(career);
+        } else {
+            return res.status(200).json([]);
+        }
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  };
