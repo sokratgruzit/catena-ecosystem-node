@@ -114,24 +114,15 @@ export const getPressByYear = async (req, res) => {
   try {
     const { year, page, limit } = req.body;
 
-    const { totalPages, currentPage } = await paginateResults(
+    const { results, totalPages, currentPage } = await paginateResults(
       Press,
-      {},
+      { year: year },
       page,
       limit
     );
 
-    console.log(year, page, limit);
-
-    const press = await Press.find({ year: year })
-      .sort({ date: -1 })
-      .populate("category")
-      .populate("persons")
-      .limit(5)
-      .exec();
-
     return res.status(200).json({
-      press,
+      press: results,
       totalPages,
       currentPage,
     });
