@@ -181,9 +181,13 @@ export const getCareerById = async (req, res) => {
 
 export const getAllCareerSlug = async (req, res) => {
     try {
-      const career = await Career.find({}, { slug: 1, _id: 0 });
-  
-      return res.status(200).json(career);
+        const career = await Career.find({}, { slug: 1, _id: 0 });
+        
+        if (career && career.length > 0) {
+            return res.status(200).json(career);
+        } else {
+            return res.status(200).json([]);
+        }
     } catch (error) {
       return res.status(500).json(error);
     }
