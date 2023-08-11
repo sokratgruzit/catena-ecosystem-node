@@ -169,7 +169,6 @@ export const getAllCareersSlug = async (req, res) => {
 
 export const getOneCareer = async (req, res) => {
   const { slug } = req.body;
-  console.log(slug, 'hhhhh');
 
   try {
     const career = await Career.findOne({ slug });
