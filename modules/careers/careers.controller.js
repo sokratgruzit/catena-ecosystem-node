@@ -193,9 +193,6 @@ export const getAllCareerSlug = async (req, res) => {
     const { slug } = req.body;
     try {
       const career = await Career.findOne({ slug })
-        .populate("category")
-        .populate("persons")
-        .exec();
   
       return res.status(200).json(career);
     } catch (error) {
