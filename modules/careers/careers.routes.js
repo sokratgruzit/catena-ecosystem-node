@@ -9,8 +9,7 @@ router.route("/get-active-careers").get(careersController.getActiveCareers);
 router.route("/get-careers-by-id").get(careersController.getCareerById);
 router.route("/delete").put(careersController.deleteCareer);
 router.route("/edit").put(careersController.editCareer);
-router.route("/get-one-career").get(careersController.getOneCareer);
+router.route("/get-one-career").post(careersController.getOneCareer);
 router.route("/ger-all-careers-slug").get(careersController.getAllCareerSlug);
-
 
 export default router;
