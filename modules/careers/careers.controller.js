@@ -169,9 +169,9 @@ export const getActiveCareers = async (req, res) => {
 };
 
 export const getCareerById = async (req, res) => {
-    const { slug } = req.body
+    const { _id } = req.body
     try {
-        const career = await Career.find({ slug });
+        const career = await Career.find({ _id });
 
         return res.status(200).json(career);
     } catch (error) {
