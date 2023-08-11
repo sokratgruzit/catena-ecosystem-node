@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   emailVerificationToken: String,
   emailVerificationExpires: Date,
   tempEmail: String,
+  status: Boolean
 });
 
 userSchema.methods.generateEmailVerificationToken = function () {
