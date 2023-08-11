@@ -11,6 +11,6 @@ router.route("/delete").put(pressController.deleteOnePress);
 router.route("/update").post(pressController.updatePress);
 router.route("/get-one-press").post(pressController.getOnePress);
 router.route("/get-all-press-slug").get(pressController.getAllPressSlug);
-router.route("/get-all-press-by-years").post(pressController.getAllPressByYears);
+router.route("/get-press-by-year").post(pressController.getPressByYear);
 
 export default router;
