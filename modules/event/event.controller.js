@@ -1,4 +1,5 @@
 import { Event } from "../../models/Event.js";
+import { paginateResults } from "../../utils/pagination.js";
 import fs from "fs";
 
 export const create = async (req, res) => {
@@ -93,12 +94,19 @@ export const updateActiveStatus = async (req, res) => {
 
 export const getAllEvent = async (req, res) => {
   try {
-    const event = await Event.find()
-      .populate("category")
-      .populate("persons")
-      .exec();
+    const { page, limit } = req.query;
 
-    return res.status(200).json(event);
+    const {
+      results: event,
+      totalPages,
+      currentPage,
+    } = await paginateResults(Event, {}, page, limit);
+
+    return res.status(200).json({
+      event,
+      totalPages,
+      currentPage,
+    });
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -112,7 +120,7 @@ export const getAllEventSlug = async (req, res) => {
   } catch (error) {
     return res.status(500).json(error);
   }
-};  
+};
 
 export const getEventWithActiveStatus = async (req, res) => {
   const { active_status } = req.body;
