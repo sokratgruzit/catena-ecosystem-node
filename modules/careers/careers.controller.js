@@ -1,4 +1,5 @@
 import { Career } from "../../models/Career.js";
+import { paginateResults } from "../../utils/pagination.js";
 
 export const create = async (req, res) => {
   const {
@@ -28,14 +29,14 @@ export const create = async (req, res) => {
     });
   }
 
-    let exists = await Career.findOne({ title });
+  let exists = await Career.findOne({ title });
 
-    let allCareer = await Career.find();
-    let row = "00000" + (allCareer.length + 1);
-    let ROW = row.slice(-6);
-    let dep = department.substring(0, 2);
-    let DEP = dep.toUpperCase();
-    let slug = DEP + ROW;
+  let allCareer = await Career.find();
+  let row = "00000" + (allCareer.length + 1);
+  let ROW = row.slice(-6);
+  let dep = department.substring(0, 2);
+  let DEP = dep.toUpperCase();
+  let slug = DEP + ROW;
 
   if (exists) {
     return res.status(200).json({ message: "already exists" });
@@ -149,11 +150,21 @@ export const editCareer = async (req, res) => {
 
 export const getAllCareers = async (req, res) => {
   try {
-    const career = await Career.find();
+    const { page, limit } = req.query;
 
-    return res.status(200).json(career);
+    const {
+      results: career,
+      totalPages,
+      currentPage,
+    } = await paginateResults(Career, {}, page, limit);
+
+    return res.status(200).json({
+      career,
+      totalPages,
+      currentPage,
+    });
   } catch (error) {
-    return req.status(500).send({ error: "Error Editing Career" });
+    return res.status(500).json(error);
   }
 };
 
@@ -189,9 +200,9 @@ export const getActiveCareers = async (req, res) => {
 };
 
 export const getCareerById = async (req, res) => {
-    const { slug } = req.body
-    try {
-        const career = await Career.find({ slug });
+  const { slug } = req.body;
+  try {
+    const career = await Career.find({ slug });
 
     return res.status(200).json(career);
   } catch (error) {
@@ -200,15 +211,15 @@ export const getCareerById = async (req, res) => {
 };
 
 export const getAllCareerSlug = async (req, res) => {
-    try {
-        const career = await Career.find({}, { slug: 1, _id: 0 });
-        
-        if (career && career.length > 0) {
-            return res.status(200).json(career);
-        } else {
-            return res.status(200).json([]);
-        }
-    } catch (error) {
-      return res.status(500).json(error);
+  try {
+    const career = await Career.find({}, { slug: 1, _id: 0 });
+
+    if (career && career.length > 0) {
+      return res.status(200).json(career);
+    } else {
+      return res.status(200).json([]);
     }
-  };
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
