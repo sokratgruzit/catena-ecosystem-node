@@ -1,105 +1,12 @@
 import { Career } from "../../models/Career.js";
 import { paginateResults } from "../../utils/pagination.js";
 
-// export const create = async (req, res) => {
-//     const {
-//         title,
-//         department,
-//         summary,
-//         responsibilities,
-//         requirements,
-//         benefits,
-//         about_core_multichain,
-//         worcking_at_core_multichain,
-//         how_we_work,
-//         job_level,
-//         salary_range_from,
-//         salary_range_to,
-//         career_languages,
-//         locations,
-//         type,
-//         featured,
-//         job_posting_from,
-//         job_posting_to,
-//     } = req.body;
-
-
-//     if (!title) {
-//         return res.status(400).send({
-//             message: "Fill all fealds",
-//         });
-//     }
-
-//     const latestPost = await Career.findOne({}, null, { sort: { createdAt: -1 } });
-//     console.log(latestPost)
-
-//     let sequence;
-
-//     if (!latestPost) {
-//         sequence = 1;
-//     } else {
-//         sequence = latestPost.sequence + 1;
-//     }
-
-//     let row = "00000" + sequence;
-//     let ROW = row.slice(-6);
-//     let dep = department.substring(0, 2);
-//     let DEP = dep.toUpperCase();
-//     let job_id = DEP + ROW;
-//     let titl = title.trim();
-//     let slug = titl + "_" + job_id;
-
-//     try {
-//         const career = await Career.create({
-//             title,
-//             department,
-//             summary,
-//             responsibilities,
-//             requirements,
-//             benefits,
-//             about_core_multichain,
-//             worcking_at_core_multichain,
-//             how_we_work,
-//             job_level,
-//             salary_range_from,
-//             salary_range_to,
-//             career_languages,
-//             locations,
-//             type,
-//             featured,
-//             job_posting_from,
-//             job_posting_to,
-//             job_id,
-//             slug,
-//             sequence
-//         });
-
-//         return res.status(200).json(career);
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json(error);
-//     }
-
-// };
-
-
-
-// Function to generate a job ID based on the latest post's sequence
-
-// const generateJobId = async () => {
-//   const latestPost = await Career.findOne({}, null, { sort: { createdAt: -1 } });
-//   const sequence = latestPost ? latestPost.sequence + 1 : 1;
-//   const paddedSequence = String(sequence).padStart(6, '0');
-//   const departmentAbbreviation = department.substring(0, 2).toUpperCase();
-//   return `${departmentAbbreviation}${paddedSequence}`;
-// };
-
 const generateJobId = async (department) => {
     const latestPost = await Career.findOne({}, null, { sort: { createdAt: -1 } });
     const sequence = latestPost ? latestPost.sequence + 1 : 1;
     const paddedSequence = String(sequence).padStart(6, '0');
     const departmentAbbreviation = department.substring(0, 2).toUpperCase();
-    return `${departmentAbbreviation}${paddedSequence}`;
+    return [`${departmentAbbreviation}${paddedSequence}`, sequence];
 };
 
 export const create = async (req, res) => {
@@ -130,9 +37,9 @@ export const create = async (req, res) => {
         }
         console.log(title.en["career.title"])
 
-        const job_id = await generateJobId(department);
+        const result = await generateJobId(department);
         let trimmedTitle = title.en["career.title"].split(' ').join('');
-        const slug = `${trimmedTitle}_${job_id}`;
+        const slug = `${trimmedTitle}_${result[0]}`;
 
         const career = await Career.create({
             title,
@@ -153,9 +60,9 @@ export const create = async (req, res) => {
             featured,
             job_posting_from,
             job_posting_to,
-            job_id,
+            job_id: result[0],
             slug,
-            sequence: job_id.substring(2), // Extract the sequence portion for numeric sorting
+            sequence: result[1] // Extract the sequence portion for numeric sorting
         });
 
         return res.status(200).json(career);
