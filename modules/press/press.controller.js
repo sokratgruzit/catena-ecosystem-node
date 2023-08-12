@@ -4,6 +4,7 @@ import fs from "fs";
 
 export const create = async (req, res) => {
   const {
+    year,
     title,
     text,
     inner_descr,
@@ -52,6 +53,7 @@ export const create = async (req, res) => {
     } else {
       try {
         const press = await Press.create({
+          year,
           title,
           text,
           inner_descr,
@@ -92,12 +94,11 @@ export const getAllPress = async (req, res) => {
   try {
     const { page, limit } = req.query;
 
-    const { results: press, totalPages, currentPage } = await paginateResults(
-      Press,
-      {},
-      page,
-      limit
-    );
+    const {
+      results: press,
+      totalPages,
+      currentPage,
+    } = await paginateResults(Press, {}, page, limit);
 
     return res.status(200).json({
       press,
@@ -109,14 +110,22 @@ export const getAllPress = async (req, res) => {
   }
 };
 
-export const getAllPressByYears = async (req, res) => {
+export const getPressByYear = async (req, res) => {
   try {
-    const press = await Press.find()
-      .populate("category")
-      .populate("persons")
-      .exec();
+    const { year, page, limit } = req.body;
 
-    return res.status(200).json(press);
+    const { results, totalPages, currentPage } = await paginateResults(
+      Press,
+      { year: year },
+      page,
+      limit
+    );
+
+    return res.status(200).json({
+      press: results,
+      totalPages,
+      currentPage,
+    });
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -134,8 +143,7 @@ export const getAllPressSlug = async (req, res) => {
   } catch (error) {
     return res.status(500).json(error);
   }
-};  
-
+};
 
 export const getOnePress = async (req, res) => {
   const { slug } = req.body;
@@ -207,6 +215,7 @@ export const deleteOnePress = async (req, res) => {
 export const updatePress = async (req, res) => {
   const {
     _id,
+    year,
     title,
     text,
     inner_descr,
@@ -259,6 +268,7 @@ export const updatePress = async (req, res) => {
     const updatedPress = await Press.findByIdAndUpdate(
       _id,
       {
+        year,
         title,
         text,
         inner_descr,

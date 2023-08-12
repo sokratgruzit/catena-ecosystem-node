@@ -2,6 +2,35 @@ import { User } from "../../models/User.js";
 
 import nodemailer from "nodemailer";
 import { verification_template } from "../../utils/email_template.js";
+import { paginateResults } from "../../utils/pagination.js";
+
+export async function getAllUsers(req, res) {
+  try {
+    const { page, limit } = req.body;
+    
+    const {
+      results: users,
+      totalPages,
+      currentPage,
+    } = await paginateResults(User, {}, page, limit);
+
+    if (users && users.length > 0) {
+      return res.status(200).json({
+        users,
+        totalPages,
+        currentPage,
+      });
+    } else {
+      return res.status(200).json({
+        users: [],
+        totalPages,
+        currentPage,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+}
 
 export async function getUserInfo(req, res) {
   try {
@@ -19,6 +48,7 @@ export async function getUserInfo(req, res) {
       fullname: user.fullname,
       email: user.isEmailVerified ? user.email : user.tempEmail,
       mobile: user.mobile,
+      status: user.status,
       dateOfBirth: user.dateOfBirth,
       _id: user._id
     };
@@ -32,7 +62,7 @@ export async function getUserInfo(req, res) {
 
 export async function makeProfile(req, res) {
   try {
-    let { address, fullname, email, mobile, dateOfBirth, password, locale } = req.body;
+    let { address, fullname, email, mobile, dateOfBirth, password, locale, status } = req.body;
  
     if (!address) return res.status(400).send("no address");
     address = address.toLowerCase();
@@ -70,13 +100,14 @@ export async function makeProfile(req, res) {
       foundUser.tempEmail = undefined;
       foundUser.email = "";
       foundUser.password = "";
+      foundUser.status = false;
       await foundUser.save();
     }
 
     let clearedUser = {};
-    let query = { fullname, mobile, dateOfBirth, password };
+    let query = { fullname, mobile, dateOfBirth, password, status };
 
-    if (password === "") query = { fullname, mobile, dateOfBirth };
+    if (password === "") query = { fullname, mobile, dateOfBirth, status };
 
     const updatedUser = await User.findOneAndUpdate(
       { address },
