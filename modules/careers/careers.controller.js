@@ -180,24 +180,15 @@ export const getAllCareersSlug = async (req, res) => {
 
 export const getOneCareer = async (req, res) => {
     const { slug } = req.body;
+  
     try {
-        const { page, limit } = req.query;
-
-        const {
-            results: career,
-            totalPages,
-            currentPage,
-        } = await paginateResults(Career, {}, page, limit);
-
-        return res.status(200).json({
-            career,
-            totalPages,
-            currentPage,
-        });
+      const career = await Career.findOne({ slug });
+      return res.status(200).json(career);
     } catch (error) {
-        return res.status(500).json(error);
+      return res.status(500).json(error);
     }
-};
+  };
+  
 
 export const getActiveCareers = async (req, res) => {
     try {
