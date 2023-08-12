@@ -30,8 +30,17 @@ export const create = async (req, res) => {
 
     let exists = await Career.findOne({ title });
 
-    let allCareer = await Career.find();
-    let row = "00000" + (allCareer.length + 1);
+    const latestPost = await Career.findOne({}, null, { sort: { createdAt: -1 } });
+
+    let sequence;
+
+    if ( !latestPost ) {
+        return sequence = 1;
+    } else {
+        sequence = latestPost.sequence + 1;
+    }
+
+    let row = "00000" + sequence;
     let ROW = row.slice(-6);
     let dep = department.substring(0, 2);
     let DEP = dep.toUpperCase();
@@ -63,7 +72,8 @@ export const create = async (req, res) => {
                 job_posting_from,
                 job_posting_to,
                 job_id,
-                slug
+                slug,
+                sequence
             });
 
             return res.status(200).json(career);
@@ -153,13 +163,23 @@ export const editCareer = async (req, res) => {
 
 export const getAllCareers = async (req, res) => {
     try {
-        const career = await Career.find();
-
-        return res.status(200).json(career);
+      const { page, limit } = req.query;
+  
+      const {
+        results: career,
+        totalPages,
+        currentPage,
+      } = await paginateResults(Career, {}, page, limit);
+  
+      return res.status(200).json({
+        career,
+        totalPages,
+        currentPage,
+      });
     } catch (error) {
-        return req.status(500).send({ error: "Error Editing Career" })
+      return res.status(500).json(error);
     }
-};
+  };
 
 export const getActiveCareers = async (req, res) => {
     try {
