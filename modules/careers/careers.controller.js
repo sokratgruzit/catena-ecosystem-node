@@ -35,7 +35,9 @@ export const create = async (req, res) => {
     let ROW = row.slice(-6);
     let dep = department.substring(0, 2);
     let DEP = dep.toUpperCase();
-    let slug = DEP + ROW;
+    let job_id = DEP + ROW;
+    let titl = title.trim;
+    let slug = titl + "_" + job_id;
 
     if (exists) {
         return res.status(200).json({ message: "already exists" });
@@ -60,6 +62,7 @@ export const create = async (req, res) => {
                 featured,
                 job_posting_from,
                 job_posting_to,
+                job_id,
                 slug
             });
 
