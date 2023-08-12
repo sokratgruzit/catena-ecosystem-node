@@ -1,7 +1,7 @@
 // utilities/pagination.js
 
 export const paginateResults = async (model, query, page = 1, limit = 10) => {
-    try {
+  try {
       page = parseInt(page, 10);
       limit = parseInt(limit, 10);
   

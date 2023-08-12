@@ -64,23 +64,23 @@ const careerShema = new mongoose.Schema(
         },
         type: {
             type: String,
-            default: false,
+            defoult: "",
         },
         featured: {
             type: Boolean,
             default: false,
         },
         job_posting_from: {
-            type: Number,
-            default: false,
+            type: String,
+            defoult: "",
         },
         job_posting_to: {
-            type: Number,
-            default: false,
+            type: String,
+            defoult: "",
         },
-        job_id: {
-            type: Number,
-            default: false,
+        slug: {
+            type: String,
+            defoult: "",
         },
     },
     {
