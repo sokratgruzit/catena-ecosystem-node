@@ -16,6 +16,13 @@ export async function getAllUsers(req, res) {
     } = await paginateResults(User, {}, page, limit);
 
     if (users && users.length > 0) {
+      users.filter(user => {
+        if (user.password) user.password = "";
+        if (!user.isEmailVerified) user.email = user.tempEmail;
+        
+        return user;
+      });
+
       return res.status(200).json({
         users,
         totalPages,
