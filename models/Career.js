@@ -82,6 +82,10 @@ const careerShema = new mongoose.Schema(
             type: String,
             defoult: "",
         },
+        sequence: {
+            type: Number,
+            default: 0,
+        }
     },
     {
         timestamps: true,

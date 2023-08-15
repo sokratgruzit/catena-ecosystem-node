@@ -5,6 +5,9 @@ import bodyParser from "body-parser";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
+import http from "http";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -38,7 +41,23 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const PORT = process.env.PORT || 5000;
+
 const app = express();
+
+const server = app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+export { io };
 
 app.use(cors(corsOptions));
 
@@ -47,10 +66,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(isAuthenticated);
 
+io.on("connection", (socket) => {
+  socket.on("join", (message) => {
+    console.log(message);
+    socket.emit("message", "Hello from server");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected from WebSocket");
+  });
+});
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let imgFolder = req.body.imgFolder;
-    
+
     cb(null, `uploads/${imgFolder}`);
   },
   filename: function (req, file, cb) {
@@ -60,22 +90,26 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.post('/upload', upload.single('image'), (req, res) => {
+app.post("/upload", upload.single("image"), (req, res) => {
   return res.status(200).send({ status: true });
 });
 
-app.post('/upload-many', upload.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'logo_image', maxCount: 1 },
-]), (req, res) => {
-  return res.status(200).send({ status: true });
-});
+app.post(
+  "/upload-many",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "logo_image", maxCount: 1 },
+  ]),
+  (req, res) => {
+    return res.status(200).send({ status: true });
+  }
+);
 
 app.get("/uploads/:folder/:img", (req, res) => {
   try {
     let imgPath = path.join(
       __dirname,
-      `./uploads/${req.params.folder}/${req.params.img}`,
+      `./uploads/${req.params.folder}/${req.params.img}`
     );
 
     if (fs.existsSync(imgPath)) {
@@ -110,8 +144,6 @@ app.use("/roles", rolesControler);
 app.use("/careers", careersController);
 //app.use('/uploads', express.static('uploads'));
 
-const PORT = process.env.PORT || 5000;
-
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
@@ -123,7 +155,3 @@ mongoose
   .catch((err) => {
     console.error("Error connecting to MongoDB", err);
   });
-
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
