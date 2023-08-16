@@ -169,7 +169,7 @@ export const getAllOpenPositions = async (req, res) => {
 
 export const getOneOpenPosition = async (req, res) => {
   const { slug } = req.body;
-
+console.log(slug)
   try {
     const openPosition = await OpenPosition.findOne({ slug });
     return res.status(200).json(openPosition);
