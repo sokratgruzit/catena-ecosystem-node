@@ -167,22 +167,12 @@ export const getAllOpenPositions = async (req, res) => {
   }
 };
 
-export const getAllOpenPositionsSlug = async (req, res) => {
-  try {
-    const OpenPositions = await OpenPosition.find({}, { slug: 1, _id: 0 });
-
-    return res.status(200).json(OpenPositions);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
 export const getOneOpenPosition = async (req, res) => {
   const { slug } = req.body;
 
   try {
-    const OpenPosition = await OpenPosition.findOne({ slug });
-    return res.status(200).json(OpenPosition);
+    const openPosition = await OpenPosition.findOne({ slug });
+    return res.status(200).json(openPosition);
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -211,10 +201,10 @@ export const getOpenPositionById = async (req, res) => {
 
 export const getAllOpenPositionSlug = async (req, res) => {
   try {
-    const OpenPosition = await OpenPosition.find({}, { slug: 1, _id: 0 });
+    const openPosition = await OpenPosition.find({}, { slug: 1, _id: 0 });
 
-    if (OpenPosition && OpenPosition.length > 0) {
-      return res.status(200).json(OpenPosition);
+    if (openPosition && openPosition.length > 0) {
+      return res.status(200).json(openPosition);
     } else {
       return res.status(200).json([]);
     }
