@@ -1,68 +1,20 @@
 import { Career } from "../../models/Career.js";
 import { paginateResults } from "../../utils/pagination.js";
 
-const generateJobId = async (department) => {
-    const latestPost = await Career.findOne({}, null, { sort: { createdAt: -1 } });
-    const sequence = latestPost ? latestPost.sequence + 1 : 1;
-    const paddedSequence = String(sequence).padStart(6, '0');
-    const departmentAbbreviation = department.substring(0, 2).toUpperCase();
-    return [`${departmentAbbreviation}${paddedSequence}`, sequence];
-};
-
 export const create = async (req, res) => {
     try {
         const {
             title,
-            department,
-            summary,
-            responsibilities,
-            requirements,
-            benefits,
-            about_core_multichain,
-            worcking_at_core_multichain,
-            how_we_work,
-            job_level,
-            salary_range_from,
-            salary_range_to,
-            career_languages,
-            locations,
-            type,
-            featured,
-            job_posting_from,
-            job_posting_to,
+            inner_descr
         } = req.body;
 
-        if (!title) {
+        if (!title || !inner_descr) {
             return res.status(400).json({ message: "Title is required." });
         }
-        console.log(title.en["career.title"])
-
-        const result = await generateJobId(department);
-        let trimmedTitle = title.en["career.title"].split(' ').join('');
-        const slug = `${trimmedTitle}_${result[0]}`;
 
         const career = await Career.create({
             title,
-            department,
-            summary,
-            responsibilities,
-            requirements,
-            benefits,
-            about_core_multichain,
-            worcking_at_core_multichain,
-            how_we_work,
-            job_level,
-            salary_range_from,
-            salary_range_to,
-            career_languages,
-            locations,
-            type,
-            featured,
-            job_posting_from,
-            job_posting_to,
-            job_id: result[0],
-            slug,
-            sequence: result[1] // Extract the sequence portion for numeric sorting
+            inner_descr
         });
 
         return res.status(200).json(career);
@@ -77,37 +29,20 @@ export const deleteCareer = async (req, res) => {
   try {
     const removeCareer = await Career.findOneAndDelete({ _id: _id });
     if (!removeCareer) {
-      return res.status(404).json({ error: "FAQ not found" });
+      return res.status(404).json({ error: "Career not found" });
     }
-    res.status(200).json({ message: "FAQ removed successfully" });
+    res.status(200).json({ message: "Career removed successfully" });
   } catch (error) {
-    console.error("Error removing FAQ:", error);
-    res.status(500).json({ error: "Failed to remove FAQ" });
+    console.error("Error removing Career:", error);
+    res.status(500).json({ error: "Failed to remove Career" });
   }
 };
 
-export const editCareer = async (req, res) => {
+export const updateCareer = async (req, res) => {
   const {
     _id,
     title,
-    department,
-    summary,
-    responsibilities,
-    requirements,
-    benefits,
-    about_core_multichain,
-    worcking_at_core_multichain,
-    how_we_work,
-    job_level,
-    salary_range_from,
-    salary_range_to,
-    career_languages,
-    locations,
-    type,
-    featured,
-    job_posting_from,
-    job_posting_to,
-    slug,
+    inner_descr
   } = req.body;
 
   console.log(req.body);
@@ -116,35 +51,18 @@ export const editCareer = async (req, res) => {
       { _id: _id },
       {
         title,
-        department,
-        summary,
-        responsibilities,
-        requirements,
-        benefits,
-        about_core_multichain,
-        worcking_at_core_multichain,
-        how_we_work,
-        job_level,
-        salary_range_from,
-        salary_range_to,
-        career_languages,
-        locations,
-        type,
-        featured,
-        job_posting_from,
-        job_posting_to,
-        slug,
+        inner_descr
       },
       { new: true }
     );
     if (!updateCareer) {
-      return res.status(404).json({ error: "FAQ not found" });
+      return res.status(404).json({ error: "Career not found" });
     } else {
       res.status(200).json(updateCareer);
     }
   } catch (error) {
-    console.error("Error updating FAQ:", error);
-    res.status(500).json({ error: "Failed to update FAQ" });
+    console.error("Error updating Career:", error);
+    res.status(500).json({ error: "Failed to update Career" });
   }
 };
 
