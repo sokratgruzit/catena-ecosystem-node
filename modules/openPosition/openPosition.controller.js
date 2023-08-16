@@ -36,10 +36,8 @@ export const create = async (req, res) => {
       return res.status(400).json({ message: "Title is required." });
     }
 
-    console.log(title)
-
     const result = await generateJobId(department);
-    let trimmedTitle = title.en['openPosition.title'].split(' ').join('');
+    let trimmedTitle = title.en["OpenPosition.title"].split(' ').join('');
     const slug = `${trimmedTitle}_${result[0]}`;
 
     const openPosition = await OpenPosition.create({
@@ -67,7 +65,6 @@ export const create = async (req, res) => {
     });
 
     return res.status(200).json(openPosition);
-
   } catch (error) {
     console.error('Error creating OpenPosition:', error);
     return res.status(500).json({ message: "Error creating OpenPosition.", error: error });
