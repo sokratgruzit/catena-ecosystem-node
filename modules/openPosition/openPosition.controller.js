@@ -37,7 +37,7 @@ export const create = async (req, res) => {
     }
 
     const result = await generateJobId(department);
-    let trimmedTitle = title.en["OpenPosition.title"].split(' ').join('');
+    let trimmedTitle = title.en["openPosition.title"].split(' ').join('');
     const slug = `${trimmedTitle}_${result[0]}`;
 
     const openPosition = await OpenPosition.create({
