@@ -35,6 +35,7 @@ import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
 import voteRouter from "./modules/vote/vote.routes.js";
 import translateRouter from "./modules/translate/translate.routes.js";
+import feedbackRouter from "./modules/feedback/feedback.routes.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -144,6 +145,7 @@ app.use("/permissions", permissionControler);
 app.use("/roles", rolesControler);
 app.use("/open-positions", openPositionController);
 app.use("/careers", careersController);
+app.use("/feedback", feedbackRouter);
 
 mongoose
   .connect(process.env.MONGO_URL, {
