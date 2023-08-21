@@ -1,6 +1,6 @@
 import * as mongoos from "mongoose";
 
-const feedbackSchema = new mongoos.Schema(
+const voiceMatterSchema = new mongoos.Schema(
   {
     userName: {
       type: String,
@@ -18,4 +18,4 @@ const feedbackSchema = new mongoos.Schema(
   { timestamps: true }
 );
 
-export const Feedback = mongoos.model("Feedback", feedbackSchema);
+export const VoiceMatter = mongoos.model("VoiceMatter", voiceMatterSchema);
