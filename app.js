@@ -19,6 +19,7 @@ import faqRouter from "./modules/faq/faq.routes.js";
 import eventRouter from "./modules/event/event.routes.js";
 import permissionControler from "./modules/permissions/permissions.routes.js";
 import careersController from "./modules/careers/careers.routes.js";
+import openPositionController from "./modules/openPosition/openPosition.routes.js";
 import rolesControler from "./modules/roles/roles.routes.js";
 import announcementRouter from "./modules/announcement/announcement.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
@@ -34,6 +35,8 @@ import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
 import voteRouter from "./modules/vote/vote.routes.js";
 import translateRouter from "./modules/translate/translate.routes.js";
+import VoiceMatter from "./modules/voiceMatter/voiceMatter.routes.js";
+import ambassadorRouter from "./modules/ambassador/ambassador.routes.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -141,8 +144,10 @@ app.use("/vote", voteRouter);
 app.use("/translates", translateRouter);
 app.use("/permissions", permissionControler);
 app.use("/roles", rolesControler);
+app.use("/open-positions", openPositionController);
 app.use("/careers", careersController);
-//app.use('/uploads', express.static('uploads'));
+app.use("/your-voice", VoiceMatter);
+app.use("/ambassador", ambassadorRouter);
 
 mongoose
   .connect(process.env.MONGO_URL, {
