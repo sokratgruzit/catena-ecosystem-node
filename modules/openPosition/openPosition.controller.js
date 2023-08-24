@@ -11,37 +11,37 @@ const generateJobId = async (department) => {
 };
 
 export const create = async (req, res) => {
+  const {
+    title,
+    department,
+    summary,
+    responsibilities,
+    requirements,
+    benefits,
+    about_catena,
+    worcking_at_catena,
+    how_we_work,
+    job_level,
+    salary_range_from,
+    salary_range_to,
+    languages,
+    locations,
+    type,
+    featured,
+    remote,
+    job_posting_from,
+    job_posting_to,
+  } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ message: "Title is required." });
+  }
+  
+  const result = await generateJobId(department);
+  let trimmedTitle = title.en["openPosition.title"].split(' ').join('');
+  const slug = `${trimmedTitle}_${result[0]}`;
+
   try {
-    const {
-      title,
-      department,
-      summary,
-      responsibilities,
-      requirements,
-      benefits,
-      about_catena,
-      worcking_at_catena,
-      how_we_work,
-      job_level,
-      salary_range_from,
-      salary_range_to,
-      languages,
-      locations,
-      type,
-      featured,
-      remote,
-      job_posting_from,
-      job_posting_to,
-    } = req.body;
-
-    if (!title) {
-      return res.status(400).json({ message: "Title is required." });
-    }
-
-    const result = await generateJobId(department);
-    let trimmedTitle = title.en["openPosition.title"].split(' ').join('');
-    const slug = `${trimmedTitle}_${result[0]}`;
-
     const openPosition = await OpenPosition.create({
       title,
       department,
@@ -157,9 +157,9 @@ export const editOpenPosition = async (req, res) => {
 };
 
 export const getAllOpenPositions = async (req, res) => {
-  try {
-    const { page, limit } = req.query;
+  const { page, limit } = req.query;
 
+  try {
     const {
       results: openPosition,
       totalPages,
@@ -199,6 +199,7 @@ export const getActiveOpenPositions = async (req, res) => {
 
 export const getOpenPositionById = async (req, res) => {
   const { _id } = req.body;
+  
   try {
     const OpenPosition = await OpenPosition.find({ _id });
 
