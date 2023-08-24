@@ -1,4 +1,5 @@
 import { Application } from "../../models/Application.js";
+import { paginateResults } from "../../utils/pagination.js";
 import fs from "fs";
 
 export const create = async (req, res) => {
@@ -61,11 +62,23 @@ export const create = async (req, res) => {
   }
 };
 
-export const getAllApplication = async (req, res) => {
-  try {
-    const application = await Application.find()
 
-    return res.status(200).json(application);
+export const getAllApplication = async (req, res) => {
+  console.log(req.query, 'qqqqq');
+  try {
+    const { page, limit } = req.query;
+
+    const {
+      results: application,
+      totalPages,
+      currentPage,
+    } = await paginateResults(Application, {}, page, limit);
+
+    return res.status(200).json({
+      application,
+      totalPages,
+      currentPage,
+    });
   } catch (error) {
     return res.status(500).json(error);
   }
