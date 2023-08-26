@@ -6,40 +6,42 @@ const generateJobId = async (department) => {
   const sequence = latestPost ? latestPost.sequence + 1 : 1;
   const paddedSequence = String(sequence).padStart(6, '0');
   const departmentAbbreviation = department.substring(0, 2).toUpperCase();
-  return [`${departmentAbbreviation}${paddedSequence}`, sequence];
+  const reference = departmentAbbreviation + paddedSequence;
+  return [`${departmentAbbreviation}${paddedSequence}`, sequence, reference];
 };
 
 export const create = async (req, res) => {
+  const {
+    title,
+    department,
+    summary,
+    responsibilities,
+    requirements,
+    benefits,
+    about_catena,
+    worcking_at_catena,
+    how_we_work,
+    job_level,
+    salary_range_from,
+    salary_range_to,
+    languages,
+    locations,
+    type,
+    featured,
+    remote,
+    job_posting_from,
+    job_posting_to,
+  } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ message: "Title is required." });
+  }
+  
+  const result = await generateJobId(department);
+  let trimmedTitle = title.en["openPosition.title"].split(' ').join('');
+  const slug = `${trimmedTitle}_${result[0]}`;
+
   try {
-    const {
-      title,
-      department,
-      summary,
-      responsibilities,
-      requirements,
-      benefits,
-      about_core_multichain,
-      worcking_at_core_multichain,
-      how_we_work,
-      job_level,
-      salary_range_from,
-      salary_range_to,
-      OpenPosition_languages,
-      locations,
-      type,
-      featured,
-      job_posting_from,
-      job_posting_to,
-    } = req.body;
-
-    if (!title) {
-      return res.status(400).json({ message: "Title is required." });
-    }
-
-    const result = await generateJobId(department);
-    let trimmedTitle = title.en["openPosition.title"].split(' ').join('');
-    const slug = `${trimmedTitle}_${result[0]}`;
-
     const openPosition = await OpenPosition.create({
       title,
       department,
@@ -47,19 +49,21 @@ export const create = async (req, res) => {
       responsibilities,
       requirements,
       benefits,
-      about_core_multichain,
-      worcking_at_core_multichain,
+      about_catena,
+      worcking_at_catena,
       how_we_work,
       job_level,
       salary_range_from,
       salary_range_to,
-      OpenPosition_languages,
+      languages,
       locations,
       type,
       featured,
+      remote,
       job_posting_from,
       job_posting_to,
       job_id: result[0],
+      reference: result[2],
       slug,
       sequence: result[1] // Extract the sequence portion for numeric sorting
     });
@@ -73,15 +77,16 @@ export const create = async (req, res) => {
 
 export const deleteOpenPosition = async (req, res) => {
   const { _id } = req.body;
+  console.log( _id)
   try {
-    const removeOpenPosition = await OpenPosition.findOneAndDelete({ _id: _id });
+    const removeOpenPosition = await OpenPosition.findOneAndDelete({ _id });
     if (!removeOpenPosition) {
-      return res.status(404).json({ error: "FAQ not found" });
+      return res.status(404).json({ error: "Open Position not found" });
     }
-    res.status(200).json({ message: "FAQ removed successfully" });
+    res.status(200).json({ message: "Open Position removed successfully" });
   } catch (error) {
-    console.error("Error removing FAQ:", error);
-    res.status(500).json({ error: "Failed to remove FAQ" });
+    console.error("Error removing Open Position:", error);
+    res.status(500).json({ error: "Failed to remove Open Position" });
   }
 };
 
@@ -94,18 +99,20 @@ export const editOpenPosition = async (req, res) => {
     responsibilities,
     requirements,
     benefits,
-    about_core_multichain,
-    worcking_at_core_multichain,
+    about_catena,
+    worcking_at_catena,
     how_we_work,
     job_level,
     salary_range_from,
     salary_range_to,
-    OpenPosition_languages,
+    languages,
     locations,
     type,
     featured,
+    remote,
     job_posting_from,
     job_posting_to,
+    reference,
     slug,
   } = req.body;
 
@@ -120,37 +127,39 @@ export const editOpenPosition = async (req, res) => {
         responsibilities,
         requirements,
         benefits,
-        about_core_multichain,
-        worcking_at_core_multichain,
+        about_catena,
+        worcking_at_catena,
         how_we_work,
         job_level,
         salary_range_from,
         salary_range_to,
-        OpenPosition_languages,
+        languages,
         locations,
         type,
         featured,
+        remote,
         job_posting_from,
         job_posting_to,
+        reference,
         slug,
       },
       { new: true }
     );
     if (!updateOpenPosition) {
-      return res.status(404).json({ error: "FAQ not found" });
+      return res.status(404).json({ error: "Open Position not found" });
     } else {
       res.status(200).json(updateOpenPosition);
     }
   } catch (error) {
-    console.error("Error updating FAQ:", error);
-    res.status(500).json({ error: "Failed to update FAQ" });
+    console.error("Error updating Open Position:", error);
+    res.status(500).json({ error: "Failed to update Open Position" });
   }
 };
 
 export const getAllOpenPositions = async (req, res) => {
-  try {
-    const { page, limit } = req.query;
+  const { page, limit } = req.query;
 
+  try {
     const {
       results: openPosition,
       totalPages,
@@ -169,7 +178,7 @@ export const getAllOpenPositions = async (req, res) => {
 
 export const getOneOpenPosition = async (req, res) => {
   const { slug } = req.body;
-console.log(slug)
+  console.log(slug)
   try {
     const openPosition = await OpenPosition.findOne({ slug });
     return res.status(200).json(openPosition);
@@ -190,6 +199,7 @@ export const getActiveOpenPositions = async (req, res) => {
 
 export const getOpenPositionById = async (req, res) => {
   const { _id } = req.body;
+  
   try {
     const OpenPosition = await OpenPosition.find({ _id });
 
