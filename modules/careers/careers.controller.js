@@ -2,26 +2,26 @@ import { Career } from "../../models/Career.js";
 import { paginateResults } from "../../utils/pagination.js";
 
 export const create = async (req, res) => {
-  const {
-    title,
-    inner_descr
-  } = req.body;
+    try {
+        const {
+            title,
+            inner_descr
+        } = req.body;
 
-  if (!title || !inner_descr) {
-    return res.status(400).json({ message: "Title is required." });
-  }
+        if (!title || !inner_descr) {
+            return res.status(400).json({ message: "Title is required." });
+        }
 
-  try {
-    const career = await Career.create({
-      title,
-      inner_descr
-    });
+        const career = await Career.create({
+            title,
+            inner_descr
+        });
 
-    return res.status(200).json(career);
-  } catch (error) {
-    console.error('Error creating career:', error);
-    return res.status(500).json({ message: "Error creating career.", error: error });
-  }
+        return res.status(200).json(career);
+    } catch (error) {
+        console.error('Error creating career:', error);
+        return res.status(500).json({ message: "Error creating career.", error: error });
+    }
 };
 
 export const deleteCareer = async (req, res) => {
@@ -67,9 +67,9 @@ export const updateCareer = async (req, res) => {
 };
 
 export const getAllCareers = async (req, res) => {
-  const { page, limit } = req.query;
-
   try {
+    const { page, limit } = req.query;
+
     const {
       results: career,
       totalPages,
@@ -88,16 +88,16 @@ export const getAllCareers = async (req, res) => {
 
 
 export const getOneCareer = async (req, res) => {
-  const { slug } = req.body;
-
-  try {
-    const career = await Career.findOne({ slug });
-    return res.status(200).json(career);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
+    const { slug } = req.body;
+  
+    try {
+      const career = await Career.findOne({ slug });
+      return res.status(200).json(career);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  };
+  
 
 export const getActiveCareers = async (req, res) => {
   try {
@@ -111,7 +111,6 @@ export const getActiveCareers = async (req, res) => {
 
 export const getCareerById = async (req, res) => {
   const { _id } = req.body;
-  
   try {
     const career = await Career.find({ _id });
 
