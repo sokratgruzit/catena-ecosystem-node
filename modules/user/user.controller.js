@@ -6,6 +6,7 @@ import { verification_template } from "../../utils/email_template.js";
 import { paginateResults } from "../../utils/pagination.js";
 
 export async function getAllUsers(req, res) {
+  // Get all users
   try {
     const { page, limit } = req.body;
 
