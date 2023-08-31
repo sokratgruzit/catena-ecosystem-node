@@ -26,11 +26,11 @@ const OpenPositionShema = new mongoose.Schema(
             type: Object,
             default: {},
         },
-        about_core_multichain: {
+        about_catena: {
             type: Object,
             default:{}
         },
-        worcking_at_core_multichain: {
+        worcking_at_catena: {
             type: Object,
             default:{}
         },
@@ -54,7 +54,7 @@ const OpenPositionShema = new mongoose.Schema(
             type: String,
             defoult: ""
         },
-        career_languages: {
+        languages: {
             type: String,
             defoult: ""
         },
@@ -67,8 +67,20 @@ const OpenPositionShema = new mongoose.Schema(
             defoult: "",
         },
         featured: {
+            type: String,
+            default: "Yes",
+        },
+        remote: {
+            type: String,
+            default: "",
+        },
+        reference: {
+            type: String,
+            defoult: "",
+        },
+        active_status: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         job_posting_from: {
             type: String,
