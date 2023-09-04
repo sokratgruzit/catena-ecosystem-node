@@ -169,7 +169,7 @@ export async function verifyEmail(req, res) {
     user.tempEmail = undefined;
     await user.save();
 
-    // io.emit("emailVerified", user._id);
+    io.emit("emailVerified", user._id);
 
     res.status(200).send("Email verified");
   } catch (e) {

@@ -69,16 +69,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(isAuthenticated);
 
-// io.on("connection", (socket) => {
-//   socket.on("join", (message) => {
-//     console.log(message);
-//     socket.emit("message", "Hello from server");
-//   });
+io.on("connection", (socket) => {
+  socket.on("join", (message) => {
+    console.log(message);
+    socket.emit("message", "Hello from server");
+  });
 
-//   socket.on("disconnect", () => {
-//     console.log("Client disconnected from WebSocket");
-//   });
-// });
+  socket.on("disconnect", () => {
+    console.log("Client disconnected from WebSocket");
+  });
+});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
