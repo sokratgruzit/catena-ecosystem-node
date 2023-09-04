@@ -18,8 +18,9 @@ import { isAuthenticated } from "./services/isAuthenticated.js";
 import faqRouter from "./modules/faq/faq.routes.js";
 import eventRouter from "./modules/event/event.routes.js";
 import permissionControler from "./modules/permissions/permissions.routes.js";
-import careersController from "./modules/careers/careers.routes.js";
-import openPositionController from "./modules/openPosition/openPosition.routes.js";
+import careersRouter from "./modules/careers/careers.routes.js";
+import watchlistRouter from "./modules/watchlist/watchlist.routes.js";
+import openPositionRouter from "./modules/openPosition/openPosition.routes.js";
 import rolesControler from "./modules/roles/roles.routes.js";
 import announcementRouter from "./modules/announcement/announcement.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
@@ -144,10 +145,12 @@ app.use("/vote", voteRouter);
 app.use("/translates", translateRouter);
 app.use("/permissions", permissionControler);
 app.use("/roles", rolesControler);
-app.use("/open-positions", openPositionController);
-app.use("/careers", careersController);
+app.use("/open-positions", openPositionRouter);
+app.use("/careers", careersRouter);
 app.use("/your-voice", VoiceMatter);
 app.use("/ambassador", ambassadorRouter);
+app.use("/watchlist", watchlistRouter);
+
 
 mongoose
   .connect(process.env.MONGO_URL, {

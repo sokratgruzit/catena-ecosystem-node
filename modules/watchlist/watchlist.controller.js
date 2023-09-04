@@ -1,7 +1,6 @@
 import { Watchlist } from "../../models/Watchlist.js";
-import { paginateResults } from "../../utils/pagination.js";
 
-export const addOrUpdateWatchlist = async (req, res) => {
+export const createOrUpdateWatchlist = async (req, res) => {
   const {
     user_id,
     token_id
