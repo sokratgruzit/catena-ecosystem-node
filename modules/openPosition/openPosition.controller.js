@@ -38,7 +38,7 @@ export const create = async (req, res) => {
   }
   
   const result = await generateJobId(department);
-  let trimmedTitle = title.en["openPosition.title"].split(' ').join('');
+  let trimmedTitle = title.en["openPosition.title"].replace(/[^a-zA-Z0-9]+/g, '').toLowerCase();
   const slug = `${trimmedTitle}_${result[0]}`;
 
   try {
