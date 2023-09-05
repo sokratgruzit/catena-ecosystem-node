@@ -32,6 +32,7 @@ import langsRouter from "./modules/languages/langs.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
 import applicationRouter from "./modules/application/application.routes.js";
 import ecosystemRouter from "./modules/ecosystem/ecosystem.routes.js";
+import departmentRouter from "./modules/department/department.routes.js"
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
 import voteRouter from "./modules/vote/vote.routes.js";
@@ -136,6 +137,7 @@ app.use("/langs", langsRouter);
 app.use("/press", pressRouter);
 app.use("/application", applicationRouter);
 app.use("/ecosystem", ecosystemRouter);
+app.use("/department", departmentRouter);
 app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
