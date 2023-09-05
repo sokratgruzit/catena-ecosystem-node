@@ -30,7 +30,7 @@ const OpenPositionShema = new mongoose.Schema(
             type: Object,
             default:{}
         },
-        worcking_at_catena: {
+        working_at_catena: {
             type: Object,
             default:{}
         },
@@ -59,8 +59,8 @@ const OpenPositionShema = new mongoose.Schema(
             defoult: ""
         },
         locations: {
-            type: String,
-            defoult: ""
+            type: Object,
+            default:{}
         },
         type: {
             type: String,

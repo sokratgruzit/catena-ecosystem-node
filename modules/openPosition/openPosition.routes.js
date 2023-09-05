@@ -8,7 +8,7 @@ router.route("/get-all-open-positions").get(openPositionController.getAllOpenPos
 router.route("/get-active-open-positions").get(openPositionController.getActiveOpenPositions);
 router.route("/get-open-positions-by-id").get(openPositionController.getOpenPositionById);
 router.route("/delete").put(openPositionController.deleteOpenPosition);
-router.route("/edit").put(openPositionController.editOpenPosition);
+router.route("/edit").post(openPositionController.editOpenPosition);
 router.route("/get-one-open-position").post(openPositionController.getOneOpenPosition);
 router.route("/get-all-open-positions-slug").get(openPositionController.getAllOpenPositionSlug);
 
