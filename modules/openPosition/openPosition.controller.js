@@ -36,7 +36,7 @@ export const create = async (req, res) => {
   if (!title) {
     return res.status(400).json({ message: "Title is required." });
   }
-  
+
   const result = await generateJobId(department);
   let trimmedTitle = title.en["openPosition.title"].replace(/[^a-zA-Z0-9]+/g, '').toLowerCase();
   const slug = `${trimmedTitle}_${result[0]}`;
@@ -77,7 +77,7 @@ export const create = async (req, res) => {
 
 export const deleteOpenPosition = async (req, res) => {
   const { _id } = req.body;
-  console.log( _id)
+  console.log(_id)
   try {
     const removeOpenPosition = await OpenPosition.findOneAndDelete({ _id });
     if (!removeOpenPosition) {
@@ -178,7 +178,6 @@ export const getAllOpenPositions = async (req, res) => {
 
 export const getOneOpenPosition = async (req, res) => {
   const { slug } = req.body;
-  console.log(slug)
   try {
     const openPosition = await OpenPosition.findOne({ slug });
     return res.status(200).json(openPosition);
@@ -189,21 +188,41 @@ export const getOneOpenPosition = async (req, res) => {
 
 export const getActiveOpenPositions = async (req, res) => {
   try {
-    const OpenPosition = await OpenPosition.find({ active_status: true });
+    const openPosition = await OpenPosition.find({ active_status: true });
 
-    return res.status(200).json(OpenPosition);
+    return res.status(200).json(openPosition);
   } catch (error) {
     return req.status(500).send({ error: "Error Editing OpenPosition" });
   }
 };
 
+export const getFeaturedOpenPositions = async (req, res) => {
+  const { page, limit } = req.query;
+
+  try {
+    const {
+      results: openPosition,
+      totalPages,
+      currentPage,
+    } = await paginateResults(OpenPosition, { featured: "Yes"}, page, limit);
+
+    return res.status(200).json({
+      openPosition,
+      totalPages,
+      currentPage,
+    });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 export const getOpenPositionById = async (req, res) => {
   const { _id } = req.body;
-  
-  try {
-    const OpenPosition = await OpenPosition.find({ _id });
 
-    return res.status(200).json(OpenPosition);
+  try {
+    const openPosition = await OpenPosition.find({ _id });
+
+    return res.status(200).json(openPosition);
   } catch (error) {
     return req.status(500).send({ error: "Error Editing OpenPosition" });
   }
