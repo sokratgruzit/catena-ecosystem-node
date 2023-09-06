@@ -126,6 +126,7 @@ app.get("/uploads/:folder/:img", (req, res) => {
   }
 });
 
+// App routes
 app.use("/admin", adminRouter);
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
