@@ -10,6 +10,48 @@ const generateJobId = async (department) => {
   return [`${departmentAbbreviation}${paddedSequence}`, sequence, reference];
 };
 
+const compareJobPostingData = () => {
+  const now = new Date();
+  const midnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1, // Next day
+    0, 0, 0, 0 // 00:00:00:000
+  );
+  const timeUntilMidnight = midnight - now;
+
+  setTimeout(() => {
+    try {
+      const currentDate = new Date();
+
+      const openPositions = OpenPosition.find({
+        job_posting_from: { $lte: currentDate },
+        job_posting_to: { $gte: currentDate },
+      });
+  
+      const updatedOpenPositions = openPositions.map((position) => {
+        
+        const isActive = currentDate >= position.job_posting_from && currentDate <= position.job_posting_to;
+
+        return {
+          ...position.toObject(),
+          active: isActive,
+        };
+      });
+      console.log(isActive)
+  
+      return res.status(200).json(updatedOpenPositions);
+    } catch (error) {
+      console.error('Error fetching OpenPositions:', error);
+      return res.status(500).json({ message: 'Error fetching OpenPositions.', error: error });
+    }
+
+    compareJobPostingData();
+  }, timeUntilMidnight);
+}
+compareJobPostingData();
+
+console.log( 'date')
 export const create = async (req, res) => {
   const {
     title,
@@ -185,7 +227,6 @@ export const getOneOpenPosition = async (req, res) => {
     return res.status(500).json(error);
   }
 };
-
 export const getActiveOpenPositions = async (req, res) => {
   try {
     const openPosition = await OpenPosition.find({ active_status: true });
@@ -204,7 +245,7 @@ export const getFeaturedOpenPositions = async (req, res) => {
       results: openPosition,
       totalPages,
       currentPage,
-    } = await paginateResults(OpenPosition, { featured: "Yes"}, page, limit);
+    } = await paginateResults(OpenPosition, { featured: "Yes" }, page, limit);
 
     return res.status(200).json({
       openPosition,
