@@ -15,43 +15,48 @@ const compareJobPostingData = () => {
   const midnight = new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate() + 1, // Next day
-    0, 0, 0, 0 // 00:00:00:000
+    now.getDate() + 1, 
+    0, 0, 0, 0 
   );
-  const timeUntilMidnight = midnight - now;
+  
+  const timeUntilMidnight = 19988; 
+  // const timeUntilMidnight = midnight - now; 
 
   setTimeout(() => {
     try {
       const currentDate = new Date();
-
-      const openPositions = OpenPosition.find({
+      
+      OpenPosition.find({
         job_posting_from: { $lte: currentDate },
         job_posting_to: { $gte: currentDate },
-      });
-  
-      const updatedOpenPositions = openPositions.map((position) => {
-        
-        const isActive = currentDate >= position.job_posting_from && currentDate <= position.job_posting_to;
+      }, (error, openPositions) => {
+        if (error) {
+          console.error('Error fetching OpenPositions:', error);
+          return;
+        }
 
-        return {
-          ...position.toObject(),
-          active: isActive,
-        };
+        const updatedOpenPositions = openPositions.map((position) => {
+          const isActive = currentDate >= position.job_posting_from && currentDate <= position.job_posting_to;
+
+          return {
+            ...position.toObject(),
+            active: isActive,
+          };
+        });
+
+        console.log(updatedOpenPositions);
+
+        compareJobPostingData();
       });
-      console.log(isActive)
-  
-      return res.status(200).json(updatedOpenPositions);
     } catch (error) {
       console.error('Error fetching OpenPositions:', error);
-      return res.status(500).json({ message: 'Error fetching OpenPositions.', error: error });
     }
-
-    compareJobPostingData();
   }, timeUntilMidnight);
-}
+};
+
 compareJobPostingData();
 
-console.log( 'date')
+console.log('date')
 export const create = async (req, res) => {
   const {
     title,
@@ -79,7 +84,7 @@ export const create = async (req, res) => {
     return res.status(400).json({ message: "Title is required." });
   }
 
-  const result = await generateJobId(department);
+  const result = await generateJobId(department.en["department.departmentName"]);
   let trimmedTitle = title.en["openPosition.title"].replace(/[^a-zA-Z0-9]+/g, '').toLowerCase();
   const slug = `${trimmedTitle}_${result[0]}`;
 
