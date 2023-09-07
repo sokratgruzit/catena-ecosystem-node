@@ -79,32 +79,30 @@ export const adminLogout = async (req, res) => {
 
 export const adminGetNFTUrl = async (req, res) => {
   const { url, owner, tokenId } = req.body;
-  
+
   try {
     const { data } = await axios.get(url);
     const exists = await Paths.findOne({ type: "nfts" });
-    
+
     if (exists) {
       let paths = exists.paths;
-      
-      if (paths.some(path => path.ownerId === owner && path.nftId === tokenId)) {
-        console.log('This path already exists');
+
+      if (
+        paths.some((path) => path.ownerId === owner && path.nftId === tokenId)
+      ) {
+        console.log("This path already exists");
       } else {
-        paths.push({ 
+        paths.push({
           ownerId: owner,
-          nftId: tokenId
+          nftId: tokenId,
         });
 
-        const filter = { type: 'nfts' };
+        const filter = { type: "nfts" };
         const update = { paths: paths };
 
-        await Paths.findOneAndUpdate(
-          filter, 
-          update, 
-          {
-            new: true, 
-          }
-        );
+        await Paths.findOneAndUpdate(filter, update, {
+          new: true,
+        });
       }
     }
 
