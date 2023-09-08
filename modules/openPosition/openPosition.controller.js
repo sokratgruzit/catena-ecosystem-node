@@ -10,53 +10,49 @@ const generateJobId = async (department) => {
   return [`${departmentAbbreviation}${paddedSequence}`, sequence, reference];
 };
 
-const compareJobPostingData = () => {
+const compareJobPostingData = async () => {
   const now = new Date();
-  const midnight = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1, 
-    0, 0, 0, 0 
-  );
-  
-  const timeUntilMidnight = 19988; 
-  // const timeUntilMidnight = midnight - now; 
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
 
-  setTimeout(() => {
+  const formattedDate = `${year}-${month}-${day}`;
+  const millisecondsInADay = 24 * 60 * 60 * 1000;
+
+  setTimeout(async () => {
     try {
-      const currentDate = new Date();
-      
-      OpenPosition.find({
-        job_posting_from: { $lte: currentDate },
-        job_posting_to: { $gte: currentDate },
-      }, (error, openPositions) => {
-        if (error) {
-          console.error('Error fetching OpenPositions:', error);
-          return;
-        }
-
-        const updatedOpenPositions = openPositions.map((position) => {
-          const isActive = currentDate >= position.job_posting_from && currentDate <= position.job_posting_to;
-
-          return {
-            ...position.toObject(),
-            active: isActive,
-          };
-        });
-
-        console.log(updatedOpenPositions);
-
-        compareJobPostingData();
+      const openPositions = await OpenPosition.find({
+        job_posting_from: { $lte: formattedDate },
+        job_posting_to: { $gte: formattedDate },
       });
+
+      for (const position of openPositions) {
+        const isActive = formattedDate >= position.job_posting_from && formattedDate <= position.job_posting_to;
+
+        const { reference } = position;
+        try {
+          const update = await OpenPosition.findOneAndUpdate({ reference }, { $set: { active_status: isActive } }, {
+            new: true,
+          });
+
+          if (!update) {
+            console.log(`No OpenPosition found with reference: ${reference}`);
+          } else {
+            console.log(`Updated OpenPosition with reference: ${reference}`);
+          }
+        } catch (error) {
+          console.error(`Error updating OpenPosition: ${error}`);
+        }
+      }
+      compareJobPostingData();
     } catch (error) {
       console.error('Error fetching OpenPositions:', error);
     }
-  }, timeUntilMidnight);
+  }, millisecondsInADay);
 };
 
 compareJobPostingData();
 
-console.log('date')
 export const create = async (req, res) => {
   const {
     title,
