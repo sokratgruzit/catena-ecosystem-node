@@ -6,6 +6,7 @@ const router = Router();
 router.route("/create").post(openPositionController.create);
 router.route("/get-all-open-positions").get(openPositionController.getAllOpenPositions);
 router.route("/get-active-open-positions").get(openPositionController.getActiveOpenPositions);
+router.route("/get-featured-open-positions").get(openPositionController.getFeaturedOpenPositions);
 router.route("/get-open-positions-by-id").get(openPositionController.getOpenPositionById);
 router.route("/delete").put(openPositionController.deleteOpenPosition);
 router.route("/edit").post(openPositionController.editOpenPosition);

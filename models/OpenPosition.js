@@ -80,7 +80,7 @@ const OpenPositionShema = new mongoose.Schema(
         },
         active_status: {
             type: Boolean,
-            default: true,
+            default: false,
         },
         job_posting_from: {
             type: String,
