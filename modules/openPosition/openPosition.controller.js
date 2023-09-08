@@ -207,7 +207,7 @@ export const getAllOpenPositions = async (req, res) => {
       results: openPosition,
       totalPages,
       currentPage,
-    } = await paginateResults(OpenPosition, {}, page, limit);
+    } = await paginateResults(OpenPosition, { active_status: true }, page, limit);
 
     return res.status(200).json({
       openPosition,
@@ -246,7 +246,7 @@ export const getFeaturedOpenPositions = async (req, res) => {
       results: openPosition,
       totalPages,
       currentPage,
-    } = await paginateResults(OpenPosition, { featured: "Yes" }, page, limit);
+    } = await paginateResults(OpenPosition, { active_status: true, featured: "Yes" }, page, limit);
 
     return res.status(200).json({
       openPosition,
