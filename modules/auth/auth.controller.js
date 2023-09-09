@@ -7,6 +7,7 @@ import config from "../../config/index.js";
 export const registerWalletAddress = async (req, res) => {
   try {
     let { address } = req.body;
+    console.log(address);
 
     if (!address) return res.status(200).send({ error: "Address is required" });
     address = address.toLowerCase();

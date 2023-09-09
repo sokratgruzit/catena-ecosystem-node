@@ -5,15 +5,16 @@ import crypto from "crypto";
 //Users model
 const userSchema = new mongoose.Schema({
   address: { type: String, required: true, unique: true },
-  fullname: { type: String, required: false },
+  nick: { type: String, required: false },
   email: { type: String, required: false, unique: false },
   mobile: { type: String, required: false },
   dateOfBirth: { type: Date, required: false },
   password: { type: String, required: false },
-  isEmailVerified: {
-    type: Boolean,
-    default: false,
-  },
+  avatar: { type: Object, required: false },
+  step: { type: Number, required: false },
+  avatarLocked: { type: Boolean, required: false },
+  team: { type: String, required: false },
+  isEmailVerified: { type: Boolean, default: false },
   emailVerificationToken: String,
   emailVerificationExpires: Date,
   tempEmail: String,
