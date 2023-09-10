@@ -1,9 +1,108 @@
 import { User } from "../../models/User.js";
 import { io } from "../../app.js";
+import axios from "axios";
 
 import nodemailer from "nodemailer";
 import { verification_template } from "../../utils/email_template.js";
 import { paginateResults } from "../../utils/pagination.js";
+
+export async function getProfileImages(req, res) {
+  
+  let data = [
+    {
+      id: "QmVCmhfX15r92Ho4VscPQk3EucLq2PzhZ18Q5XQL62i4UQ",
+      img: "https://infura-ipfs.io/ipfs/QmVCmhfX15r92Ho4VscPQk3EucLq2PzhZ18Q5XQL62i4UQ",
+      name: "Storm",
+      price: "1",
+      url: "https://sokrat-nfts.infura-ipfs.io/ipfs/QmVCmhfX15r92Ho4VscPQk3EucLq2PzhZ18Q5XQL62i4UQ",
+      description: "Storm",
+      website: "catena.network",
+      royalties: "20",
+      fileSize: "100",
+      category: "Profile",
+      property: "Anarchy",
+      social: {
+        instagram: "https://www.instagram.com",
+        facebook: "https://www.facebook.com",
+        twitter: "https://twitter.com"
+      }
+    },
+    {
+      id: "Qma3nyDUc5T3Qop9bskFGGq3H221SWnaw7YeHibiJtQCBq",
+      img: "https://infura-ipfs.io/ipfs/Qma3nyDUc5T3Qop9bskFGGq3H221SWnaw7YeHibiJtQCBq",
+      name: "Samurai",
+      price: "1",
+      url: "https://sokrat-nfts.infura-ipfs.io/ipfs/Qma3nyDUc5T3Qop9bskFGGq3H221SWnaw7YeHibiJtQCBq",
+      description: "Samurai",
+      website: "catena.network",
+      royalties: "20",
+      fileSize: "100",
+      category: "Profile",
+      property: "Anarchy",
+      social: {
+        instagram: "https://www.instagram.com",
+        facebook: "https://www.facebook.com",
+        twitter: "https://twitter.com"
+      }
+    },
+    {
+      id: "QmTE5F635ZB3bHntbmcLxsf6ESBYV1EP6HoE2nDSg5GN8a",
+      img: "https://infura-ipfs.io/ipfs/QmTE5F635ZB3bHntbmcLxsf6ESBYV1EP6HoE2nDSg5GN8a",
+      name: "Moon",
+      price: "1",
+      url: "https://sokrat-nfts.infura-ipfs.io/ipfs/QmTE5F635ZB3bHntbmcLxsf6ESBYV1EP6HoE2nDSg5GN8a",
+      description: "Moon",
+      website: "catena.network",
+      royalties: "20",
+      fileSize: "100",
+      category: "Profile",
+      property: "Anarchy",
+      social: {
+        instagram: "https://www.instagram.com",
+        facebook: "https://www.facebook.com",
+        twitter: "https://twitter.com"
+      }
+    },
+    {
+      id: "Qmcre8w5dSfGWiveeyAPkA7JJ3XWcYNksRveTiZB8PhhVX",
+      img: "https://infura-ipfs.io/ipfs/Qmcre8w5dSfGWiveeyAPkA7JJ3XWcYNksRveTiZB8PhhVX",
+      name: "Light",
+      price: "1",
+      url: "https://sokrat-nfts.infura-ipfs.io/ipfs/Qmcre8w5dSfGWiveeyAPkA7JJ3XWcYNksRveTiZB8PhhVX",
+      description: "Light",
+      website: "catena.network",
+      royalties: "20",
+      fileSize: "100",
+      category: "Profile",
+      property: "Anarchy",
+      social: {
+        instagram: "https://www.instagram.com",
+        facebook: "https://www.facebook.com",
+        twitter: "https://twitter.com"
+      }
+    },
+    {
+      id: "QmTzzhoefNAeLuU2tqPKF5Wyc9payX9pvoUVQf7zZmKjM5",
+      img: "https://infura-ipfs.io/ipfs/QmTzzhoefNAeLuU2tqPKF5Wyc9payX9pvoUVQf7zZmKjM5",
+      name: "Lucky",
+      price: "1",
+      url: "https://sokrat-nfts.infura-ipfs.io/ipfs/QmTzzhoefNAeLuU2tqPKF5Wyc9payX9pvoUVQf7zZmKjM5",
+      description: "Lucky",
+      website: "catena.network",
+      royalties: "20",
+      fileSize: "100",
+      category: "Profile",
+      property: "Anarchy",
+      social: {
+        instagram: "https://www.instagram.com",
+        facebook: "https://www.facebook.com",
+        twitter: "https://twitter.com"
+      }
+    }
+  ];
+
+  return res.status(200).json(data);
+}
 
 export async function getAllUsers(req, res) {
   // Get all users
