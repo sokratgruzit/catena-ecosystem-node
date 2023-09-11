@@ -108,7 +108,7 @@ export const adminGetNFTUrl = async (req, res) => {
       }
     }
 
-    return res.status(200).send({ data });
+    return res.status(200).send(data);
   } catch (error) {
     return res.status(500).send({ error: "Error while get uls" });
   }

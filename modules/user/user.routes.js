@@ -5,6 +5,7 @@ const router = Router();
 
 router.route("/get-all-users").post(userController.getAllUsers);
 router.route("/verify-email/:token").get(userController.verifyEmail);
+router.route("/profile-images").get(userController.getProfileImages);
 router.route("/").post(userController.getUserInfo);
 router.route("/profile").post(userController.makeProfile);
 

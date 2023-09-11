@@ -21,7 +21,9 @@ export const create = async (req, res) => {
     });
   }
 
-  let exists = await Event.findOne({ slug });
+  let updatedSlug = slug.toLowerCase().replace(" ", "-");
+
+  let exists = await Event.findOne({ slug: updatedSlug });
 
   if (exists) {
     let imgPath = `uploads/events/${image}`;
@@ -55,7 +57,7 @@ export const create = async (req, res) => {
         active_status,
         category,
         persons,
-        slug,
+        slug: updatedSlug
       });
 
       return res.status(200).json(event);
