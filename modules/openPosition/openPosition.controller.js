@@ -10,6 +10,49 @@ const generateJobId = async (department) => {
   return [`${departmentAbbreviation}${paddedSequence}`, sequence, reference];
 };
 
+const compareJobPostingData = async () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day}`;
+  const millisecondsInADay = 24 * 60 * 60 * 1000;
+
+  setTimeout(async () => {
+    try {
+      const openPositions = await OpenPosition.find({
+        job_posting_from: { $lte: formattedDate },
+        job_posting_to: { $gte: formattedDate },
+      });
+
+      for (const position of openPositions) {
+        const isActive = formattedDate >= position.job_posting_from && formattedDate <= position.job_posting_to;
+
+        const { reference } = position;
+        try {
+          const update = await OpenPosition.findOneAndUpdate({ reference }, { $set: { active_status: isActive } }, {
+            new: true,
+          });
+
+          if (!update) {
+            console.log(`No OpenPosition found with reference: ${reference}`);
+          } else {
+            console.log(`Updated OpenPosition with reference: ${reference}`);
+          }
+        } catch (error) {
+          console.error(`Error updating OpenPosition: ${error}`);
+        }
+      }
+      compareJobPostingData();
+    } catch (error) {
+      console.error('Error fetching OpenPositions:', error);
+    }
+  }, millisecondsInADay);
+};
+
+compareJobPostingData();
+
 export const create = async (req, res) => {
   const {
     title,
@@ -19,7 +62,7 @@ export const create = async (req, res) => {
     requirements,
     benefits,
     about_catena,
-    worcking_at_catena,
+    working_at_catena,
     how_we_work,
     job_level,
     salary_range_from,
@@ -36,9 +79,9 @@ export const create = async (req, res) => {
   if (!title) {
     return res.status(400).json({ message: "Title is required." });
   }
-  
-  const result = await generateJobId(department);
-  let trimmedTitle = title.en["openPosition.title"].split(' ').join('');
+
+  const result = await generateJobId(department.en["department.departmentName"]);
+  let trimmedTitle = title.en["openPosition.title"].replace(/[^a-zA-Z0-9]+/g, '').toLowerCase();
   const slug = `${trimmedTitle}_${result[0]}`;
 
   try {
@@ -50,7 +93,7 @@ export const create = async (req, res) => {
       requirements,
       benefits,
       about_catena,
-      worcking_at_catena,
+      working_at_catena,
       how_we_work,
       job_level,
       salary_range_from,
@@ -77,7 +120,7 @@ export const create = async (req, res) => {
 
 export const deleteOpenPosition = async (req, res) => {
   const { _id } = req.body;
-  console.log( _id)
+  console.log(_id)
   try {
     const removeOpenPosition = await OpenPosition.findOneAndDelete({ _id });
     if (!removeOpenPosition) {
@@ -100,7 +143,7 @@ export const editOpenPosition = async (req, res) => {
     requirements,
     benefits,
     about_catena,
-    worcking_at_catena,
+    working_at_catena,
     how_we_work,
     job_level,
     salary_range_from,
@@ -128,7 +171,7 @@ export const editOpenPosition = async (req, res) => {
         requirements,
         benefits,
         about_catena,
-        worcking_at_catena,
+        working_at_catena,
         how_we_work,
         job_level,
         salary_range_from,
@@ -164,7 +207,7 @@ export const getAllOpenPositions = async (req, res) => {
       results: openPosition,
       totalPages,
       currentPage,
-    } = await paginateResults(OpenPosition, {}, page, limit);
+    } = await paginateResults(OpenPosition, { active_status: true }, page, limit);
 
     return res.status(200).json({
       openPosition,
@@ -178,7 +221,6 @@ export const getAllOpenPositions = async (req, res) => {
 
 export const getOneOpenPosition = async (req, res) => {
   const { slug } = req.body;
-  console.log(slug)
   try {
     const openPosition = await OpenPosition.findOne({ slug });
     return res.status(200).json(openPosition);
@@ -186,24 +228,43 @@ export const getOneOpenPosition = async (req, res) => {
     return res.status(500).json(error);
   }
 };
-
 export const getActiveOpenPositions = async (req, res) => {
   try {
-    const OpenPosition = await OpenPosition.find({ active_status: true });
+    const openPosition = await OpenPosition.find({ active_status: true });
 
-    return res.status(200).json(OpenPosition);
+    return res.status(200).json(openPosition);
   } catch (error) {
     return req.status(500).send({ error: "Error Editing OpenPosition" });
   }
 };
 
+export const getFeaturedOpenPositions = async (req, res) => {
+  const { page, limit } = req.query;
+
+  try {
+    const {
+      results: openPosition,
+      totalPages,
+      currentPage,
+    } = await paginateResults(OpenPosition, { active_status: true, featured: "Yes" }, page, limit);
+
+    return res.status(200).json({
+      openPosition,
+      totalPages,
+      currentPage,
+    });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 export const getOpenPositionById = async (req, res) => {
   const { _id } = req.body;
-  
-  try {
-    const OpenPosition = await OpenPosition.find({ _id });
 
-    return res.status(200).json(OpenPosition);
+  try {
+    const openPosition = await OpenPosition.find({ _id });
+
+    return res.status(200).json(openPosition);
   } catch (error) {
     return req.status(500).send({ error: "Error Editing OpenPosition" });
   }

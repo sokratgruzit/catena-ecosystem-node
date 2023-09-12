@@ -18,8 +18,9 @@ import { isAuthenticated } from "./services/isAuthenticated.js";
 import faqRouter from "./modules/faq/faq.routes.js";
 import eventRouter from "./modules/event/event.routes.js";
 import permissionControler from "./modules/permissions/permissions.routes.js";
-import careersController from "./modules/careers/careers.routes.js";
-import openPositionController from "./modules/openPosition/openPosition.routes.js";
+import careersRouter from "./modules/careers/careers.routes.js";
+import watchlistRouter from "./modules/watchlist/watchlist.routes.js";
+import openPositionRouter from "./modules/openPosition/openPosition.routes.js";
 import rolesControler from "./modules/roles/roles.routes.js";
 import announcementRouter from "./modules/announcement/announcement.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
@@ -31,6 +32,7 @@ import langsRouter from "./modules/languages/langs.routes.js";
 import pressRouter from "./modules/press/press.routes.js";
 import applicationRouter from "./modules/application/application.routes.js";
 import ecosystemRouter from "./modules/ecosystem/ecosystem.routes.js";
+import departmentRouter from "./modules/department/department.routes.js"
 import proposalsRouter from "./modules/proposals/proposals.routes.js";
 import choicesRouter from "./modules/choices/choices.routes.js";
 import voteRouter from "./modules/vote/vote.routes.js";
@@ -136,6 +138,7 @@ app.use("/langs", langsRouter);
 app.use("/press", pressRouter);
 app.use("/application", applicationRouter);
 app.use("/ecosystem", ecosystemRouter);
+app.use("/department", departmentRouter);
 app.use("/faq", faqRouter);
 app.use("/proposals", proposalsRouter);
 app.use("/choices", choicesRouter);
@@ -145,10 +148,12 @@ app.use("/vote", voteRouter);
 app.use("/translates", translateRouter);
 app.use("/permissions", permissionControler);
 app.use("/roles", rolesControler);
-app.use("/open-positions", openPositionController);
-app.use("/careers", careersController);
+app.use("/open-positions", openPositionRouter);
+app.use("/careers", careersRouter);
 app.use("/your-voice", VoiceMatter);
 app.use("/ambassador", ambassadorRouter);
+app.use("/watchlist", watchlistRouter);
+
 
 mongoose
   .connect(process.env.MONGO_URL, {
