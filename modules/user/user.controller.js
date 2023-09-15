@@ -7,7 +7,7 @@ import { verification_template } from "../../utils/email_template.js";
 import { paginateResults } from "../../utils/pagination.js";
 
 export async function getProfileImages(req, res) {
-  
+
   let data = [
     {
       id: "QmVCmhfX15r92Ho4VscPQk3EucLq2PzhZ18Q5XQL62i4UQ",
@@ -119,7 +119,7 @@ export async function getAllUsers(req, res) {
       users.filter(user => {
         if (user.password) user.password = "";
         if (!user.isEmailVerified) user.email = user.tempEmail;
-        
+
         return user;
       });
 
@@ -169,17 +169,24 @@ export async function makeProfile(req, res) {
     const foundUser = await User.findOne({ address });
     if (!foundUser) return res.status(400).send("no user found");
 
-    if (!req.body.step) {
+    if (req.body.step == "Starter") {
       query = {
-        step: 1,
+        step: 0,
         avatar: req.body.avatar,
         avatarLocked: req.body.avatarLocked
+      };
+    }
+
+    if (req.body.step === 1) {
+      query = {
+        step: 1,
       };
     }
 
     if (req.body.step === 2) {
       query = {
         step: 2,
+        team: req.body.team,
         avatarLocked: req.body.avatarLocked
       };
     }
@@ -187,7 +194,6 @@ export async function makeProfile(req, res) {
     if (req.body.step === 3) {
       query = {
         step: 3,
-        team: req.body.team,
         nick: req.body.nick
       };
     }
@@ -203,61 +209,61 @@ export async function makeProfile(req, res) {
     });
 
     res.status(200).send(updatedUser);
-  //   if (
-  //     foundUser.isEmailVerified &&
-  //     foundUser?.email &&
-  //     foundUser?.email === email
-  //   ) {
-  //     // User is already verified and the email hasn't changed, no need to send a new verification email
-  //   } else if (
-  //     foundUser.isEmailVerified &&
-  //     foundUser?.email &&
-  //     foundUser?.email !== email
-  //   ) {
-  //     // User is verified, but the provided email is different, reset the verification status and send new verification email
-  //     const token = foundUser.generateEmailVerificationToken();
-  //     foundUser.isEmailVerified = false;
-  //     foundUser.email = "";
-  //     foundUser.tempEmail = email;
-  //     foundUser.password = password;
-  //     await foundUser.save();
-  //     await sendVerificationEmail(email, token, locale);
-  //     // Send verification email to the new email
-  //   } else if (!foundUser.isEmailVerified && email) {
-  //     // User is not verified, and a new email is provided, send a verification email
-  //     const token = foundUser.generateEmailVerificationToken();
-  //     foundUser.tempEmail = email;
-  //     await foundUser.save();
-  //     await sendVerificationEmail(foundUser.tempEmail, token, locale);
-  //     // Send verification email to the new email
-  //   } else {
-  //     foundUser.isEmailVerified = false;
-  //     foundUser.emailVerificationExpires = undefined;
-  //     foundUser.emailVerificationToken = undefined;
-  //     foundUser.tempEmail = undefined;
-  //     foundUser.email = "";
-  //     foundUser.password = "";
-  //     foundUser.status = false;
-  //     await foundUser.save();
-  //   }
+    //   if (
+    //     foundUser.isEmailVerified &&
+    //     foundUser?.email &&
+    //     foundUser?.email === email
+    //   ) {
+    //     // User is already verified and the email hasn't changed, no need to send a new verification email
+    //   } else if (
+    //     foundUser.isEmailVerified &&
+    //     foundUser?.email &&
+    //     foundUser?.email !== email
+    //   ) {
+    //     // User is verified, but the provided email is different, reset the verification status and send new verification email
+    //     const token = foundUser.generateEmailVerificationToken();
+    //     foundUser.isEmailVerified = false;
+    //     foundUser.email = "";
+    //     foundUser.tempEmail = email;
+    //     foundUser.password = password;
+    //     await foundUser.save();
+    //     await sendVerificationEmail(email, token, locale);
+    //     // Send verification email to the new email
+    //   } else if (!foundUser.isEmailVerified && email) {
+    //     // User is not verified, and a new email is provided, send a verification email
+    //     const token = foundUser.generateEmailVerificationToken();
+    //     foundUser.tempEmail = email;
+    //     await foundUser.save();
+    //     await sendVerificationEmail(foundUser.tempEmail, token, locale);
+    //     // Send verification email to the new email
+    //   } else {
+    //     foundUser.isEmailVerified = false;
+    //     foundUser.emailVerificationExpires = undefined;
+    //     foundUser.emailVerificationToken = undefined;
+    //     foundUser.tempEmail = undefined;
+    //     foundUser.email = "";
+    //     foundUser.password = "";
+    //     foundUser.status = false;
+    //     await foundUser.save();
+    //   }
 
-  //   let clearedUser = {};
-  //   let query = { fullname, mobile, dateOfBirth, password, status };
+    //   let clearedUser = {};
+    //   let query = { fullname, mobile, dateOfBirth, password, status };
 
-  //   if (password === "") query = { fullname, mobile, dateOfBirth, status };
+    //   if (password === "") query = { fullname, mobile, dateOfBirth, status };
 
-  //   const updatedUser = await User.findOneAndUpdate({ address }, query, {
-  //     new: true,
-  //   });
+    //   const updatedUser = await User.findOneAndUpdate({ address }, query, {
+    //     new: true,
+    //   });
 
-  //   clearedUser.email = updatedUser.isEmailVerified
-  //     ? updatedUser.email
-  //     : updatedUser.tempEmail;
-  //   clearedUser.dateOfBirth = updatedUser.dateOfBirth;
-  //   clearedUser.mobile = updatedUser.mobile;
-  //   clearedUser.fullname = updatedUser.fullname;
+    //   clearedUser.email = updatedUser.isEmailVerified
+    //     ? updatedUser.email
+    //     : updatedUser.tempEmail;
+    //   clearedUser.dateOfBirth = updatedUser.dateOfBirth;
+    //   clearedUser.mobile = updatedUser.mobile;
+    //   clearedUser.fullname = updatedUser.fullname;
 
-  //   res.status(200).send(clearedUser);
+    //   res.status(200).send(clearedUser);
   } catch (e) {
     console.log(e);
     return res.status(404).send("Something went wrong");
