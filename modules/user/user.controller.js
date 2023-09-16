@@ -171,11 +171,13 @@ export async function makeProfile(req, res) {
 
     if (!req.body.step) {
       query = {
-        step: 0,
+        step: 1,
         avatar: req.body.avatar,
         avatarLocked: req.body.avatarLocked
       };
     }
+
+    console.log(req.body.step);
 
     if (req.body.step === 1) {
       query = {
