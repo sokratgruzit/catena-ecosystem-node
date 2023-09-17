@@ -169,7 +169,7 @@ export async function makeProfile(req, res) {
     const foundUser = await User.findOne({ address });
     if (!foundUser) return res.status(400).send("no user found");
 
-    if (!req.body.step) {
+    if (req.body.step === 1) {
       query = {
         step: 1,
         avatar: req.body.avatar,
@@ -177,25 +177,23 @@ export async function makeProfile(req, res) {
       };
     }
 
-    console.log(req.body.step);
-
-    if (req.body.step === 1) {
-      query = {
-        step: 1,
-      };
-    }
-
     if (req.body.step === 2) {
       query = {
         step: 2,
-        team: req.body.team,
-        avatarLocked: req.body.avatarLocked
       };
     }
 
     if (req.body.step === 3) {
       query = {
         step: 3,
+        team: req.body.team,
+        avatarLocked: req.body.avatarLocked
+      };
+    }
+
+    if (req.body.step === 4) {
+      query = {
+        step: 4,
         nick: req.body.nick
       };
     }
