@@ -169,13 +169,15 @@ export async function makeProfile(req, res) {
     const foundUser = await User.findOne({ address });
     if (!foundUser) return res.status(400).send("no user found");
 
-    if (req.body.step == "Starter") {
+    if (!req.body.step) {
       query = {
-        step: 0,
+        step: 1,
         avatar: req.body.avatar,
         avatarLocked: req.body.avatarLocked
       };
     }
+
+    console.log(req.body.step);
 
     if (req.body.step === 1) {
       query = {
