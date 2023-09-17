@@ -11,11 +11,11 @@ export const create = async (req, res) => {
     exchange_link,
   } = req.body;
 
-  if (!exchange_name || !inner_descr || !active_status || !color || !exchange_link) {
-    return res.status(400).send({
-      message: "Fill all fealds",
-    });
-  }
+  // if (!exchange_name || !inner_descr || !color || !exchange_link) {
+  //   return res.status(400).send({
+  //     message: "Fill all fealds",
+  //   });
+  // }
 
   let exists = await Ecosystem.findOne({
     exchange_name,
