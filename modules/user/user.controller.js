@@ -177,11 +177,9 @@ export async function makeProfile(req, res) {
       };
     }
 
-    console.log(req.body.step);
-
     if (req.body.step === 1) {
       query = {
-        step: 1,
+        step: 2,
       };
     }
 
