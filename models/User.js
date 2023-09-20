@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
   avatarLocked: { type: Boolean, required: false },
   team: { type: String, required: false },
   isEmailVerified: { type: Boolean, default: false },
+  tokenId: { type: String, required: false },
   emailVerificationToken: String,
   emailVerificationExpires: Date,
   tempEmail: String,

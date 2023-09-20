@@ -173,7 +173,8 @@ export async function makeProfile(req, res) {
       query = {
         step: 1,
         avatar: req.body.avatar,
-        avatarLocked: req.body.avatarLocked
+        avatarLocked: req.body.avatarLocked,
+        tokenId: req.body.tokenId
       };
     }
 
@@ -185,8 +186,7 @@ export async function makeProfile(req, res) {
 
     if (req.body.step === 2) {
       query = {
-        step: 2,
-        team: req.body.team,
+        step: 3,
         avatarLocked: req.body.avatarLocked
       };
     }
