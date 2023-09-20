@@ -193,14 +193,15 @@ export async function makeProfile(req, res) {
 
     if (req.body.step === 3) {
       query = {
-        step: 3,
-        nick: req.body.nick
+        step: 4,
+        nick: req.body.team
       };
     }
 
-    if (req.body.step === 10) {
+    if (req.body.step === 4) {
       query = {
-        step: 0
+        step: 5,
+        nick: req.body.nick
       };
     }
 
