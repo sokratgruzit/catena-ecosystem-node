@@ -177,6 +177,12 @@ export async function makeProfile(req, res) {
       };
     }
 
+    if (req.body.step === 1) {
+      query = {
+        step: 2,
+      };
+    }
+
     if (req.body.step === 2) {
       query = {
         step: 2,

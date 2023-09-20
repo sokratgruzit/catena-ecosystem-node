@@ -6,6 +6,7 @@ import crypto from "crypto";
 const userSchema = new mongoose.Schema({
   address: { type: String, required: true, unique: true },
   nick: { type: String, required: false },
+  transactionHash: { type: String, required: false },
   email: { type: String, required: false, unique: false },
   mobile: { type: String, required: false },
   dateOfBirth: { type: Date, required: false },
