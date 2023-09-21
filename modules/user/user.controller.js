@@ -200,10 +200,17 @@ export async function makeProfile(req, res) {
     }
 
     if (req.body.step === 4) {
-      query = {
-        step: 5,
-        nick: req.body.nick
-      };
+
+      const checkUser = await User.find({ nick: req.body.nick });
+
+      if (checkUser.length) {
+        query = {
+          step: 5,
+          nick: req.body.nick
+        };
+      } else {
+        return res.status(200).send({ "message": "this nick already existing" })
+      }
     }
 
     const updatedUser = await User.findOneAndUpdate({ address }, query, {
